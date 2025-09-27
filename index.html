@@ -14,14 +14,15 @@
     <style>
         /* Variabel Warna & Desain untuk Tampilan Premium */
         :root {
-            --bg-color: #F8F9FA;
-            --card-bg: #FFFFFF;
-            --card-border: #EDEFF2;
-            --primary-text: #1a202c;
-            --secondary-text: #6c757d;
+            --bg-color: #1A1A1A; /* Abu-abu sangat gelap */
+            --card-bg: #242424; /* Abu-abu sedikit lebih terang */
+            --card-border: #3A3A3A;
+            --primary-text: #EAEAEA; /* Putih gading */
+            --secondary-text: #888888;
             --accent-color: #C0A062; /* Emas lembut */
             --accent-hover: #ad8d54;
-            --shadow-light: rgba(0, 0, 0, 0.05);
+            --whatsapp-green: #25D366;
+            --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
             --shadow-medium: rgba(99, 102, 241, 0.2);
             --font-family: 'Manrope', sans-serif;
             --border-radius: 20px;
@@ -40,11 +41,22 @@
             from { opacity: 1; transform: translateX(0); }
             to { opacity: 0; transform: translateX(-50px); }
         }
-        @keyframes pulse {
+        @keyframes subtle-glow {
+            0% { box-shadow: 0 0 8px rgba(192, 160, 98, 0.2); }
+            50% { box-shadow: 0 0 16px rgba(192, 160, 98, 0.4); }
+            100% { box-shadow: 0 0 8px rgba(192, 160, 98, 0.2); }
+        }
+        @keyframes active-pulse {
             0% { transform: scale(1); }
-            50% { transform: scale(1.03); }
+            50% { transform: scale(1.08); }
             100% { transform: scale(1); }
         }
+        @keyframes icon-nudge {
+            0% { transform: translateX(0); }
+            50% { transform: translateX(3px); }
+            100% { transform: translateX(0); }
+        }
+
 
         /* Pengaturan Dasar Body */
         body {
@@ -53,8 +65,8 @@
             margin: 0;
             padding: 30px 15px;
             display: flex;
-            justify-content: center;
-            align-items: flex-start;
+            justify-content: center; /* Rata tengah horizontal */
+            align-items: center; /* Rata tengah vertikal */
             min-height: 100vh;
             color: var(--primary-text);
             box-sizing: border-box;
@@ -71,28 +83,33 @@
         
         /* Kartu Profil dengan Efek Kaca Buram */
         .profile-card {
-            background: none;
+            background: var(--card-bg);
             padding: 35px 30px;
-            margin-bottom: 35px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            margin-bottom: 40px;
             animation: fadeIn 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-            border-bottom: 1px solid var(--card-border);
-            padding-bottom: 40px;
         }
 
         .user-photo {
             width: 130px;
             height: 130px;
             border-radius: 50%;
-            object-fit: cover;
-            border: 4px solid var(--card-bg);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
+            object-fit: cover; 
+            border: 4px solid var(--bg-color);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1), 0 0 20px rgba(192, 160, 98, 0.15);
             margin-bottom: 20px;
         }
 
         h1 {
-            font-size: 1.8em;
+            font-size: 2em;
             margin: 0;
-            font-weight: 700;
+            font-weight: 800;
+            /* Efek Gradien Emas pada Teks */
+            background: linear-gradient(90deg, var(--accent-color), #e6c78a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         h2 {
@@ -109,104 +126,64 @@
         }
         
         /* Tombol Menu dengan Animasi Staggered */
-        .menu a {
+        .menu .back-button, .menu a.contact-button {
             display: flex;
             align-items: center;
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            color: var(--primary-text);
-            padding: 18px 25px;
-            margin-bottom: 20px;
-            border-radius: 15px;
-            text-decoration: none;
-            font-size: 1em;
-            font-weight: 500;
-            transition: all 0.25s ease-out;
-            text-align: center;
-            opacity: 0; /* Awalnya transparan untuk animasi */
-            animation: fadeIn 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-        }
-        /* Efek Staggered (muncul satu per satu) */
-        .menu button.category-button, .menu button.back-button {
-            display: flex;
-            align-items: center;
+            justify-content: center;
             width: 100%;
             background: var(--card-bg);
             border: 1px solid var(--card-border);
-            color: var(--primary-text);
+            color: var(--primary-text); 
             padding: 18px 25px;
-            margin-bottom: 20px;
+            margin-bottom: 18px; 
             border-radius: 15px;
             text-decoration: none;
-            font-size: 1em;
+            font-size: 1.02em;
             font-weight: 500;
-            transition: all 0.25s ease-out;
-            text-align: left;
+            transition: transform 0.25s ease-out, color 0.25s ease-out, border-color 0.25s ease-out, box-shadow 0.25s ease-out, background-color 0.25s ease-out;
             opacity: 0; /* Awalnya transparan untuk animasi */
             animation: fadeIn 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
             font-family: var(--font-family);
             cursor: pointer;
+            box-sizing: border-box;
         }
-        .menu a:nth-child(1) { animation-delay: 0.1s; }
-        .menu a:nth-child(2) { animation-delay: 0.2s; }
-        .menu a:nth-child(3) { animation-delay: 0.3s; }
-        .menu a:nth-child(4) { animation-delay: 0.4s; }
-        .menu a:nth-child(5) { animation-delay: 0.5s; }
-        .menu a:nth-child(6) { animation-delay: 0.6s; }
-        .menu a:nth-child(7) { animation-delay: 0.7s; }
-        .menu button:nth-child(1) { animation-delay: 0.1s; }
-        .menu button:nth-child(2) { animation-delay: 0.2s; }
-        .menu button:nth-child(3) { animation-delay: 0.3s; }
-        .menu button:nth-child(4) { animation-delay: 0.4s; }
-        .menu button:nth-child(5) { animation-delay: 0.5s; }
-        .menu button:nth-child(6) { animation-delay: 0.6s; }
 
-        .menu a:hover, .menu button:hover {
+        /* Efek Staggered (muncul satu per satu) */
+        .menu .action-buttons a:nth-child(1) { animation-delay: 0.6s; }
+        .menu .action-buttons a:nth-child(2) { animation-delay: 0.7s; }
+
+        .menu a:hover {
             transform: translateY(-3px);
+            background-color: #282828;
             border-color: var(--accent-color);
             color: var(--accent-color);
+            box-shadow: 0 8px 20px rgba(192, 160, 98, 0.12);
         }
 
-        .menu a:hover .menu-icon, .menu button:hover .menu-icon {
-            stroke: var(--accent-color) !important;
-        }
-
-        .menu-icon {
-            width: 22px; height: 22px;
-            margin-right: 12px;
-            stroke: var(--secondary-text);
-            transition: stroke 0.3s ease;
-        }
-
-        .menu a:active, .menu button:active {
-            transform: scale(0.98);
-        }
-        
         .contact-button {
             justify-content: center;
+            font-weight: 700;
             background: var(--accent-color);
-            color: #fff !important;
-            border-color: var(--accent-color) !important;
-            animation-name: fadeIn;
-            animation-duration: 0.5s;
-            animation-timing-function: cubic-bezier(0.25, 1, 0.5, 1), ease-in-out;
-            animation-delay: 0.7s, 1s;
+            color: #FFFFFF;
+            border-color: var(--accent-color);
+            animation: fadeIn 0.5s cubic-bezier(0.25, 1, 0.5, 1) 0.7s forwards, subtle-glow 2.5s ease-in-out 1.5s infinite;
         }
-        .contact-button:hover {
+        .contact-button:hover, .contact-button:focus {
             background: var(--accent-hover);
+            color: #FFFFFF;
         }
 
         .back-button {
             justify-content: center;
-            background-color: var(--card-bg) !important;
-            color: var(--secondary-text) !important;
+            background-color: var(--card-bg);
+            color: var(--secondary-text);
             font-weight: 500;
-            border-color: var(--card-border) !important;
+            border-color: var(--card-border);
         }
-        .back-button:hover, .menu a.back-button:hover {
-            color: var(--accent-color) !important;
+        .back-button:hover {
+            color: var(--accent-color);
         }
-        
+
         /* --- Bagian Halaman Tema --- */
         #theme-title {
             font-size: 1.4em;
@@ -217,7 +194,7 @@
 
         .theme-toggle {
             display: flex;
-            background-color: rgba(0, 0, 0, 0.05);
+            background-color: rgba(255, 255, 255, 0.05);
             border-radius: 12px;
             padding: 6px;
             margin-bottom: 30px;
@@ -229,22 +206,296 @@
             background-color: transparent;
             border-radius: 8px;
             font-family: var(--font-family);
-            font-size: 0.9em;
-            font-weight: 500;
+            font-size: 0.95em;
+            font-weight: 600;
             color: var(--secondary-text);
             cursor: pointer;
             transition: all 0.3s ease;
         }
         .theme-toggle button.active {
-            background-color: #fff;
+            background-color: #333;
             color: var(--accent-color);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
         }
         
         /* Kelas utilitas */
         .hidden { display: none !important; }
         .animating-out { animation: slideOut 0.4s cubic-bezier(0.5, 0, 0.75, 0) forwards; }
         .animating-in { animation: slideIn 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+    </style>
+    <style>
+        /* Footer Styling */
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--card-border);
+            font-size: 0.85em;
+            color: var(--secondary-text);
+            animation: fadeIn 1s 1s ease-out forwards;
+            opacity: 0;
+        }
+
+        /* --- Styling untuk Grid Kategori di Halaman Utama --- */
+        #category-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+            margin-bottom: 30px;
+        }
+
+        .category-card {
+            position: relative;
+            border-radius: 15px;
+            overflow: hidden;
+            border: none;
+            padding: 0;
+            background-color: var(--card-bg);
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            opacity: 0;
+            animation: fadeIn 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        .category-card-image {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+        }
+
+        .category-card-content {
+            padding: 15px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .category-card-title {
+            margin: 0;
+            font-size: 1em;
+            font-weight: 600;
+            color: var(--primary-text);
+            text-align: left;
+            flex-grow: 1;
+            margin-bottom: 15px;
+        }
+
+        .category-card .category-button {
+            width: 100%;
+            padding: 10px;
+            font-size: 0.8em;
+            font-weight: 700;
+            border-radius: 8px;
+            background-color: transparent;
+            border: 1px solid var(--accent-color);
+            color: var(--accent-color);
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+        .category-card:hover .category-button {
+            background-color: var(--accent-color);
+            color: var(--card-bg);
+        }
+
+        /* Staggered animation for category cards */
+        #category-grid .category-card:nth-child(1) { animation-delay: 0.1s; }
+        #category-grid .category-card:nth-child(2) { animation-delay: 0.2s; }
+        #category-grid .category-card:nth-child(3) { animation-delay: 0.3s; }
+        #category-grid .category-card:nth-child(4) { animation-delay: 0.4s; }
+        #category-grid .category-card:nth-child(5) { animation-delay: 0.5s; }
+
+        /* --- Styling untuk Halaman Katalog Tema --- */
+        #catalog-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+            width: 100%;
+        }
+
+        .catalog-item {
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            opacity: 0;
+            animation: fadeIn 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+
+        .catalog-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        .catalog-item-image {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+        }
+
+        .catalog-item-details {
+            padding: 15px;
+            text-align: left;
+        }
+
+        .catalog-item-title {
+            font-weight: 600;
+            font-size: 0.95em;
+            margin: 0 0 8px 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .catalog-item-price {
+            font-size: 1.1em;
+            font-weight: 700;
+            color: var(--accent-color);
+            margin: 0 0 15px 0;
+        }
+
+        .catalog-item-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Base button style in catalog */
+        .catalog-item-actions a {
+            flex: 1;
+            padding: 8px 10px;
+            font-size: 0.8em;
+            font-weight: 700;
+            border-radius: 8px;
+            text-align: center;
+            text-decoration: none;
+            transition: all 0.25s ease;
+        }
+
+        /* Secondary button (Lihat) */
+        .catalog-item-actions .btn-secondary {
+            background-color: transparent;
+            border: 1px solid var(--accent-color);
+            color: var(--accent-color);
+        }
+        .catalog-item-actions .btn-secondary:hover {
+            background-color: var(--accent-color);
+            color: var(--card-bg);
+        }
+
+        /* Primary button (Pesan) */
+        .catalog-item-actions .btn-primary {
+            background-color: var(--accent-color);
+            border: 1px solid var(--accent-color);
+            color: #FFFFFF;
+        }
+
+        /* Floating Social Media Container */
+        .social-float {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            display: flex;
+            flex-direction: column-reverse; /* Toggle button at the bottom */
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        /* Wrapper for the actual social media icons */
+        .social-icons-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-height: 0; /* Initially hidden */
+            overflow: hidden;
+            opacity: 0;
+            transition: max-height 0.4s ease-out, opacity 0.4s ease-out;
+        }
+
+        /* When the social-float is active, reveal the wrapper */
+        .social-float.active .social-icons-wrapper {
+            max-height: 300px; /* Sufficient height to show all icons */
+            opacity: 1;
+        }
+
+        /* Base style for all social buttons (toggle and individual links) */
+        .social-icon {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 50px;
+            height: 50px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 50%;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        /* Specific styles for the actual social links inside the wrapper */
+        .social-icons-wrapper a.social-icon {
+            opacity: 0; /* Hidden for staggered reveal */
+            transform: translateY(20px); /* Start position for slide-up */
+            transition: opacity 0.3s ease-out, transform 0.3s ease-out, background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        /* When the wrapper is active, reveal and animate individual social links */
+        .social-float.active .social-icons-wrapper a.social-icon {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Initial fade-in for the toggle button itself */
+        #social-toggle-btn {
+            background-color: var(--whatsapp-green);
+            border-color: var(--whatsapp-green);
+            opacity: 0;
+            animation: fadeIn 0.5s cubic-bezier(0.25, 1, 0.5, 1) 1.2s forwards;
+        }
+        
+        /* Base style for all SVGs in social icons */
+        .social-icon svg {
+            width: 24px;
+            height: 24px;
+            fill: var(--secondary-text);
+            transition: fill 0.3s ease;
+        }
+        
+        #social-toggle-btn svg {
+            fill: #FFFFFF;
+        }
+
+        .social-icon:hover {
+            transform: scale(1.1);
+            border-color: var(--accent-color);
+            box-shadow: 0 6px 18px rgba(192, 160, 98, 0.2);
+        }
+
+        .social-icon:hover svg {
+            fill: var(--accent-color);
+        }
+
+        /* Staggered transition-delay for social icons when active */
+        .social-float.active .social-icons-wrapper a.social-icon:nth-child(1) { transition-delay: 0.1s; }
+        .social-float.active .social-icons-wrapper a.social-icon:nth-child(2) { transition-delay: 0.2s; }
+        .social-float.active .social-icons-wrapper a.social-icon:nth-child(3) { transition-delay: 0.3s; }
+        .social-float.active .social-icons-wrapper a.social-icon:nth-child(4) { transition-delay: 0.4s; }
+
+        /* Animate toggle icon when active */
+        .social-float.active #social-toggle-btn .toggle-icon {
+            animation: active-pulse 1.5s ease-in-out infinite;
+        }
+
+        @media (max-width: 480px) {
+            .social-float { bottom: 20px; right: 20px; }
+            .social-icon { width: 45px; height: 45px; }
+            .social-icon svg { width: 22px; height: 22px; }
+        }
     </style>
 </head>
 <body>
@@ -253,64 +504,73 @@
         
         <div class="profile-card">
             <!-- GANTI 'src' DENGAN LINK FOTO ANDA -->
-            <img src="https://i.ibb.co/6yT4R0N/user-photo-placeholder.jpg" alt="User Photo" class="user-photo">
+            <img src="https://github.com/wayanku/storybali-undangan/blob/main/IMG_6302%20(2).JPG?raw=true" alt="User Photo" class="user-photo">
             <h1>Undangan Digital Bali</h1>
             <h2>Pilih Kategori Undangan Impian Anda</h2>
         </div>
 
         <!-- Halaman Menu Utama -->
         <div id="main-menu" class="page">
-            <div class="menu">
-                <button class="category-button">
-                    <svg class="menu-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" /></svg>
-                    Pernikahan Bali
-                </button>
-                <button class="category-button">
-                    <svg class="menu-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
-                    Pernikahan Muslim
-                </button>
-                <button class="category-button">
-                    <svg class="menu-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456z" /></svg>
-                    Metatah / Potong Gigi
-                </button>
-                <button class="category-button">
-                    <svg class="menu-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m-7.5-2.962a3.75 3.75 0 015.25 0m-5.25 0a3.75 3.75 0 00-5.25 0M12 15.75a3 3 0 01-3-3m3 3a3 3 0 003-3m-3 3V6.75m0 9V6.75m0 9a3 3 0 01-3-3m0-6a3 3 0 013-3m0 3a3 3 0 003-3m-3 3a3 3 0 01-3-3m9 9a9 9 0 00-18 0h18z" /></svg>
-                    3 Bulanan
-                </button>
-                <button class="category-button">
-                    <svg class="menu-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 11.25v8.25a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5v-8.25M12 4.875A2.625 2.625 0 1014.625 7.5H9.375A2.625 2.625 0 1012 4.875zM21 11.25H3" /></svg>
-                    Ulang Tahun
-                </button>
-                <button class="category-button">
-                    <svg class="menu-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15.91 11.672a.375.375 0 010 .656l-5.603 3.113a.375.375 0 01-.557-.328V8.887c0-.286.307-.466.557-.327l5.603 3.112z" /></svg>
-                    Undangan Video
-                </button>
-                <!-- GANTI NOMOR WHATSAPP ANDA -->
-                <a href="https://wa.me/6281234567890?text=Halo, saya tertarik dengan undangan digital." target="_blank" class="contact-button">Hubungi Kami</a>
+            <div id="category-grid">
+                <div class="category-card"><img src="https://picsum.photos/id/367/400/400" class="category-card-image"><div class="category-card-content"><h4 class="category-card-title">Pernikahan Bali</h4><button class="category-button">Lihat Jenis Tema</button></div></div>
+                <div class="category-card"><img src="https://picsum.photos/id/431/400/400" class="category-card-image"><div class="category-card-content"><h4 class="category-card-title">Pernikahan Muslim</h4><button class="category-button">Lihat Jenis Tema</button></div></div>
+                <div class="category-card"><img src="https://picsum.photos/id/211/400/400" class="category-card-image"><div class="category-card-content"><h4 class="category-card-title">Metatah / Potong Gigi</h4><button class="category-button">Lihat Jenis Tema</button></div></div>
+                <div class="category-card"><img src="https://picsum.photos/id/164/400/400" class="category-card-image"><div class="category-card-content"><h4 class="category-card-title">3 Bulanan</h4><button class="category-button">Lihat Jenis Tema</button></div></div>
+                <div class="category-card"><img src="https://picsum.photos/id/64/400/400" class="category-card-image"><div class="category-card-content"><h4 class="category-card-title">Ulang Tahun</h4><button class="category-button">Lihat Jenis Tema</button></div></div>
             </div>
         </div>
 
         <!-- Halaman Pilihan Tema -->
         <div id="theme-page" class="page hidden">
-            <h3 id="theme-title">Pilihan Tema</h3>
+            <h3 id="theme-title">Pilihan Tema Pernikahan Bali</h3>
 
             <div class="theme-toggle">
                 <button id="btn-with-photo" class="active">Dengan Foto</button>
                 <button id="btn-without-photo">Tanpa Foto</button>
             </div>
             
-            <div id="theme-list" class="menu">
-                <!-- GANTI '#' DENGAN LINK TEMA ANDA -->
-                <a href="#" class="theme-link" data-original-text="Tema 1">Tema 1</a>
-                <a href="#" class="theme-link" data-original-text="Tema 2">Tema 2</a>
-                <a href="#" class="theme-link" data-original-text="Tema 3">Tema 3</a>
-                <a href="#" class="theme-link" data-original-text="Tema 4">Tema 4</a>
+            <div id="catalog-grid">
+                <!-- Item Katalog akan di-generate oleh JavaScript -->
+            </div>
+
+            <div class="menu" style="margin-top: 30px;">
                 <button class="back-button">
                     Kembali ke Menu
                 </button>
             </div>
         </div>
 
+        <!-- Footer Hak Cipta -->
+        <footer class="footer">
+            &copy; 2024 Undangan Digital Bali. All Rights Reserved.
+            <div class="menu" style="margin-top: 20px;">
+                <!-- GANTI NOMOR WHATSAPP ANDA -->
+                <a href="https://wa.me/6281234567890?text=Halo, saya tertarik dengan undangan digital." target="_blank" rel="noopener noreferrer" class="contact-button">Hubungi Kami</a>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- Floating Social Media Buttons (Toggle) -->
+    <div class="social-float">
+        <div class="social-icons-wrapper">
+            <!-- GANTI '#' DENGAN LINK MEDIA SOSIAL ANDA -->
+            <a href="https://wa.me/6281234567890" target="_blank" rel="noopener noreferrer" class="social-icon" title="WhatsApp">
+                <svg viewBox="0 0 24 24"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.58C8.75 21.39 10.37 21.82 12.04 21.82C17.5 21.82 21.95 17.37 21.95 11.91C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2M12.04 3.67C14.24 3.67 16.3 4.5 17.82 6.02C19.34 7.54 20.27 9.6 20.27 11.81C20.27 16.45 16.62 20.1 12.04 20.1C10.56 20.1 9.12 19.72 7.89 19L7.2 18.61L3.69 19.74L4.83 16.3L4.42 15.58C3.68 14.28 3.27 12.84 3.27 11.81C3.27 7.27 6.92 3.67 12.04 3.67M9.13 7.59C8.89 7.59 8.66 7.65 8.48 7.83C8.3 8.01 7.96 8.34 7.96 9.03C7.96 9.72 8.49 10.39 8.61 10.55C8.73 10.71 9.93 12.79 11.96 13.6C13.65 14.26 14.06 14.09 14.39 14.05C15.09 13.93 15.98 13.3 16.22 12.64C16.46 11.98 16.46 11.42 16.34 11.26C16.22 11.1 16.04 11.04 15.77 10.92C15.5 10.8 14.39 10.24 14.18 10.16C13.97 10.08 13.83 10.02 13.68 10.26C13.53 10.5 13.1 11.04 12.98 11.2C12.86 11.36 12.74 11.38 12.47 11.26C12.2 11.14 11.43 10.88 10.51 10.08C9.81 9.49 9.31 8.76 9.19 8.56C9.07 8.36 9.19 8.24 9.31 8.12C9.41 8.02 9.53 7.88 9.65 7.76C9.77 7.64 9.83 7.55 9.95 7.35C10.07 7.15 10.01 7.01 9.95 6.89C9.89 6.77 9.37 5.54 9.13 4.98"/></svg>
+            </a>
+            <a href="#" target="_blank" rel="noopener noreferrer" class="social-icon" title="Instagram">
+                <svg viewBox="0 0 24 24"><path d="M7.8,2H16.2C19.4,2 22,4.6 22,7.8V16.2A5.8,5.8 0 0,1 16.2,22H7.8C4.6,22 2,19.4 2,16.2V7.8A5.8,5.8 0 0,1 7.8,2M7.6,4A3.6,3.6 0 0,0 4,7.6V16.4C4,18.39 5.61,20 7.6,20H16.4A3.6,3.6 0 0,0 20,16.4V7.6C20,5.61 18.39,4 16.4,4H7.6M17.25,5.5A1.25,1.25 0 0,1 18.5,6.75A1.25,1.25 0 0,1 17.25,8A1.25,1.25 0 0,1 16,6.75A1.25,1.25 0 0,1 17.25,5.5M12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9Z" /></svg>
+            </a>
+            <a href="#" target="_blank" rel="noopener noreferrer" class="social-icon" title="TikTok">
+                <svg viewBox="0 0 24 24"><path d="M16.6 5.82s.07.42.18.81c1.22.24 2.13.69 2.13 1.38 0 .75-.91 1.13-2.13 1.38v2.97c-1.57 0-2.64-.88-2.64-2.19v-5.2c0-2.34 1.4-3.96 3.96-3.96 1.06 0 2.09.36 2.97.97l-.75 1.71c-.54-.39-1.2-.6-1.89-.6-1.11 0-1.68.72-1.68 1.83v1.35M12.93 14.52c0 2.64-2.16 4.68-4.8 4.68s-4.8-2.04-4.8-4.68c0-2.64 2.16-4.68 4.8-4.68s4.8 2.04 4.8 4.68zm-2.64 0c0-1.2-.96-2.16-2.16-2.16s-2.16.96-2.16 2.16.96 2.16 2.16 2.16 2.16-.96 2.16-2.16z"/></svg>
+            </a>
+            <a href="#" target="_blank" rel="noopener noreferrer" class="social-icon" title="YouTube">
+                <svg viewBox="0 0 24 24"><path d="M10,15L15.19,12L10,9V15M21.56,7.17C21.69,7.64 21.78,8.27 21.84,9.04C21.91,9.82 21.94,10.6 21.94,11.4C21.94,12.2 21.91,12.98 21.84,13.76C21.78,14.53 21.69,15.16 21.56,15.63C21.31,16.7 20.7,17.5 19.9,18.09C19.1,18.69 18.13,19 16.95,19.07C15.77,19.13 14.44,19.19 12.95,19.21C11.45,19.24 10.05,19.26 8.75,19.26C7.45,19.26 6.15,19.24 4.85,19.21C3.36,19.19 2.03,19.13 0.85,19.07C-0.33,19 -1.13,18.69 -1.93,18.09C-2.73,17.5 -3.31,16.7 -3.56,15.63C-3.69,15.16 -3.78,14.53 -3.84,13.76C-3.91,12.98 -3.94,12.2 -3.94,11.4C-3.94,10.6 -3.91,9.82 -3.84,9.04C-3.78,8.27 -3.69,7.64 -3.56,7.17C-3.31,6.1 -2.73,5.3 -1.93,4.71C-1.13,4.11 -0.13,3.8 1.05,3.73C2.23,3.67 3.56,3.61 5.05,3.59C6.55,3.56 7.95,3.54 9.25,3.54C10.55,3.54 11.85,3.56 13.15,3.59C14.64,3.61 15.97,3.67 17.15,3.73C18.33,3.8 19.13,4.11 19.93,4.71C20.73,5.3 21.31,6.1 21.56,7.17Z" transform="translate(3.94, -3.54)"/></svg>
+            </a>
+        </div>
+        <button id="social-toggle-btn" class="social-icon" title="Hubungi Kami">
+            <svg class="toggle-icon" viewBox="0 0 24 24"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.58C8.75 21.39 10.37 21.82 12.04 21.82C17.5 21.82 21.95 17.37 21.95 11.91C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2M12.04 3.67C14.24 3.67 16.3 4.5 17.82 6.02C19.34 7.54 20.27 9.6 20.27 11.81C20.27 16.45 16.62 20.1 12.04 20.1C10.56 20.1 9.12 19.72 7.89 19L7.2 18.61L3.69 19.74L4.83 16.3L4.42 15.58C3.68 14.28 3.27 12.84 3.27 11.81C3.27 7.27 6.92 3.67 12.04 3.67M9.13 7.59C8.89 7.59 8.66 7.65 8.48 7.83C8.3 8.01 7.96 8.34 7.96 9.03C7.96 9.72 8.49 10.39 8.61 10.55C8.73 10.71 9.93 12.79 11.96 13.6C13.65 14.26 14.06 14.09 14.39 14.05C15.09 13.93 15.98 13.3 16.22 12.64C16.46 11.98 16.46 11.42 16.34 11.26C16.22 11.1 16.04 11.04 15.77 10.92C15.5 10.8 14.39 10.24 14.18 10.16C13.97 10.08 13.83 10.02 13.68 10.26C13.53 10.5 13.1 11.04 12.98 11.2C12.86 11.36 12.74 11.38 12.47 11.26C12.2 11.14 11.43 10.88 10.51 10.08C9.81 9.49 9.31 8.76 9.19 8.56C9.07 8.36 9.19 8.24 9.31 8.12C9.41 8.02 9.53 7.88 9.65 7.76C9.77 7.64 9.83 7.55 9.95 7.35C10.07 7.15 10.01 7.01 9.95 6.89C9.89 6.77 9.37 5.54 9.13 4.98"/></svg>
+        </button>
     </div>
 
     <!-- JavaScript untuk Fungsionalitas Ajaib -->
@@ -320,15 +580,25 @@
             // Definisikan semua elemen yang akan dimanipulasi
             const mainMenu = document.getElementById('main-menu');
             const themePage = document.getElementById('theme-page');
-            const themeTitle = document.getElementById('theme-title');
+            const themeTitle = document.getElementById('theme-title'); 
             const categoryButtons = document.querySelectorAll('.category-button');
             const backButton = document.querySelector('.back-button');
             const btnWithPhoto = document.getElementById('btn-with-photo');
             const btnWithoutPhoto = document.getElementById('btn-without-photo');
             const themeToggleButtons = document.querySelectorAll('.theme-toggle button');
-            const themeLinks = document.querySelectorAll('.theme-link');
+            const catalogGrid = document.getElementById('catalog-grid');
+            const socialFloat = document.querySelector('.social-float');
+            const socialToggleBtn = document.getElementById('social-toggle-btn');
             
             const animationDuration = 400; // Durasi animasi dalam milidetik
+
+            // Data untuk katalog (bisa diganti dengan data dari server nanti)
+            const themes = [
+                { name: 'Tema Elegan Gold', image: 'https://picsum.photos/id/1041/400/400' },
+                { name: 'Tema Rustic Green', image: 'https://picsum.photos/id/1043/400/400' },
+                { name: 'Tema Modern Blue', image: 'https://picsum.photos/id/1044/400/400' },
+                { name: 'Tema Floral Pink', image: 'https://picsum.photos/id/1045/400/400' },
+            ];
 
             // Fungsi untuk transisi antar halaman
             function switchPage(fromPage, toPage) {
@@ -340,6 +610,11 @@
                     
                     toPage.classList.remove('hidden');
                     toPage.classList.add('animating-in');
+
+                    // Jika halaman tujuan adalah halaman tema, generate katalog
+                    if (toPage.id === 'theme-page') {
+                        generateCatalog();
+                    }
                     
                     setTimeout(() => {
                         toPage.classList.remove('animating-in');
@@ -350,24 +625,38 @@
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
 
-            // Fungsi untuk memperbarui teks pada tombol tema
-            function updateThemeLinks() {
+            // Fungsi untuk membuat dan menampilkan katalog
+            function generateCatalog() {
                 const isWithoutPhoto = btnWithoutPhoto.classList.contains('active');
-                themeLinks.forEach(link => {
-                    const originalText = link.dataset.originalText;
-                    if (isWithoutPhoto) {
-                        link.textContent = `${originalText} Tanpa Foto`;
-                    } else {
-                        link.textContent = originalText;
-                    }
+                const price = isWithoutPhoto ? 'Rp 30.000' : 'Rp 50.000';
+                
+                catalogGrid.innerHTML = ''; // Kosongkan grid sebelum mengisi
+
+                themes.forEach((theme, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'catalog-item';
+                    item.style.animationDelay = `${index * 0.1}s`;
+
+                    item.innerHTML = `
+                        <img src="${theme.image}" alt="${theme.name}" class="catalog-item-image">
+                        <div class="catalog-item-details">
+                            <h4 class="catalog-item-title">${theme.name}</h4>
+                            <p class="catalog-item-price">${price}</p>
+                            <div class="catalog-item-actions">
+                                <a href="#" class="btn-secondary">Lihat</a>
+                                <a href="https://wa.me/6281234567890?text=Halo, saya tertarik dengan ${theme.name} (${price})" target="_blank" class="btn-primary">Pesan</a>
+                            </div>
+                        </div>
+                    `;
+                    catalogGrid.appendChild(item);
                 });
             }
 
             // Event listener untuk tombol kategori -> pindah ke halaman tema
             categoryButtons.forEach(button => {
                 button.addEventListener('click', function(event) {
-                    // event.preventDefault(); tidak perlu untuk <button>
-                    themeTitle.textContent = `Pilihan Tema ${this.textContent}`;
+                    const categoryName = this.previousElementSibling.textContent;
+                    themeTitle.textContent = `Pilihan Tema ${categoryName}`;
                     switchPage(mainMenu, themePage);
                 });
             });
@@ -386,9 +675,14 @@
                         themeToggleButtons.forEach(btn => btn.classList.remove('active'));
                         // Tambahkan 'active' ke tombol yang diklik
                         this.classList.add('active');
-                        updateThemeLinks();
+                        generateCatalog(); // Regenerate katalog dengan harga baru
                     }
                 });
+            });
+
+            // Event listener for social media toggle button
+            socialToggleBtn.addEventListener('click', function() {
+                socialFloat.classList.toggle('active');
             });
         });
     </script>
