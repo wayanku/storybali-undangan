@@ -102,8 +102,8 @@
         /* Wrapper baru untuk konten bagian atas */
         .main-content-wrapper {
             width: 100%;
-            background-color: var(--bg-color); /* Memberi latar abu-abu pada bagian atas */
-            padding: 30px 15px;
+            background-color: var(--bg-color); /* Latar belakang konten utama */
+            padding: 0 15px 30px 15px; /* Sesuaikan padding */
             box-sizing: border-box;
         }
         /* Kontainer Utama yang Responsif */
@@ -114,46 +114,50 @@
             margin: 0 auto; /* Menengahkan kontainer di mobile */
         }
         
-        /* Kartu Profil dengan Efek Kaca Buram */
-        .profile-card {
-            position: relative; /* Diperlukan untuk bingkai gradien */
-            background: var(--card-bg);
-            padding: 30px;
-            border-radius: var(--border-radius);
-            margin-bottom: 40px;
-            animation: fadeIn 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-            border: 1px solid var(--card-border); /* Fallback jika pseudo-element tidak didukung */
+        /* Kontainer untuk gambar sampul di bagian atas */
+        .cover-image-container {
+            position: relative;
+            width: 100%;
+            height: 300px; /* Tinggi gambar sampul di mobile */
+            /* margin-bottom: 30px; */ /* Dihapus untuk menghilangkan celah hijau */
+            animation: fadeIn 0.6s ease-out;
+            overflow: hidden; /* Sembunyikan slide yang tidak aktif */
+            background-color: #f0f2f0; /* Warna latar saat gambar memuat */
         }
 
-        /* Bingkai Gradien Emas yang Elegan */
-        .profile-card::before {
-            content: '';
+        /* Style untuk setiap gambar slide */
+        .cover-slide {
             position: absolute;
             top: 0;
             left: 0;
-            right: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out; /* Transisi fade yang lembut */
+        }
+        /* Style untuk slide yang sedang aktif/terlihat */
+        .cover-slide.active-slide {
+            opacity: 1;
+        }
+
+        /* Gradasi lembut sebagai pembatas */
+        .cover-image-container::after {
+            content: '';
+            position: absolute;
+            left: 0;
             bottom: 0;
-            border-radius: var(--border-radius);
-            padding: 1px; /* Ketebalan bingkai */
-            background: linear-gradient(145deg, rgba(145, 161, 127, 0.3), rgba(145, 161, 127, 0.1), rgba(145, 161, 127, 0.3));
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: destination-out;
-            mask-composite: exclude;
+            width: 100%;
+            height: 50%; /* Tinggi gradasi */
+            background: linear-gradient(to top, var(--bg-color), transparent);
         }
 
-        .user-photo {
-            width: 130px;
-            height: 130px;
-            border-radius: 50%;
-            object-fit: cover; 
-            border: 4px solid var(--card-bg);
-            box-shadow: 0 4px 15px rgba(73, 86, 59, 0.08), 0 0 20px rgba(145, 161, 127, 0.1);
-            margin-bottom: 20px;
-        }
-
-        .profile-title-wrapper {
+        .header-content {
+            margin: 30px 0 40px 0; /* Menambahkan margin atas untuk menggantikan margin yang dihapus */
+            animation: fadeIn 0.6s ease-out 0.2s forwards;
+            opacity: 0;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
             gap: 8px; /* Jarak antara judul dan ikon verified */
         }
@@ -173,7 +177,7 @@
         }
 
         h2 {
-            font-size: 1em;
+            font-size: 1.1em;
             margin: 5px 0 0;
             font-weight: 400;
             color: var(--secondary-text);
@@ -675,16 +679,45 @@
             animation: fadeIn 0.5s cubic-bezier(0.25, 1, 0.5, 1) 1.2s forwards;
         }
         
+        /* Posisi relatif untuk menampung dua ikon yang bisa bertukar */
+        #social-toggle-btn {
+            position: relative;
+        }
+        #social-toggle-btn .toggle-icon,
+        #social-toggle-btn .close-icon {
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
         /* Base style for all SVGs in social icons */
         .social-icon svg {
             width: 24px;
             height: 24px;
-            fill: var(--secondary-text);
-            transition: fill 0.3s ease;
+            transition: transform 0.3s ease;
+        }
+        
+        .social-icon img { /* Menambahkan style untuk tag <img> */
+            width: 100%; height: 100%; object-fit: cover;
         }
         
         #social-toggle-btn svg {
-            fill: var(--accent-text-color);
+            fill: #fff; /* Pastikan ikon toggle tetap putih */
+        }
+
+        /* Sembunyikan ikon 'X' secara default */
+        #social-toggle-btn .close-icon {
+            position: absolute;
+            opacity: 0;
+            transform: rotate(-90deg) scale(0.5);
+        }
+
+        /* Saat aktif, tampilkan ikon 'X' dan sembunyikan ikon chat */
+        .social-float.active #social-toggle-btn .toggle-icon {
+            opacity: 0;
+            transform: rotate(90deg) scale(0.5);
+        }
+        .social-float.active #social-toggle-btn .close-icon {
+            opacity: 1;
+            transform: rotate(0deg) scale(1);
         }
 
         .social-icon:hover {
@@ -693,20 +726,15 @@
             box-shadow: 0 6px 18px rgba(145, 161, 127, 0.25);
         }
 
-        .social-icon:hover svg {
-            fill: var(--accent-color);
-        }
+        /* Efek hover sekarang hanya pada transform, bukan warna ikon */
+        /* .social-icon:hover svg {
+        } */
 
         /* Staggered transition-delay for social icons when active */
         .social-float.active .social-icons-wrapper a.social-icon:nth-child(1) { transition-delay: 0.1s; }
         .social-float.active .social-icons-wrapper a.social-icon:nth-child(2) { transition-delay: 0.2s; }
         .social-float.active .social-icons-wrapper a.social-icon:nth-child(3) { transition-delay: 0.3s; }
         .social-float.active .social-icons-wrapper a.social-icon:nth-child(4) { transition-delay: 0.4s; }
-
-        /* Animate toggle icon when active */
-        .social-float.active #social-toggle-btn .toggle-icon {
-            animation: active-pulse 1.5s ease-in-out infinite;
-        }
 
         @media (max-width: 480px) {
             .social-float { bottom: 90px; right: 15px; } /* Disesuaikan untuk mobile */
@@ -740,40 +768,25 @@
 
         /* Untuk Desktop (lebar layar 1024px ke atas) */
         @media (min-width: 1024px) {
-            body {
-                align-items: stretch; /* Konten tidak lagi dipaksa ke tengah */
-            }
-            .main-content-wrapper { padding: 40px 0; } /* Menambah padding atas/bawah */
+            .main-content-wrapper { padding: 0 0 40px 0; } /* Menghapus padding horizontal */
 
             .container {
                 max-width: 1140px; /* Lebarkan kontainer untuk tampilan desktop modern */
             }
 
-            .profile-card {
-                display: flex; /* Gunakan flexbox untuk layout horizontal */
-                align-items: center; /* Sejajarkan item secara vertikal */
-                text-align: left; /* Ratakan teks ke kiri */
-                padding: 40px;
-                gap: 30px; /* Jarak antara foto dan teks */
+            .cover-image-container {
+                height: 400px; /* Tinggikan gambar sampul di desktop */
+                /* margin-bottom: 40px; */ /* Dihapus agar gradasi menyatu */
             }
 
-            .profile-card-content {
-                flex-grow: 1;
-            }
-
-            .user-photo {
-                width: 150px; /* Perbesar foto profil */
-                height: 150px;
-                margin-bottom: 0; /* Hapus margin bawah karena sudah horizontal */
+            .header-content {
+                margin-bottom: 50px;
             }
 
             h1 {
                 font-size: 2.5em; /* Perbesar judul utama */
             }
-
-            .profile-title-wrapper {
-                justify-content: flex-start; /* Ratakan judul dan badge ke kiri */
-            }
+            h2 { font-size: 1.2em; }
 
             #category-grid {
                 /* Tampilkan semua 5 kategori dalam satu baris */
@@ -798,6 +811,7 @@
             position: fixed;
             bottom: 20px;
             left: 50%;
+            min-width: 300px; /* Menambahkan lebar minimum */
             transform: translateX(-50%);
             width: auto; /* Agar lebar menyesuaikan konten */
             max-width: 95%; /* Batas lebar maksimum */
@@ -813,7 +827,7 @@
             box-shadow: 0 8px 32px 0 rgba(73, 86, 59, 0.2); /* Bayangan lembut */
 
             display: flex;
-            gap: 2px; /* Jarak antar tombol lebih rapat */
+            gap: 4px; /* Jarak antar tombol sedikit dilebarkan */
             align-items: center;
             transition: bottom 0.3s ease;
         }
@@ -828,7 +842,7 @@
             font-size: 0.65em; /* Sedikit lebih besar agar mudah dibaca */
             font-weight: 600;
             gap: 3px;
-            padding: 6px 8px; /* Padding tombol disesuaikan */
+            padding: 6px 12px; /* Padding horizontal ditambah agar lebih lebar */
             border-radius: 25px; /* Lebih bulat */
             transition: all 0.25s ease;
             text-shadow: 0 1px 2px rgba(0,0,0,0.1); /* Bayangan teks agar lebih terbaca */
@@ -840,9 +854,11 @@
 
         .floating-nav a svg {
             width: 20px; /* Ukuran ikon disesuaikan */
-            height: 20px;
-            fill: var(--primary-text);
-            transition: fill 0.25s ease;
+            height: 20px; /* Ikon baru (outline) */
+            stroke: var(--primary-text);
+            stroke-width: 2;
+            fill: none;
+            transition: stroke 0.25s ease;
         }
 
         /* Style untuk tombol navigasi yang aktif */
@@ -850,29 +866,25 @@
             background-color: var(--accent-color);
             color: var(--accent-text-color);
         }
-        .floating-nav a.active svg { fill: var(--accent-text-color); }
+        .floating-nav a.active svg { stroke: var(--accent-text-color); }
     </style>
 </head>
 <body>
 
+    <!-- Kontainer Gambar Sampul -->
+    <div class="cover-image-container">
+        <!-- Gambar-gambar untuk slideshow -->
+        <img src="https://images.pexels.com/photos/1024989/pexels-photo-1024989.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="Foto Prewedding 1" class="cover-slide active-slide">
+        <img src="https://images.pexels.com/photos/3014856/pexels-photo-3014856.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="Foto Prewedding 2" class="cover-slide">
+        <img src="https://images.pexels.com/photos/2253870/pexels-photo-2253870.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="Foto Prewedding 3" class="cover-slide">
+        <img src="https://images.pexels.com/photos/1730877/pexels-photo-1730877.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="Foto Prewedding 4" class="cover-slide">
+        <img src="https://images.pexels.com/photos/265722/pexels-photo-265722.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="Foto Prewedding 5" class="cover-slide">
+    </div>
+
     <div class="main-content-wrapper">
         <div class="container">
-            
-            <div class="profile-card">
-                <!-- GANTI 'src' DENGAN LINK FOTO ANDA -->
-                <img src="https://raw.githubusercontent.com/wayanku/storybali-undangan/main/IMG_6302%20(2).JPG" alt="Foto Profil Undangan Digital Bali" class="user-photo">
-                <div class="profile-card-content">
-                    <div class="profile-title-wrapper">
-                        <h1>Undangan Digital Bali</h1>
-                        <svg class="verified-badge" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12S6.5 22 12 22 22 17.5 22 12 17.5 2 12 2M10 17L5 12L6.41 10.59L10 14.17L17.59 6.58L19 8L10 17Z"></path></svg>
-                    </div>
-                    <h2>Pilih Kategori Undangan Impian Anda</h2>
-                </div>
-            </div>
-
-            <!-- Halaman Menu Utama -->
-            <div style="text-align: center; margin-bottom: 30px; display: none;">
-                <h1 style="color: var(--primary-text); margin-top: -10px;">Undangan Digital Bali</h1> <!-- Disembunyikan karena sudah ada di kartu -->
+            <div class="header-content">
+                <h1>Undangan Digital Bali</h1>
                 <h2 style="color: var(--secondary-text);">Pilih Kategori Undangan Impian Anda</h2>
             </div>
 
@@ -963,43 +975,45 @@
         <div class="social-icons-wrapper">
             <!-- GANTI '#' DENGAN LINK MEDIA SOSIAL ANDA -->
             <a href="https://wa.me/message/RNPBCG25N5V2A1" target="_blank" rel="noopener noreferrer" class="social-icon" title="WhatsApp">
-                <svg viewBox="0 0 24 24"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.58C8.75 21.39 10.37 21.82 12.04 21.82C17.5 21.82 21.95 17.37 21.95 11.91C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2M12.04 3.67C14.24 3.67 16.3 4.5 17.82 6.02C19.34 7.54 20.27 9.6 20.27 11.81C20.27 16.45 16.62 20.1 12.04 20.1C10.56 20.1 9.12 19.72 7.89 19L7.2 18.61L3.69 19.74L4.83 16.3L4.42 15.58C3.68 14.28 3.27 12.84 3.27 11.81C3.27 7.27 6.92 3.67 12.04 3.67M9.13 7.59C8.89 7.59 8.66 7.65 8.48 7.83C8.3 8.01 7.96 8.34 7.96 9.03C7.96 9.72 8.49 10.39 8.61 10.55C8.73 10.71 9.93 12.79 11.96 13.6C13.65 14.26 14.06 14.09 14.39 14.05C15.09 13.93 15.98 13.3 16.22 12.64C16.46 11.98 16.46 11.42 16.34 11.26C16.22 11.1 16.04 11.04 15.77 10.92C15.5 10.8 14.39 10.24 14.18 10.16C13.97 10.08 13.83 10.02 13.68 10.26C13.53 10.5 13.1 11.04 12.98 11.2C12.86 11.36 12.74 11.38 12.47 11.26C12.2 11.14 11.43 10.88 10.51 10.08C9.81 9.49 9.31 8.76 9.19 8.56C9.07 8.36 9.19 8.24 9.31 8.12C9.41 8.02 9.53 7.88 9.65 7.76C9.77 7.64 9.83 7.55 9.95 7.35C10.07 7.15 10.01 7.01 9.95 6.89C9.89 6.77 9.37 5.54 9.13 4.98"/></svg>
+                <img src="https://github.com/wayanku/storybali-undangan/blob/main/sosial%20media/logo.png?raw=true" alt="WhatsApp">
             </a>
             <a href="#" target="_blank" rel="noopener noreferrer" class="social-icon" title="Instagram">
-                <svg viewBox="0 0 24 24"><path d="M7.8,2H16.2C19.4,2 22,4.6 22,7.8V16.2A5.8,5.8 0 0,1 16.2,22H7.8C4.6,22 2,19.4 2,16.2V7.8A5.8,5.8 0 0,1 7.8,2M7.6,4A3.6,3.6 0 0,0 4,7.6V16.4C4,18.39 5.61,20 7.6,20H16.4A3.6,3.6 0 0,0 20,16.4V7.6C20,5.61 18.39,4 16.4,4H7.6M17.25,5.5A1.25,1.25 0 0,1 18.5,6.75A1.25,1.25 0 0,1 17.25,8A1.25,1.25 0 0,1 16,6.75A1.25,1.25 0 0,1 17.25,5.5M12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9Z" /></svg>
+                <img src="https://github.com/wayanku/storybali-undangan/blob/main/sosial%20media/instagram.png?raw=true" alt="Instagram">
             </a>
             <a href="#" target="_blank" rel="noopener noreferrer" class="social-icon" title="TikTok">
-                <svg viewBox="0 0 24 24"><path d="M16.6 5.82s.07.42.18.81c1.22.24 2.13.69 2.13 1.38 0 .75-.91 1.13-2.13 1.38v2.97c-1.57 0-2.64-.88-2.64-2.19v-5.2c0-2.34 1.4-3.96 3.96-3.96 1.06 0 2.09.36 2.97.97l-.75 1.71c-.54-.39-1.2-.6-1.89-.6-1.11 0-1.68.72-1.68 1.83v1.35M12.93 14.52c0 2.64-2.16 4.68-4.8 4.68s-4.8-2.04-4.8-4.68c0-2.64 2.16-4.68 4.8-4.68s4.8 2.04 4.8 4.68zm-2.64 0c0-1.2-.96-2.16-2.16-2.16s-2.16.96-2.16 2.16.96 2.16 2.16 2.16 2.16-.96 2.16-2.16z"/></svg>
+                <img src="https://github.com/wayanku/storybali-undangan/blob/main/sosial%20media/tik-tok.png?raw=true" alt="TikTok">
             </a>
             <a href="#" target="_blank" rel="noopener noreferrer" class="social-icon" title="YouTube">
-                <svg viewBox="0 0 24 24"><path d="M10,15L15.19,12L10,9V15M21.56,7.17C21.69,7.64 21.78,8.27 21.84,9.04C21.91,9.82 21.94,10.6 21.94,11.4C21.94,12.2 21.91,12.98 21.84,13.76C21.78,14.53 21.69,15.16 21.56,15.63C21.31,16.7 20.7,17.5 19.9,18.09C19.1,18.69 18.13,19 16.95,19.07C15.77,19.13 14.44,19.19 12.95,19.21C11.45,19.24 10.05,19.26 8.75,19.26C7.45,19.26 6.15,19.24 4.85,19.21C3.36,19.19 2.03,19.13 0.85,19.07C-0.33,19 -1.13,18.69 -1.93,18.09C-2.73,17.5 -3.31,16.7 -3.56,15.63C-3.69,15.16 -3.78,14.53 -3.84,13.76C-3.91,12.98 -3.94,12.2 -3.94,11.4C-3.94,10.6 -3.91,9.82 -3.84,9.04C-3.78,8.27 -3.69,7.64 -3.56,7.17C-3.31,6.1 -2.73,5.3 -1.93,4.71C-1.13,4.11 -0.13,3.8 1.05,3.73C2.23,3.67 3.56,3.61 5.05,3.59C6.55,3.56 7.95,3.54 9.25,3.54C10.55,3.54 11.85,3.56 13.15,3.59C14.64,3.61 15.97,3.67 17.15,3.73C18.33,3.8 19.13,4.11 19.93,4.71C20.73,5.3 21.31,6.1 21.56,7.17Z" transform="translate(3.94, -3.54)"/></svg>
+                <img src="https://github.com/wayanku/storybali-undangan/blob/main/sosial%20media/youtube.png?raw=true" alt="YouTube">
             </a>
         </div>
         <button id="social-toggle-btn" class="social-icon" title="Hubungi Kami">
-            <svg class="toggle-icon" viewBox="0 0 24 24"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.58C8.75 21.39 10.37 21.82 12.04 21.82C17.5 21.82 21.95 17.37 21.95 11.91C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2M12.04 3.67C14.24 3.67 16.3 4.5 17.82 6.02C19.34 7.54 20.27 9.6 20.27 11.81C20.27 16.45 16.62 20.1 12.04 20.1C10.56 20.1 9.12 19.72 7.89 19L7.2 18.61L3.69 19.74L4.83 16.3L4.42 15.58C3.68 14.28 3.27 12.84 3.27 11.81C3.27 7.27 6.92 3.67 12.04 3.67M9.13 7.59C8.89 7.59 8.66 7.65 8.48 7.83C8.3 8.01 7.96 8.34 7.96 9.03C7.96 9.72 8.49 10.39 8.61 10.55C8.73 10.71 9.93 12.79 11.96 13.6C13.65 14.26 14.06 14.09 14.39 14.05C15.09 13.93 15.98 13.3 16.22 12.64C16.46 11.98 16.46 11.42 16.34 11.26C16.22 11.1 16.04 11.04 15.77 10.92C15.5 10.8 14.39 10.24 14.18 10.16C13.97 10.08 13.83 10.02 13.68 10.26C13.53 10.5 13.1 11.04 12.98 11.2C12.86 11.36 12.74 11.38 12.47 11.26C12.2 11.14 11.43 10.88 10.51 10.08C9.81 9.49 9.31 8.76 9.19 8.56C9.07 8.36 9.19 8.24 9.31 8.12C9.41 8.02 9.53 7.88 9.65 7.76C9.77 7.64 9.83 7.55 9.95 7.35C10.07 7.15 10.01 7.01 9.95 6.89C9.89 6.77 9.37 5.54 9.13 4.98"/></svg>
+            <svg class="toggle-icon" viewBox="0 0 24 24"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.76.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.81 3.07 1.24 4.74 1.24 5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2zm4.88 13.38c-.27.13-1.62.8-1.88.93-.25.13-.43.2-.62-.2-.18-.38-.75-1.23-.92-1.5-.17-.27-.33-.31-.62-.18-.28.13-1.25.48-1.52.58-.27.1-.54.15-.81.05-.27-.1-.58-.34-1.1-.83-.6-.55-1.15-1.23-1.32-1.61-.17-.38-.04-.58.11-.75.13-.15.28-.38.43-.51.13-.13.18-.23.28-.38.1-.15.05-.28-.02-.4-.08-.13-.75-1.8-1.02-2.46-.27-.66-.55-.57-.75-.57-.18 0-.38-.05-.58-.05s-.53.08-.81.38c-.27.3-.92.9-1.12 2.13s.23 2.3.26 2.45c.03.15.53 1.23 2.5 2.2.48.23.86.36 1.15.46.45.15.86.13 1.18.08.38-.05 1.18-.48 1.35-.93.17-.45.17-.83.12-.93-.05-.1-.18-.15-.43-.28z"/></svg>
+            <!-- Ikon 'X' untuk menutup -->
+            <svg class="close-icon" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
         </button>
     </div>
 
     <!-- Navigasi Kaca Melayang -->
     <nav class="floating-nav">
         <a href="#" id="nav-home">
-            <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8h5z"/></svg>
+            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h7.5"/></svg>
             <span>Beranda</span>
         </a>
         <a href="#" class="nav-category-link" data-category="Pernikahan Bali">
-            <svg viewBox="0 0 24 24"><path d="M12,21.35L10.55,20.03C5.4,15.36 2,12.27 2,8.5C2,5.41 4.42,3 7.5,3C9.24,3 10.91,3.81 12,5.08C13.09,3.81 14.76,3 16.5,3C19.58,3 22,5.41 22,8.5C22,12.27 18.6,15.36 13.45,20.03L12,21.35Z"/></svg>
+            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" /></svg>
             <span>Wedding</span>
         </a>
         <a href="#" class="nav-category-link" data-category="Metatah / Potong Gigi">
-            <svg viewBox="0 0 24 24"><path d="M12,3L2,12H5V20H19V12H22L12,3M7,18V12H9V18H7M11,18V12H13V18H11M15,18V12H17V18H15Z"/></svg>
+            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18" /></svg>
             <span>Metatah</span>
         </a>
         <a href="#" class="nav-category-link" data-category="3 Bulanan">
-            <svg viewBox="0 0 24 24"><path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,6A3,3 0 0,1 15,9C15,9.88 14.54,10.67 13.8,11.21C14.59,12.05 15,13.2 15,14.5C15,16.43 13.66,18 12,18C10.34,18 9,16.43 9,14.5C9,13.2 9.41,12.05 10.2,11.21C9.46,10.67 9,9.88 9,9A3,3 0 0,1 12,6Z"/></svg>
+            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.182 15.182a4.5 4.5 0 01-6.364 0M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75s.168-.75.375-.75.375.336.375.75zm-.75 0h.008v.015h-.008V9.75zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75zm-.75 0h.008v.015h-.008V9.75z" /></svg>
             <span>Bayi</span>
         </a>
         <a href="#" class="nav-category-link" data-category="Ulang Tahun">
-            <svg viewBox="0 0 24 24"><path d="M12,2C12,2 11,3 11,5C11,7 12,8 12,8C12,8 13,7 13,5C13,3 12,2 12,2M19,11C19,11 18,12 16,12C14,12 13,11 13,11V8H19V11M5,11C5,11 6,12 8,12C10,12 11,11 11,11V8H5V11M22,13V20A2,2 0 0,1 20,22H4A2,2 0 0,1 2,20V13H22Z"/></svg>
+            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 11.25v8.25a1.5 1.5 0 01-1.5 1.5H4.5A1.5 1.5 0 013 19.5v-8.25a1.5 1.5 0 011.5-1.5h15a1.5 1.5 0 011.5 1.5zM12 2.25a.75.75 0 00-.75.75v3a.75.75 0 001.5 0v-3a.75.75 0 00-.75-.75zM9 6.75a.75.75 0 00-.75.75v3a.75.75 0 001.5 0v-3a.75.75 0 00-.75-.75zM15 6.75a.75.75 0 00-.75.75v3a.75.75 0 001.5 0v-3a.75.75 0 00-.75-.75z" /></svg>
             <span>Ultah</span>
         </a>
     </nav>
@@ -1023,6 +1037,7 @@
             const socialToggleBtn = document.getElementById('social-toggle-btn');
             const customModal = document.getElementById('custom-modal');
             const modalCloseBtn = document.getElementById('modal-close-btn');
+            const coverSlides = document.querySelectorAll('.cover-slide');
 
             
             const animationDuration = 400; // Durasi animasi dalam milidetik
@@ -1034,6 +1049,24 @@
                 { image: 'https://picsum.photos/id/1044/400/400' },
                 { image: 'https://picsum.photos/id/1045/400/400' },
             ];
+
+            // --- Fungsionalitas Slideshow Sampul ---
+            let currentSlideIndex = 0;
+            function changeSlide() {
+                if (coverSlides.length === 0) return; // Hentikan jika tidak ada slide
+
+                // Sembunyikan slide saat ini
+                coverSlides[currentSlideIndex].classList.remove('active-slide');
+
+                // Pindah ke slide berikutnya, kembali ke awal jika sudah di akhir
+                currentSlideIndex = (currentSlideIndex + 1) % coverSlides.length;
+
+                // Tampilkan slide berikutnya
+                coverSlides[currentSlideIndex].classList.add('active-slide');
+            }
+
+            // Ganti slide setiap 5 detik (5000 milidetik)
+            setInterval(changeSlide, 5000);
 
             // Fungsi untuk transisi antar halaman
             function switchPage(fromPage, toPage) {
