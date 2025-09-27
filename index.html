@@ -2,9 +2,23 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
+    <!-- Meta tags untuk SEO dan tampilan di mesin pencari -->
+    <title>Undangan Digital Bali - Buat Undangan Impian Anda</title>
+    <meta name="description" content="Pilih dan pesan undangan digital premium untuk pernikahan, metatah, ulang tahun, dan acara lainnya di Bali. Desain elegan dan modern.">
+    <meta name="keywords" content="undangan digital, undangan bali, undangan pernikahan, undangan metatah, undangan online, e-invitation">
+    <meta name="author" content="Undangan Digital Bali">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Undangan Digital Bali</title>
-    
+
+    <!-- Favicon (ikon di tab browser) -->
+    <link rel="icon" href="https://github.com/wayanku/storybali-undangan/blob/main/IMG_6302%20(2).JPG?raw=true" type="image/x-icon">
+
+    <!-- Open Graph Meta Tags (untuk tampilan saat share di media sosial) -->
+    <meta property="og:title" content="Undangan Digital Bali - Buat Undangan Impian Anda">
+    <meta property="og:description" content="Pilih dari berbagai kategori tema undangan digital premium untuk momen spesial Anda.">
+    <meta property="og:image" content="https://github.com/wayanku/storybali-undangan/blob/main/IMG_6302%20(2).JPG?raw=true">
+    <meta property="og:url" content="https://your-website-url.com"> <!-- GANTI DENGAN URL WEBSITE ANDA -->
+    <meta property="og:type" content="website">
+
     <!-- Impor Font Premium dari Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -83,12 +97,29 @@
         
         /* Kartu Profil dengan Efek Kaca Buram */
         .profile-card {
+            position: relative; /* Diperlukan untuk bingkai gradien */
             background: var(--card-bg);
             padding: 35px 30px;
             border-radius: var(--border-radius);
-            box-shadow: var(--card-shadow);
             margin-bottom: 40px;
             animation: fadeIn 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+            border: 1px solid var(--card-border); /* Fallback jika pseudo-element tidak didukung */
+        }
+
+        /* Bingkai Gradien Emas yang Elegan */
+        .profile-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: var(--border-radius);
+            padding: 1px; /* Ketebalan bingkai */
+            background: linear-gradient(145deg, rgba(192, 160, 98, 0.4), rgba(192, 160, 98, 0.1), rgba(192, 160, 98, 0.4));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: destination-out;
+            mask-composite: exclude;
         }
 
         .user-photo {
@@ -101,6 +132,13 @@
             margin-bottom: 20px;
         }
 
+        .profile-title-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px; /* Jarak antara judul dan ikon verified */
+        }
+
         h1 {
             font-size: 2em;
             margin: 0;
@@ -110,6 +148,12 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+        }
+
+        .verified-badge {
+            width: 24px;
+            height: 24px;
+            fill: var(--accent-color);
         }
 
         h2 {
@@ -222,6 +266,69 @@
         .hidden { display: none !important; }
         .animating-out { animation: slideOut 0.4s cubic-bezier(0.5, 0, 0.75, 0) forwards; }
         .animating-in { animation: slideIn 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+    </style>
+    <style>
+        /* --- Styling untuk Custom Modal (Pop-up) --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .modal-content {
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--card-border);
+            box-shadow: var(--card-shadow);
+            text-align: center;
+            max-width: 320px;
+            width: 90%;
+            transform: translateY(-20px) scale(0.95);
+            transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s ease;
+            opacity: 0;
+        }
+        .modal-overlay.active .modal-content {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+        }
+        .modal-content h4 {
+            margin-top: 0;
+            font-size: 1.2em;
+            color: var(--primary-text);
+        }
+        .modal-content p {
+            color: var(--secondary-text);
+            margin-bottom: 25px;
+        }
+        /* Menggunakan style tombol yang sudah ada */
+        .modal-content .btn-primary { text-decoration: none; }
+
+        .modal-icon {
+            width: 50px;
+            height: 50px;
+            margin: 0 auto 15px auto;
+            background-color: rgba(192, 160, 98, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(192, 160, 98, 0.2);
+        }
+        .modal-icon svg { width: 28px; height: 28px; fill: var(--accent-color); }
     </style>
     <style>
         /* Footer Styling */
@@ -504,8 +611,11 @@
         
         <div class="profile-card">
             <!-- GANTI 'src' DENGAN LINK FOTO ANDA -->
-            <img src="https://github.com/wayanku/storybali-undangan/blob/main/IMG_6302%20(2).JPG?raw=true" alt="User Photo" class="user-photo">
-            <h1>Undangan Digital Bali</h1>
+            <img src="https://github.com/wayanku/storybali-undangan/blob/main/IMG_6302%20(2).JPG?raw=true" alt="Foto Profil Undangan Digital Bali" class="user-photo">
+            <div class="profile-title-wrapper">
+                <h1>Undangan Digital Bali</h1>
+                <svg class="verified-badge" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12S6.5 22 12 22 22 17.5 22 12 17.5 2 12 2M10 17L5 12L6.41 10.59L10 14.17L17.59 6.58L19 8L10 17Z"></path></svg>
+            </div>
             <h2>Pilih Kategori Undangan Impian Anda</h2>
         </div>
 
@@ -551,6 +661,19 @@
 
     </div>
 
+    <!-- HTML untuk Custom Modal (Pop-up) -->
+    <div id="custom-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"></path></svg>
+            </div>
+            <h4>Segera Hadir</h4>
+            <p>Pratinjau untuk tema ini belum tersedia. Silakan hubungi kami untuk info lebih lanjut.</p>
+            <!-- Tombol untuk menutup modal -->
+            <a href="#" id="modal-close-btn" class="btn-primary">Mengerti</a>
+        </div>
+    </div>
+
     <!-- Floating Social Media Buttons (Toggle) -->
     <div class="social-float">
         <div class="social-icons-wrapper">
@@ -589,6 +712,9 @@
             const catalogGrid = document.getElementById('catalog-grid');
             const socialFloat = document.querySelector('.social-float');
             const socialToggleBtn = document.getElementById('social-toggle-btn');
+            const customModal = document.getElementById('custom-modal');
+            const modalCloseBtn = document.getElementById('modal-close-btn');
+
             
             const animationDuration = 400; // Durasi animasi dalam milidetik
 
@@ -643,12 +769,21 @@
                             <h4 class="catalog-item-title">${theme.name}</h4>
                             <p class="catalog-item-price">${price}</p>
                             <div class="catalog-item-actions">
-                                <a href="#" class="btn-secondary">Lihat</a>
+                                <a href="#" class="btn-secondary view-theme-btn">Lihat</a>
                                 <a href="https://wa.me/6281234567890?text=Halo, saya tertarik dengan ${theme.name} (${price})" target="_blank" class="btn-primary">Pesan</a>
                             </div>
                         </div>
                     `;
                     catalogGrid.appendChild(item);
+                });
+
+                // Tambahkan event listener ke semua tombol 'Lihat' yang baru dibuat
+                document.querySelectorAll('.view-theme-btn').forEach(button => {
+                    button.addEventListener('click', function(event) {
+                        event.preventDefault(); // Mencegah link berpindah halaman
+                        // Tampilkan modal kustom
+                        customModal.classList.add('active');
+                    });
                 });
             }
 
@@ -683,6 +818,12 @@
             // Event listener for social media toggle button
             socialToggleBtn.addEventListener('click', function() {
                 socialFloat.classList.toggle('active');
+            });
+
+            // Event listener untuk menutup modal
+            modalCloseBtn.addEventListener('click', function(event) {
+                event.preventDefault();
+                customModal.classList.remove('active');
             });
         });
     </script>
