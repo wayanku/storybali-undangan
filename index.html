@@ -103,8 +103,8 @@
         .main-content-wrapper {
             width: 100%;
             background-color: var(--bg-color); /* Latar belakang konten utama */
-            padding: 0 15px 30px 15px; /* Sesuaikan padding */
             box-sizing: border-box;
+            padding-bottom: 30px; /* Hanya padding bawah yang dipertahankan */
         }
         /* Kontainer Utama yang Responsif */
         .container {
@@ -381,10 +381,10 @@
         .category-card {
             position: relative;
             border-radius: 15px;
-            overflow: hidden;
-            border: none;
-            padding: 0;
+            overflow: hidden; /* Mencegah konten meluap dari sudut */
             background-color: #fff;
+            /* Menambahkan padding agar gambar tidak memenuhi kartu */
+            padding: 10px;
             display: flex;
             flex-direction: column;
             box-shadow: 0 4px 15px rgba(73, 86, 59, 0.08);
@@ -400,12 +400,14 @@
 
         .category-card-image {
             width: 100%;
-            height: auto; /* Biarkan tinggi menyesuaikan secara otomatis */
-            /* Menghapus object-fit agar gambar tidak terpotong */
+            height: auto;
+            display: block; /* Mencegah spasi ekstra di bawah gambar */
+            /* Memberi sudut membulat pada gambar */
+            border-radius: 8px;
         }
 
         .category-card-content {
-            padding: 15px;
+            padding: 15px 0 5px 0; /* Menyesuaikan padding agar konten rata */
             flex-grow: 1;
             display: flex;
             flex-direction: column;
@@ -417,6 +419,7 @@
             font-weight: 600;
             color: var(--primary-text);
             text-align: left;
+            /* Properti flexbox dihapus karena ikon dihilangkan */
             flex-grow: 1;
             margin-bottom: 15px;
         }
@@ -426,16 +429,17 @@
             padding: 10px;
             font-size: 0.8em;
             font-weight: 700;
-            border-radius: 8px;
-            background-color: transparent;
+            border-radius: 10px;
+            background-color: var(--accent-color); /* Menyamakan style dengan tombol 'Pesan' */
             border: 1px solid var(--accent-color);
-            color: var(--accent-color);
+            color: var(--accent-text-color);
             cursor: pointer;
             transition: all 0.25s ease;
         }
+
         .category-card:hover .category-button {
-            background-color: var(--accent-color);
-            color: var(--accent-text-color);
+            background-color: var(--accent-hover); /* Efek hover disamakan */
+            border-color: var(--accent-hover);
         }
 
         /* Staggered animation for category cards */
@@ -542,6 +546,10 @@
             width: 100%;
         }
 
+        @media (max-width: 480px) {
+            #catalog-grid { gap: 12px; } /* Jarak antar katalog di HP dipersempit */
+        }
+
         .catalog-item {
             background-color: #fff;
             border-radius: 15px;
@@ -549,10 +557,11 @@
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             opacity: 0;
             animation: fadeIn 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-            /* Menambahkan padding di dalam kartu */
-            padding: 10px; /* Jarak ke pinggir diperkecil */
             display: flex;
             flex-direction: column;
+            overflow: hidden;
+            /* INI PERBAIKANNYA: Menambahkan padding di dalam kartu */
+            padding: 10px;
         }
 
         .catalog-item:hover {
@@ -562,13 +571,15 @@
 
         .catalog-item-image {
             width: 100%;
-            height: auto; /* Biarkan tinggi menyesuaikan secara otomatis */
-            border-radius: 8px; /* Sudut disesuaikan dengan padding baru */
+            height: auto;
+            display: block; /* Mencegah spasi ekstra di bawah gambar */
+            /* INI PERBAIKANNYA: Memberi sudut membulat pada gambar */
+            border-radius: 8px;
         }
 
         .catalog-item-details {
-            padding: 15px;
-            padding-top: 10px; /* Mengurangi padding atas */
+            /* INI PERBAIKANNYA: Mengatur ulang padding agar konten di bawah rata */
+            padding: 15px 0 5px 0;
             text-align: left;
             flex-grow: 1; /* Memastikan detail mengisi ruang yang tersedia */
             display: flex;
@@ -579,7 +590,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center; /* Rata tengah vertikal */
-            margin-bottom: 8px;
+            margin-bottom: 10px; /* Jarak ke harga disesuaikan */
         }
 
         .catalog-item-title {
@@ -591,6 +602,7 @@
             text-overflow: ellipsis;
             display: flex; /* Menggunakan flexbox untuk menyejajarkan ikon dan teks */
             align-items: center;
+            min-width: 0; /* Perbaikan krusial: Mencegah flex item meluap dan menyebabkan overflow */
         }
 
         .catalog-item-title svg {
@@ -657,6 +669,7 @@
             transition: all 0.25s ease;
             display: flex;
             align-items: center;
+            min-width: 0; /* Perbaikan: Mencegah tombol meluap saat teks panjang */
             justify-content: center;
         }
 
@@ -843,7 +856,16 @@
         }
         
         @media (max-width: 767px) {
-            .features-full-width-wrapper { padding-left: 15px; padding-right: 15px; } 
+            /* Menambahkan padding horizontal pada wrapper di tampilan mobile */
+            .main-content-wrapper {
+                padding-left: 15px;
+                padding-right: 15px;
+            }
+            .features-full-width-wrapper,
+            .testimonials-section,
+            .payment-methods-section { 
+                padding-left: 15px; padding-right: 15px; 
+            } 
         }
 
         /* Untuk Desktop (lebar layar 1024px ke atas) */
@@ -941,6 +963,30 @@
             .testimonials-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
+        }
+    </style>
+    <style>
+        /* --- Styling untuk Bagian Metode Pembayaran --- */
+        .payment-methods-section {
+            width: 100%;
+            background-color: var(--bg-color); /* Latar sama dengan testimoni */
+            padding: 50px 0;
+            box-sizing: border-box;
+            border-top: 1px solid #d1d5db; /* Garis pemisah tipis */
+        }
+        .payment-methods-section h3 {
+            font-size: 1.4em;
+            font-weight: 600;
+            margin-top: 0;
+            margin-bottom: 25px;
+            color: var(--primary-text);
+            text-align: center;
+        }
+        .payment-methods-image {
+            max-width: 85%; /* Ukuran gambar diperkecil agar tidak memenuhi layar */
+            height: auto;
+            display: block;
+            margin: 0 auto;
         }
     </style>
     <style>
@@ -1137,6 +1183,14 @@
         </div>
     </div>
 
+    <!-- Bagian Metode Pembayaran -->
+    <div class="payment-methods-section">
+        <div class="container">
+            <h3>Mendukung Berbagai Jenis Pembayaran</h3>
+            <img src="https://github.com/wayanku/storybali-undangan/blob/main/CAHNNEL-PEMBAYARAN@4x-1.png?raw=true" alt="Metode Pembayaran" class="payment-methods-image">
+        </div>
+    </div>
+
     <!-- Footer Hak Cipta (dipindahkan ke sini) -->
     <div class="container" style="padding-bottom: 30px; padding-top: 20px;">
         <footer class="footer">
@@ -1311,7 +1365,7 @@
 
                 themes.forEach((theme, index) => {
                     const themeNumber = index + 1;
-                    const themeName = isWithoutPhoto ? `Tema Tanpa Foto ${themeNumber}` : `Tema ${themeNumber}`;
+                    const themeName = isWithoutPhoto ? `Tanpa Foto ${themeNumber}` : `Tema ${themeNumber}`;
 
                     // Membuat tombol "Lihat" secara dinamis
                     let viewButtonHtml;
@@ -1337,7 +1391,7 @@
                             <div class="catalog-item-header">
                                 <h4 class="catalog-item-title">
                                     <svg viewBox="0 0 24 24"><path d="M17,18C15.89,18 15,18.89 15,20A2,2 0 0,0 17,22A2,2 0 0,0 19,20C19,18.89 18.1,18 17,18M1,2V4H3L6.6,11.59L5.24,14.04C5.09,14.32 5,14.65 5,15A2,2 0 0,0 7,17H19V15H7.42A0.25,0.25 0 0,1 7.17,14.75L7.2,14.64L8.1,13H15.55C16.3,13 16.96,12.58 17.3,11.97L20.88,5.5C20.95,5.34 21,5.17 21,5A1,1 0 0,0 20,4H5.21L4.27,2H1Z" /></svg>
-                                    ${themeName}
+                                    <span>${themeName}</span>
                                 </h4>
                             </div>
                             <div class="catalog-item-price-wrapper">
