@@ -1285,13 +1285,80 @@
             
             const animationDuration = 400; // Durasi animasi dalam milidetik
 
-            // Data untuk katalog (bisa diganti dengan data dari server nanti)
-            const themes = [
-                { image: 'https://picsum.photos/id/1041/400/400' }, // Tema 1
-                { image: 'https://picsum.photos/id/1043/400/400', previewUrl: 'https://wayanku.github.io/pernikahan-tema-2/' }, // Tema 2
-                { image: 'https://picsum.photos/id/1044/400/400' },
-                { image: 'https://picsum.photos/id/1045/400/400' },
-            ];
+            // --- PERBAIKAN: Data katalog dipisahkan per kategori ---
+            // Setiap kategori sekarang memiliki sub-objek 'withPhoto' dan 'withoutPhoto'
+            const catalogData = {
+                "Pernikahan Bali": [
+                    {
+                        type: 'withPhoto',
+                        themes: [
+                            { image: 'https://picsum.photos/id/1041/400/400', previewUrl: 'https://wayanku.github.io/pernikahan-tema-1/' },
+                            { image: 'https://picsum.photos/id/1043/400/400', previewUrl: 'https://wayanku.github.io/pernikahan-tema-2/' },
+                            { image: 'https://picsum.photos/id/1044/400/400' },
+                            { image: 'https://picsum.photos/id/1045/400/400' },
+                        ]
+                    },
+                    {
+                        type: 'withoutPhoto',
+                        themes: [
+                            { image: 'https://picsum.photos/id/1048/400/400' }, // Tanpa Foto 1
+                            { image: 'https://picsum.photos/id/1050/400/400' }, // Tanpa Foto 2
+                            { image: 'https://picsum.photos/id/1051/400/400' }, // Tanpa Foto 3
+                            { image: 'https://picsum.photos/id/1052/400/400' }, // Tanpa Foto 4
+                        ]
+                    }
+                ],
+                "Pernikahan Muslim": [
+                    { type: 'withPhoto', themes: [
+                        { image: 'https://picsum.photos/id/1060/400/400' }, { image: 'https://picsum.photos/id/1062/400/400' },
+                        { image: 'https://picsum.photos/id/1063/400/400' }, { image: 'https://picsum.photos/id/1064/400/400' }
+                    ] },
+                    { type: 'withoutPhoto', themes: [
+                        { image: 'https://picsum.photos/id/1065/400/400' }, { image: 'https://picsum.photos/id/1066/400/400' },
+                        { image: 'https://picsum.photos/id/1067/400/400' }, { image: 'https://picsum.photos/id/1068/400/400' }
+                    ] }
+                ],
+                "Metatah / Potong Gigi": [
+                    {
+                        type: 'withPhoto',
+                        themes: [
+                            { image: 'https://picsum.photos/id/211/400/400' }, { image: 'https://picsum.photos/id/212/400/400' },
+                            { image: 'https://picsum.photos/id/214/400/400' }, { image: 'https://picsum.photos/id/215/400/400' }
+                        ]
+                    },
+                    { type: 'withoutPhoto', themes: [
+                        { image: 'https://picsum.photos/id/216/400/400' }, { image: 'https://picsum.photos/id/218/400/400' },
+                        { image: 'https://picsum.photos/id/219/400/400' }, { image: 'https://picsum.photos/id/220/400/400' }
+                    ] }
+                ],
+                "3 Bulanan": [
+                    { type: 'withPhoto', themes: [
+                        { image: 'https://picsum.photos/id/315/400/400' }, { image: 'https://picsum.photos/id/316/400/400' },
+                        { image: 'https://picsum.photos/id/317/400/400' }, { image: 'https://picsum.photos/id/318/400/400' }
+                    ] },
+                    { type: 'withoutPhoto', themes: [
+                        { image: 'https://picsum.photos/id/319/400/400' }, { image: 'https://picsum.photos/id/320/400/400' },
+                        { image: 'https://picsum.photos/id/321/400/400' }, { image: 'https://picsum.photos/id/322/400/400' }
+                    ] }
+                ],
+                "Ulang Tahun": [
+                    {
+                        type: 'withPhoto',
+                        themes: [
+                            { image: 'https://picsum.photos/id/431/400/400' }, { image: 'https://picsum.photos/id/433/400/400' },
+                            { image: 'https://picsum.photos/id/434/400/400' }, { image: 'https://picsum.photos/id/435/400/400' }
+                        ]
+                    },
+                    {
+                        type: 'withoutPhoto',
+                        themes: [
+                            { image: 'https://picsum.photos/id/436/400/400' }, { image: 'https://picsum.photos/id/438/400/400' },
+                            { image: 'https://picsum.photos/id/439/400/400' }, { image: 'https://picsum.photos/id/440/400/400' }
+                        ]
+                    }
+                ],
+                // Anda bisa menambahkan kategori lain di sini
+            };
 
             // --- Fungsionalitas Slideshow Sampul ---
             let currentSlideIndex = 0;
@@ -1361,19 +1428,30 @@
             }
 
             function generateItems(isWithoutPhoto, finalPrice, originalPrice, discount) {
+                // --- PERBAIKAN: Ambil data tema berdasarkan kategori yang aktif ---
+                const categoryName = themeTitle.textContent.replace('Pilihan Tema ', '');
+                const categoryThemeData = catalogData[categoryName] || [];
+
+                // --- PERBAIKAN: Pilih set tema yang benar (dengan/tanpa foto) ---
+                const themeType = isWithoutPhoto ? 'withoutPhoto' : 'withPhoto';
+                const themeSet = categoryThemeData.find(set => set.type === themeType);
+                const themes = themeSet ? themeSet.themes : []; // Ambil daftar tema atau array kosong
+                
                 catalogGrid.innerHTML = ''; // Kosongkan grid sebelum mengisi
 
                 themes.forEach((theme, index) => {
                     const themeNumber = index + 1;
                     const themeName = isWithoutPhoto ? `Tanpa Foto ${themeNumber}` : `Tema ${themeNumber}`;
 
-                    // Membuat tombol "Lihat" secara dinamis
+                    // --- PERBAIKAN: Logika tombol "Lihat" disesuaikan ---
+                    // Link pratinjau hanya muncul jika TIDAK dalam mode "Tanpa Foto"
+                    // dan jika URL pratinjau memang ada di data.
                     let viewButtonHtml;
-                    if (theme.previewUrl) {
+                    if (theme.previewUrl && !isWithoutPhoto) {
                         // Jika ada URL pratinjau, buat link langsung yang membuka tab baru
                         viewButtonHtml = `<a href="${theme.previewUrl}" target="_blank" rel="noopener noreferrer" class="btn-secondary"><svg viewBox="0 0 24 24"><path d="M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17M12,4.5C7,4.5 2.73,7.61 1,12C2.73,16.39 7,19.5 12,19.5C17,19.5 21.27,16.39 23,12C21.27,7.61 17,4.5 12,4.5Z"/></svg>Lihat</a>`;
                     } else {
-                        // Jika tidak, buat tombol yang memicu modal "Segera Hadir"
+                        // Jika dalam mode "Tanpa Foto" atau tidak ada URL, buat tombol yang memicu modal "Segera Hadir"
                         viewButtonHtml = `<a href="#" class="btn-secondary view-theme-btn"><svg viewBox="0 0 24 24"><path d="M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17M12,4.5C7,4.5 2.73,7.61 1,12C2.73,16.39 7,19.5 12,19.5C17,19.5 21.27,16.39 23,12C21.27,7.61 17,4.5 12,4.5Z"/></svg>Lihat</a>`;
                     }
 
