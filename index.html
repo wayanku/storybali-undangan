@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <!-- Meta tags untuk SEO dan tampilan di mesin pencari -->
-    <title>Undangan Digital Bali - Buat Undangan Impian Anda</title>
-    <meta name="description" content="Pilih dan pesan undangan digital premium untuk pernikahan, metatah, ulang tahun, dan acara lainnya di Bali. Desain elegan dan modern.">
+    <title>Storybali Undangan - Undangan Digital Bali</title>
+    <meta name="description" content="Storybali Undangan menyediakan undangan digital premium untuk pernikahan, metatah, ulang tahun, dan acara lainnya di Bali. Desain elegan dan modern.">
     <meta name="keywords" content="undangan digital, undangan bali, undangan pernikahan, undangan metatah, undangan online, e-invitation">
-    <meta name="author" content="Undangan Digital Bali">
+    <meta name="author" content="Storybali Undangan">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Favicon (ikon di tab browser) -->
     <link rel="icon" href="https://raw.githubusercontent.com/wayanku/storybali-undangan/main/IMG_6302%20(2).JPG" type="image/x-icon">
 
     <!-- Open Graph Meta Tags (untuk tampilan saat share di media sosial) -->
-    <meta property="og:title" content="Undangan Digital Bali - Buat Undangan Impian Anda">
-    <meta property="og:description" content="Pilih dari berbagai kategori tema undangan digital premium untuk momen spesial Anda.">
+    <meta property="og:title" content="Storybali Undangan - Undangan Digital Bali">
+    <meta property="og:description" content="Storybali Undangan: Pilih dari berbagai kategori tema undangan digital premium untuk momen spesial Anda.">
     <meta property="og:image" content="https://raw.githubusercontent.com/wayanku/storybali-undangan/main/IMG_6302%20(2).JPG">
     <meta property="og:url" content="https://your-website-url.com"> <!-- GANTI DENGAN URL WEBSITE ANDA NANTI -->
     <meta property="og:type" content="website">
@@ -34,8 +34,8 @@
             --card-border: #d1d5db;
             --primary-text: #49563B;
             --secondary-text: #808D7B;
-            --accent-color: #91A17F;
-            --accent-hover: #81916f;
+            --accent-color: #748873; /* Warna hijau baru sesuai permintaan */
+            --accent-hover: #627661; /* Warna hover yang disesuaikan */
 
             /* --- Dark Mode --- */
             --dark-bg: #1f2937;
@@ -68,9 +68,9 @@
             to { opacity: 0; transform: translateX(-50px); }
         }
         @keyframes subtle-glow {
-            0%   { box-shadow: 0 0 8px rgba(145, 161, 127, 0.2); }
-            50%  { box-shadow: 0 0 16px rgba(145, 161, 127, 0.4); }
-            100% { box-shadow: 0 0 8px rgba(145, 161, 127, 0.2); }
+            0%   { box-shadow: 0 0 8px rgba(116, 136, 115, 0.2); } /* Disesuaikan dengan warna baru */
+            50%  { box-shadow: 0 0 16px rgba(116, 136, 115, 0.4); } /* Disesuaikan dengan warna baru */
+            100% { box-shadow: 0 0 8px rgba(116, 136, 115, 0.2); } /* Disesuaikan dengan warna baru */
         }
         @keyframes active-pulse {
             0% { transform: scale(1); }
@@ -220,8 +220,8 @@
             transform: translateY(-3px);
             background-color: var(--accent-color);
             border-color: var(--accent-color);
-            color: #fff; 
-            box-shadow: 0 8px 20px rgba(145, 161, 127, 0.2);
+            color: #fff;
+            box-shadow: 0 8px 20px rgba(116, 136, 115, 0.2); /* Disesuaikan dengan warna baru */
         }
 
         .contact-button {
@@ -281,6 +281,11 @@
             background-color: var(--accent-color); /* Latar hijau untuk tombol aktif */
             color: var(--accent-text-color); /* Teks putih untuk tombol aktif */
             box-shadow: 0 2px 10px rgba(73, 86, 59, 0.15);
+        }
+
+        .catalog-grid-class {
+            position: relative;
+            min-height: 200px; /* Memberi ruang untuk spinner saat kosong */
         }
         
         /* Kelas utilitas */
@@ -445,7 +450,7 @@
             width: 100%;
             background-color: var(--accent-color); /* Latar hijau zaitun */
             padding: 50px 0;
-            margin-top: 50px;
+            margin-top: 20px; /* Mengurangi margin atas agar tidak terlalu jauh */
             box-sizing: border-box;
             opacity: 0;
             animation: fadeIn 0.5s cubic-bezier(0.25, 1, 0.5, 1) 0.6s forwards;
@@ -480,40 +485,38 @@
             
             /* Menjadikan item fitur sebagai kartu putih */
             background-color: var(--card-bg);
-            padding: 15px 8px; /* Mengecilkan padding kartu */
+            padding: 12px 5px; /* Padding kartu diperkecil lagi */
             border-radius: 15px;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
         .feature-icon {
-            width: 48px; /* Mengecilkan ukuran ikon */
-            height: 48px;
-            margin-bottom: 10px;
-            /* Latar ikon diubah agar kontras dengan background hijau */
-            background-color: rgba(145, 161, 127, 0.1); /* Latar ikon menjadi hijau transparan */
-            border-radius: 50%;
+            width: 36px; /* Ukuran ikon diperkecil lagi */
+            height: 36px;
+            margin-bottom: 8px; /* Jarak ke teks dikurangi */
+            /* Menghapus latar belakang dan border lingkaran */
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 1px solid rgba(145, 161, 127, 0.15);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
         .feature-item:hover .feature-icon {
             transform: scale(1.1);
         }
         .feature-item:hover {
-            transform: translateY(-5px);
+            transform: translateY(-3px); /* Efek hover sedikit lebih halus */
             box-shadow: 0 8px 25px rgba(73, 86, 59, 0.15);
         }
         .feature-icon svg {
-            width: 24px; /* Mengecilkan ukuran gambar SVG di dalam ikon */
+            width: 24px; /* Ukuran SVG diperkecil lagi */
             height: 24px;
             fill: #49563B; /* Ikon berwarna hijau tua agar kontras di atas putih */
         }
         .feature-name {
-            font-size: 0.75em; /* Mengecilkan ukuran font */
+            font-size: 0.7em; /* Ukuran font diperkecil lagi */
             font-weight: 500;
-            color: var(--secondary-text); /* Warna teks diubah menjadi abu-abu kehijauan */
-            line-height: 1.4;
+            color: var(--secondary-text);
+            line-height: 1.3; /* Jarak antar baris teks dirapikan */
+            min-height: 2.8em; /* Disesuaikan untuk font lebih kecil agar tetap rata */
         }
 
         /* Staggered animation for feature items */
@@ -542,11 +545,14 @@
         .catalog-item {
             background-color: #fff;
             border-radius: 15px;
-            overflow: hidden;
             box-shadow: 0 4px 15px rgba(73, 86, 59, 0.08);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             opacity: 0;
             animation: fadeIn 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+            /* Menambahkan padding di dalam kartu */
+            padding: 10px; /* Jarak ke pinggir diperkecil */
+            display: flex;
+            flex-direction: column;
         }
 
         .catalog-item:hover {
@@ -556,57 +562,120 @@
 
         .catalog-item-image {
             width: 100%;
-            /* Menghapus aspect-ratio dan object-fit agar gambar tidak terpotong */
             height: auto; /* Biarkan tinggi menyesuaikan secara otomatis */
+            border-radius: 8px; /* Sudut disesuaikan dengan padding baru */
         }
 
         .catalog-item-details {
             padding: 15px;
+            padding-top: 10px; /* Mengurangi padding atas */
             text-align: left;
+            flex-grow: 1; /* Memastikan detail mengisi ruang yang tersedia */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .catalog-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center; /* Rata tengah vertikal */
+            margin-bottom: 8px;
         }
 
         .catalog-item-title {
             font-weight: 600;
-            font-size: 0.95em;
-            margin: 0 0 8px 0;
+            font-size: 0.9em;
+            margin: 0;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            display: flex; /* Menggunakan flexbox untuk menyejajarkan ikon dan teks */
+            align-items: center;
+        }
+
+        .catalog-item-title svg {
+            width: 16px; /* Ukuran ikon */
+            height: 16px;
+            fill: var(--secondary-text); /* Warna ikon disamakan dengan teks sekunder */
+            margin-right: 8px; /* Jarak antara ikon dan teks */
+            flex-shrink: 0; /* Mencegah ikon menyusut */
+            transition: fill 0.25s ease;
+        }
+
+        .catalog-item-price-wrapper {
+            display: flex;
+            flex-direction: column; /* Mengubah tata letak menjadi vertikal */
+            align-items: flex-start; /* Rata kiri */
+            gap: 4px; /* Mengurangi jarak antar elemen */
+            margin-bottom: 15px;
+            flex-grow: 1; /* Mendorong tombol Pesan ke bawah */
         }
 
         .catalog-item-price {
-            font-size: 1.1em;
+            font-size: 1.2em; /* Sedikit diperbesar agar lebih menonjol */
             font-weight: 700;
-            color: var(--accent-color);
-            margin: 0 0 15px 0;
+            color: #e53e3e; /* Warna merah untuk harga diskon */
+            margin: 0;
+        }
+
+        .discount-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .discount-badge {
+            background-color: rgba(229, 62, 62, 0.1); /* Latar merah transparan */
+            color: #c53030; /* Teks merah lebih gelap */
+            font-size: 0.75em;
+            font-weight: 700;
+            padding: 3px 6px;
+            border-radius: 6px;
+        }
+
+        .original-price {
+            font-size: 0.9em;
+            color: var(--secondary-text);
+            text-decoration: line-through;
         }
 
         .catalog-item-actions {
             display: flex;
-            gap: 10px;
+            flex-direction: column; /* Mengubah tata letak menjadi vertikal (atas-bawah) */
+            gap: 10px; /* Jarak antara tombol Lihat dan Pesan */
         }
 
         /* Base button style in catalog */
         .catalog-item-actions a {
             flex: 1;
-            padding: 8px 10px;
-            font-size: 0.8em;
+            padding: 10px;
+            font-size: 0.85em;
             font-weight: 700;
             border-radius: 8px;
             text-align: center;
             text-decoration: none;
             transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         /* Secondary button (Lihat) */
         .catalog-item-actions .btn-secondary {
             background-color: transparent;
-            border: 1px solid var(--accent-color);
-            color: var(--accent-color);
+            border: 1px solid var(--card-border);
+            color: var(--secondary-text);
+            gap: 8px;
         }
         .catalog-item-actions .btn-secondary:hover {
             background-color: var(--accent-color);
             color: var(--accent-text-color);
+            border-color: var(--accent-color);
+        }
+        .catalog-item-actions .btn-secondary svg {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
         }
 
         /* Primary button (Pesan) */
@@ -614,6 +683,12 @@
             background-color: var(--accent-color);
             border: 1px solid var(--accent-color);
             color: var(--accent-text-color);
+            gap: 8px; /* Jarak antara ikon dan teks */
+        }
+        .catalog-item-actions .btn-primary svg {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
         }
 
         /* Floating Social Media Container */
@@ -659,10 +734,14 @@
         }
 
         /* Specific styles for the actual social links inside the wrapper */
-        .social-icons-wrapper a.social-icon {
+        .social-icons-wrapper .social-icon {
             opacity: 0; /* Hidden for staggered reveal */
             transform: translateY(20px); /* Start position for slide-up */
-            transition: opacity 0.3s ease-out, transform 0.3s ease-out, background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+            transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+            /* Menghapus latar belakang, border, dan bayangan */
+            background-color: transparent;
+            border: none;
+            box-shadow: none;
         }
 
         /* When the wrapper is active, reveal and animate individual social links */
@@ -721,9 +800,10 @@
         }
 
         .social-icon:hover {
-            transform: scale(1.1);
-            border-color: var(--accent-color);
-            box-shadow: 0 6px 18px rgba(145, 161, 127, 0.25);
+            transform: scale(1.15); /* Perbesar sedikit efek hover */
+        }
+        #social-toggle-btn:hover {
+            box-shadow: 0 6px 18px rgba(37, 211, 102, 0.35); /* Bayangan hover khusus untuk tombol toggle */
         }
 
         /* Efek hover sekarang hanya pada transform, bukan warna ikon */
@@ -806,6 +886,64 @@
         }
     </style>
     <style>
+        /* --- Styling untuk Bagian Testimoni --- */
+        .testimonials-section {
+            width: 100%;
+            background-color: var(--bg-color);
+            padding: 50px 0;
+            box-sizing: border-box;
+        }
+        .testimonials-section h3 {
+            font-size: 1.4em;
+            font-weight: 600;
+            margin-top: 0;
+            margin-bottom: 35px;
+            color: var(--primary-text);
+            text-align: center;
+        }
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        .testimonial-card {
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(73, 86, 59, 0.08);
+            position: relative;
+            border: 1px solid var(--card-border);
+        }
+        .testimonial-card .quote-icon {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            font-size: 3em;
+            color: var(--accent-color);
+            opacity: 0.15;
+            line-height: 1;
+        }
+        .testimonial-card p.quote {
+            font-size: 0.95em;
+            color: var(--secondary-text);
+            line-height: 1.6;
+            margin: 0 0 15px 0;
+            position: relative;
+            z-index: 1;
+        }
+        .testimonial-card p.client-name {
+            font-weight: 700;
+            color: var(--primary-text);
+            margin: 0;
+            text-align: right;
+        }
+        @media (min-width: 768px) {
+            .testimonials-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+    <style>
         /* --- CSS untuk Navigasi Kaca Melayang --- */
         .floating-nav {
             position: fixed;
@@ -861,6 +999,40 @@
             transition: stroke 0.25s ease;
         }
 
+        /* --- CSS untuk Indikator Loading (Spinner) --- */
+        .loading-spinner {
+            position: absolute;
+            top: 40%; /* Sedikit dinaikkan posisinya */
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex; /* Menggunakan flex untuk menyejajarkan titik */
+            gap: 10px; /* Jarak antar titik */
+            z-index: 10;
+        }
+
+        .loading-spinner .dot {
+            width: 12px;
+            height: 12px;
+            background-color: var(--accent-color);
+            border-radius: 50%;
+            animation: bounce 0.6s infinite alternate;
+        }
+
+        /* Memberi jeda animasi pada setiap titik */
+        .loading-spinner .dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        .loading-spinner .dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes bounce {
+            to {
+                opacity: 0.3;
+                transform: translateY(-10px);
+            }
+        }
+
         /* Style untuk tombol navigasi yang aktif */
         .floating-nav a.active {
             background-color: var(--accent-color);
@@ -884,7 +1056,7 @@
     <div class="main-content-wrapper">
         <div class="container">
             <div class="header-content">
-                <h1>Undangan Digital Bali</h1>
+                <h1>Storybali Undangan</h1>
                 <h2 style="color: var(--secondary-text);">Pilih Kategori Undangan Impian Anda</h2>
             </div>
 
@@ -908,7 +1080,7 @@
                     <button id="btn-without-photo">Tanpa Foto</button>
                 </div>
                 
-                <div id="catalog-grid">
+                <div id="catalog-grid" class="catalog-grid-class">
                     <!-- Item Katalog akan di-generate oleh JavaScript -->
                 </div>
 
@@ -946,14 +1118,29 @@
         </div>
     </div>
 
+    <!-- Bagian Testimoni -->
+    <div class="testimonials-section">
+        <div class="container">
+            <h3>Apa Kata Mereka?</h3>
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <div class="quote-icon">“</div>
+                    <p class="quote">Prosesnya cepat dan hasilnya memuaskan banget! Tim Storybali sangat membantu dan responsif. Undangannya jadi pusat perhatian di hari H.</p>
+                    <p class="client-name">- Gungde & Ayu</p>
+                </div>
+                <div class="testimonial-card">
+                    <div class="quote-icon">“</div>
+                    <p class="quote">Desainnya modern dan elegan, persis seperti yang kami mau. Fitur amplop digital juga sangat memudahkan tamu. Recommended!</p>
+                    <p class="client-name">- Budi & Santi</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Footer Hak Cipta (dipindahkan ke sini) -->
     <div class="container" style="padding-bottom: 30px; padding-top: 20px;">
         <footer class="footer">
-            &copy; 2024 Undangan Digital Bali. All Rights Reserved.
-            <div class="menu" style="margin-top: 20px;">
-                <!-- GANTI NOMOR WHATSAPP ANDA -->
-                <a href="https://wa.me/message/RNPBCG25N5V2A1" target="_blank" rel="noopener noreferrer" class="contact-button">Hubungi Kami</a>
-            </div>
+            &copy; 2024 Storybali Undangan. All Rights Reserved.
         </footer>
     </div>
 
@@ -1038,6 +1225,8 @@
             const customModal = document.getElementById('custom-modal');
             const modalCloseBtn = document.getElementById('modal-close-btn');
             const coverSlides = document.querySelectorAll('.cover-slide');
+            const navHome = document.getElementById('nav-home');
+            const navCategoryLinks = document.querySelectorAll('.nav-category-link');
 
             
             const animationDuration = 400; // Durasi animasi dalam milidetik
@@ -1083,13 +1272,13 @@
                     toPage.classList.add('animating-in');
 
                     if (toPage.id === 'theme-page') {
-                        generateCatalog();
+                        generateCatalog(); // Generate untuk halaman tema
                     } else {
                         // Hanya tampilkan fitur jika kembali ke menu utama
                         featuresWrapper.classList.remove('hidden');
                         featuresWrapper.classList.add('animating-in');
                     }
-                    
+
                     setTimeout(() => {
                         toPage.classList.remove('animating-in');
                         featuresWrapper.classList.remove('animating-in');
@@ -1103,8 +1292,21 @@
             // Fungsi untuk membuat dan menampilkan katalog
             function generateCatalog() {
                 const isWithoutPhoto = btnWithoutPhoto.classList.contains('active');
-                const price = isWithoutPhoto ? 'Rp 30.000' : 'Rp 50.000';
+
+                const finalPrice = isWithoutPhoto ? 'Rp 30.000' : 'Rp 50.000';
+                const originalPrice = isWithoutPhoto ? 'Rp 60.000' : 'Rp 100.000';
+                const discount = '50%';
                 
+                // Tampilkan spinner
+                catalogGrid.innerHTML = '<div class="loading-spinner"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
+
+                // Beri jeda singkat agar spinner sempat terlihat
+                setTimeout(() => {
+                    generateItems(isWithoutPhoto, finalPrice, originalPrice, discount);
+                }, 300); // 300ms delay
+            }
+
+            function generateItems(isWithoutPhoto, finalPrice, originalPrice, discount) {
                 catalogGrid.innerHTML = ''; // Kosongkan grid sebelum mengisi
 
                 themes.forEach((theme, index) => {
@@ -1115,11 +1317,15 @@
                     let viewButtonHtml;
                     if (theme.previewUrl) {
                         // Jika ada URL pratinjau, buat link langsung yang membuka tab baru
-                        viewButtonHtml = `<a href="${theme.previewUrl}" target="_blank" rel="noopener noreferrer" class="btn-secondary">Lihat</a>`;
+                        viewButtonHtml = `<a href="${theme.previewUrl}" target="_blank" rel="noopener noreferrer" class="btn-secondary"><svg viewBox="0 0 24 24"><path d="M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17M12,4.5C7,4.5 2.73,7.61 1,12C2.73,16.39 7,19.5 12,19.5C17,19.5 21.27,16.39 23,12C21.27,7.61 17,4.5 12,4.5Z"/></svg>Lihat</a>`;
                     } else {
                         // Jika tidak, buat tombol yang memicu modal "Segera Hadir"
-                        viewButtonHtml = `<a href="#" class="btn-secondary view-theme-btn">Lihat</a>`;
+                        viewButtonHtml = `<a href="#" class="btn-secondary view-theme-btn"><svg viewBox="0 0 24 24"><path d="M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17M12,4.5C7,4.5 2.73,7.61 1,12C2.73,16.39 7,19.5 12,19.5C17,19.5 21.27,16.39 23,12C21.27,7.61 17,4.5 12,4.5Z"/></svg>Lihat</a>`;
                     }
+
+                    // Membuat link WhatsApp cerdas
+                    const waMessage = encodeURIComponent(`Halo Storybali Undangan, saya tertarik untuk memesan undangan dengan ${themeName}.`);
+                    const waLink = `https://wa.me/message/RNPBCG25N5V2A1?text=${waMessage}`;
 
                     const item = document.createElement('div');
                     item.className = 'catalog-item';
@@ -1128,11 +1334,22 @@
                     item.innerHTML = `
                         <img src="${theme.image}" alt="${themeName}" class="catalog-item-image">
                         <div class="catalog-item-details">
-                            <h4 class="catalog-item-title">${themeName}</h4>
-                            <p class="catalog-item-price">${price}</p>
+                            <div class="catalog-item-header">
+                                <h4 class="catalog-item-title">
+                                    <svg viewBox="0 0 24 24"><path d="M17,18C15.89,18 15,18.89 15,20A2,2 0 0,0 17,22A2,2 0 0,0 19,20C19,18.89 18.1,18 17,18M1,2V4H3L6.6,11.59L5.24,14.04C5.09,14.32 5,14.65 5,15A2,2 0 0,0 7,17H19V15H7.42A0.25,0.25 0 0,1 7.17,14.75L7.2,14.64L8.1,13H15.55C16.3,13 16.96,12.58 17.3,11.97L20.88,5.5C20.95,5.34 21,5.17 21,5A1,1 0 0,0 20,4H5.21L4.27,2H1Z" /></svg>
+                                    ${themeName}
+                                </h4>
+                            </div>
+                            <div class="catalog-item-price-wrapper">
+                                <p class="catalog-item-price">${finalPrice}</p>
+                                <div class="discount-info">
+                                    <span class="discount-badge">${discount}</span>
+                                    <span class="original-price">${originalPrice}</span>
+                                </div>
+                            </div>
                             <div class="catalog-item-actions">
                                 ${viewButtonHtml}
-                                <a href="https://wa.me/message/RNPBCG25N5V2A1" target="_blank" class="btn-primary">Pesan</a>
+                                <a href="${waLink}" target="_blank" class="btn-primary"><svg viewBox="0 0 24 24"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.76.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.81 3.07 1.24 4.74 1.24 5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2zm4.88 13.38c-.27.13-1.62.8-1.88.93-.25.13-.43.2-.62-.2-.18-.38-.75-1.23-.92-1.5-.17-.27-.33-.31-.62-.18-.28.13-1.25.48-1.52.58-.27.1-.54.15-.81.05-.27-.1-.58-.34-1.1-.83-.6-.55-1.15-1.23-1.32-1.61-.17-.38-.04-.58.11-.75.13-.15.28-.38.43-.51.13-.13.18-.23.28-.38.1-.15.05-.28-.02-.4-.08-.13-.75-1.8-1.02-2.46-.27-.66-.55-.57-.75-.57-.18 0-.38-.05-.58-.05s-.53.08-.81.38c-.27.3-.92.9-1.12 2.13s.23 2.3.26 2.45c.03.15.53 1.23 2.5 2.2.48.23.86.36 1.15.46.45.15.86.13 1.18.08.38-.05 1.18-.48 1.35-.93.17-.45.17-.83.12-.93-.05-.1-.18-.15-.43-.28z"/></svg>Pesan</a>
                             </div>
                         </div>
                     `;
@@ -1151,8 +1368,10 @@
             // Event listener untuk tombol kategori -> pindah ke halaman tema
             categoryButtons.forEach(button => {
                 button.addEventListener('click', function(event) {
-                    const categoryName = this.previousElementSibling.textContent;
+                    const categoryCard = this.closest('.category-card');
+                    const categoryName = categoryCard.querySelector('.category-card-title').textContent;
                     themeTitle.textContent = `Pilihan Tema ${categoryName}`;
+                    updateActiveNav(categoryName); // Sinkronisasi navigasi
                     // Tambahkan state ke history browser sebelum beralih halaman
                     history.pushState({page: 'catalog'}, `Katalog - ${categoryName}`, '#katalog');
                     switchPage(mainMenu, themePage); 
@@ -1182,7 +1401,7 @@
                         themeToggleButtons.forEach(btn => btn.classList.remove('active'));
                         // Tambahkan 'active' ke tombol yang diklik
                         this.classList.add('active');
-                        generateCatalog(); // Regenerate katalog dengan harga baru
+                        generateCatalog(); // Regenerate katalog dengan harga dan tema baru
                     }
                 });
             });
@@ -1199,9 +1418,6 @@
             });
 
             // --- Fungsionalitas Navigasi Melayang ---
-            const navHome = document.getElementById('nav-home');
-            const navCategoryLinks = document.querySelectorAll('.nav-category-link');
-
             // Tombol Beranda: kembali ke menu utama jika di halaman katalog, atau scroll ke atas
             navHome.addEventListener('click', function(e) {
                 e.preventDefault();
@@ -1214,8 +1430,12 @@
 
             // Fungsi untuk menandai tombol navigasi yang aktif
             function updateActiveNav(categoryName) {
+                // Nonaktifkan semua tombol dulu
+                navHome.classList.remove('active');
                 navCategoryLinks.forEach(link => {
-                    // Cek apakah nama kategori di tombol cocok dengan yang ditampilkan
+                    link.classList.remove('active');
+                    // Cek apakah nama kategori di tombol cocok dengan yang ditampilkan,
+                    // atau jika nama kategori mengandung kata kunci dari tombol (misal "Pernikahan Bali" cocok dengan "Wedding")
                     if (link.dataset.category === categoryName) {
                         link.classList.add('active');
                     } else {
