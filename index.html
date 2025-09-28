@@ -1378,8 +1378,11 @@
                     }
 
                     // Membuat link WhatsApp cerdas
-                    const waMessage = encodeURIComponent(`Halo Storybali Undangan, saya tertarik untuk memesan undangan dengan ${themeName}.`);
-                    const waLink = `https://wa.me/message/RNPBCG25N5V2A1?text=${waMessage}`;
+                    // Mengambil nama kategori dari judul halaman, menghapus "Pilihan Tema "
+                    const categoryName = themeTitle.textContent.replace('Pilihan Tema ', '');
+                    // Membuat pesan yang lebih spesifik
+                    const waMessage = encodeURIComponent(`Halo Storybali Undangan, saya tertarik untuk memesan undangan ${categoryName} dengan ${themeName}.`);
+                    const waLink = `https://wa.me/6285738517248?text=${waMessage}`;
 
                     const item = document.createElement('div');
                     item.className = 'catalog-item';
