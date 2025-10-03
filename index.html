@@ -923,6 +923,11 @@
             color: var(--primary-text);
             text-align: center;
         }
+        .testimonials-section h3 + p { /* Sub-heading */
+            margin-top: -25px;
+            margin-bottom: 40px;
+            color: var(--secondary-text);
+        }
         .testimonials-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -932,37 +937,83 @@
             background-color: var(--card-bg);
             border-radius: 15px;
             padding: 25px;
-            box-shadow: 0 4px 15px rgba(73, 86, 59, 0.08);
+            box-shadow: var(--card-shadow);
             position: relative;
             border: 1px solid var(--card-border);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
         }
         .testimonial-card .quote-icon {
             position: absolute;
-            top: 15px;
-            left: 20px;
-            font-size: 3em;
+            top: -10px;
+            left: 15px;
+            font-size: 4em;
             color: var(--accent-color);
-            opacity: 0.15;
+            opacity: 0.1;
             line-height: 1;
+            z-index: 0;
+        }
+        .testimonial-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            position: relative;
+            z-index: 1;
+        }
+        .client-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--card-border);
+        }
+        .client-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
         }
         .testimonial-card p.quote {
             font-size: 0.95em;
             color: var(--secondary-text);
             line-height: 1.6;
-            margin: 0 0 15px 0;
+            margin: 0;
             position: relative;
             z-index: 1;
+        }
+        .rating-stars {
+            display: flex;
+            gap: 4px;
+        }
+        .rating-stars svg {
+            width: 18px;
+            height: 18px;
+            fill: #f59e0b; /* Warna kuning untuk bintang */
         }
         .testimonial-card p.client-name {
             font-weight: 700;
             color: var(--primary-text);
             margin: 0;
-            text-align: right;
         }
-        @media (min-width: 768px) {
-            .testimonials-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
+        /* Animasi untuk slider testimoni */
+        @keyframes scroll {
+            from { transform: translateX(0); }
+            to { transform: translateX(-100%); }
+        }
+        .testimonials-scroller {
+            overflow: hidden;
+            -webkit-mask: linear-gradient(90deg, transparent, white 20%, white 80%, transparent);
+            mask: linear-gradient(90deg, transparent, white 20%, white 80%, transparent);
+        }
+    </style>
+    <style>
+        .testimonials-grid {
+            display: flex; /* Menggunakan flexbox untuk item berdampingan */
+            gap: 20px;
+            animation: scroll 40s linear infinite; /* Durasi animasi disesuaikan */
+        }
+        .testimonials-scroller:hover .testimonials-grid {
+            animation-play-state: paused; /* Jeda animasi saat kursor di atasnya */
         }
     </style>
     <style>
@@ -1168,16 +1219,54 @@
     <div class="testimonials-section">
         <div class="container">
             <h3>Apa Kata Mereka?</h3>
-            <div class="testimonials-grid">
-                <div class="testimonial-card">
-                    <div class="quote-icon">“</div>
-                    <p class="quote">Prosesnya cepat dan hasilnya memuaskan banget! Tim Storybali sangat membantu dan responsif. Undangannya jadi pusat perhatian di hari H.</p>
-                    <p class="client-name">- Gungde & Ayu</p>
-                </div>
-                <div class="testimonial-card">
-                    <div class="quote-icon">“</div>
-                    <p class="quote">Desainnya modern dan elegan, persis seperti yang kami mau. Fitur amplop digital juga sangat memudahkan tamu. Recommended!</p>
-                    <p class="client-name">- Budi & Santi</p>
+            <p>Lihat apa yang klien kami katakan tentang layanan kami.</p>
+            <div class="testimonials-scroller">
+                <div class="testimonials-grid">
+                    <!-- Testimoni akan diduplikasi untuk efek loop yang mulus -->
+                    <div class="testimonial-card">
+                        <div class="quote-icon">“</div>
+                        <div class="testimonial-header">
+                            <img src="https://i.pravatar.cc/150?img=1" alt="Avatar Gungde & Ayu" class="client-avatar">
+                            <div class="client-info">
+                                <p class="client-name">Gungde & Ayu</p>
+                                <div class="rating-stars"><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg></div>
+                            </div>
+                        </div>
+                        <p class="quote">Prosesnya cepat dan hasilnya memuaskan banget! Tim Storybali sangat membantu dan responsif. Undangannya jadi pusat perhatian di hari H.</p>
+                    </div>
+                    <div class="testimonial-card">
+                        <div class="quote-icon">“</div>
+                        <div class="testimonial-header">
+                            <img src="https://i.pravatar.cc/150?img=32" alt="Avatar Budi & Santi" class="client-avatar">
+                            <div class="client-info">
+                                <p class="client-name">Budi & Santi</p>
+                                <div class="rating-stars"><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg></div>
+                            </div>
+                        </div>
+                        <p class="quote">Desainnya modern dan elegan, persis seperti yang kami mau. Fitur amplop digital juga sangat memudahkan tamu. Recommended!</p>
+                    </div>
+                    <div class="testimonial-card">
+                        <div class="quote-icon">“</div>
+                        <div class="testimonial-header">
+                            <img src="https://i.pravatar.cc/150?img=5" alt="Avatar Eka & Putri" class="client-avatar">
+                            <div class="client-info">
+                                <p class="client-name">Eka & Putri</p>
+                                <div class="rating-stars"><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg></div>
+                            </div>
+                        </div>
+                        <p class="quote">Suka banget sama semua fiturnya, lengkap dan mudah digunakan. Adminnya juga sabar banget jawabin semua pertanyaan. Mantap!</p>
+                    </div>
+                    <div class="testimonial-card">
+                        <div class="quote-icon">“</div>
+                        <div class="testimonial-header">
+                            <img src="https://i.pravatar.cc/150?img=47" alt="Avatar Komang & Dewi" class="client-avatar">
+                            <div class="client-info">
+                                <p class="client-name">Komang & Dewi</p>
+                                <div class="rating-stars"><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg></div>
+                            </div>
+                        </div>
+                        <p class="quote">Terima kasih Storybali! Undangannya keren dan beda dari yang lain. Banyak teman yang nanya bikin di mana. Sukses selalu!</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1599,6 +1688,20 @@
                     switchPage(mainMenu, themePage);
                 });
             });
+
+            // --- Fungsionalitas Slider Testimoni ---
+            const scroller = document.querySelector(".testimonials-scroller");
+            const grid = scroller.querySelector(".testimonials-grid");
+            
+            // Duplikasi item di dalam grid untuk membuat efek loop yang tak terbatas
+            const gridContent = Array.from(grid.children);
+            gridContent.forEach(item => {
+                const duplicatedItem = item.cloneNode(true);
+                duplicatedItem.setAttribute("aria-hidden", true); // Baik untuk aksesibilitas
+                grid.appendChild(duplicatedItem);
+            });
+
+
 
         });
     </script>
