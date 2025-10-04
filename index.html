@@ -571,7 +571,8 @@
 
         .catalog-item-image {
             width: 100%;
-            height: auto;
+            aspect-ratio: 1 / 1; /* Menjadikan gambar persegi (1x1) */
+            object-fit: cover; /* Memastikan gambar mengisi area tanpa distorsi */
             display: block; /* Mencegah spasi ekstra di bawah gambar */
             /* INI PERBAIKANNYA: Memberi sudut membulat pada gambar */
             border-radius: 8px;
@@ -1143,11 +1144,9 @@
     <!-- Kontainer Gambar Sampul -->
     <div class="cover-image-container">
         <!-- Gambar-gambar untuk slideshow -->
-        <img src="https://images.pexels.com/photos/1024989/pexels-photo-1024989.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="Foto Prewedding 1" class="cover-slide active-slide">
-        <img src="https://images.pexels.com/photos/3014856/pexels-photo-3014856.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="Foto Prewedding 2" class="cover-slide">
-        <img src="https://images.pexels.com/photos/2253870/pexels-photo-2253870.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="Foto Prewedding 3" class="cover-slide">
-        <img src="https://images.pexels.com/photos/1730877/pexels-photo-1730877.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="Foto Prewedding 4" class="cover-slide">
-        <img src="https://images.pexels.com/photos/265722/pexels-photo-265722.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="Foto Prewedding 5" class="cover-slide">
+        <img src="https://github.com/wayanku/storybali-undangan/blob/main/foto%20nikah%202,foto%20nikah1,foto%20nikah%203/foto%20nikah1.webp?raw=true" alt="Foto Pernikahan 1" class="cover-slide active-slide">
+        <img src="https://github.com/wayanku/storybali-undangan/blob/main/foto%20nikah%202,foto%20nikah1,foto%20nikah%203/foto%20nikah%202.webp?raw=true" alt="Foto Pernikahan 2" class="cover-slide">
+        <img src="https://github.com/wayanku/storybali-undangan/blob/main/foto%20nikah%202,foto%20nikah1,foto%20nikah%203/foto%20nikah%203.webp?raw=true" alt="Foto Pernikahan 3" class="cover-slide">
     </div>
 
     <div class="main-content-wrapper">
@@ -1389,7 +1388,7 @@
                     {
                         type: 'withPhoto',
                         themes: [
-                            { image: 'https://picsum.photos/id/1041/400/400', previewUrl: 'https://wayanku.github.io/pernikahan-tema-1/' },
+                            { image: 'https://github.com/wayanku/storybali-undangan/blob/main/foto%20nikah%202,foto%20nikah1,foto%20nikah%203/891cb82d-73ed-42b7-a091-70253afc6819%20(1).webp?raw=true', previewUrl: 'https://wayanku.github.io/pernikahan-tema-1/' },
                             { image: 'https://picsum.photos/id/1043/400/400', previewUrl: 'https://wayanku.github.io/pernikahan-tema-2/' },
                             { image: 'https://picsum.photos/id/1044/400/400' },
                             { image: 'https://picsum.photos/id/1045/400/400' },
