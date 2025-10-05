@@ -1137,6 +1137,22 @@
             color: var(--accent-text-color);
         }
         .floating-nav a.active svg { stroke: var(--accent-text-color); }
+
+        /* --- Aksesibilitas: Mengurangi Gerakan untuk Pengguna yang Membutuhkan --- */
+        @media (prefers-reduced-motion: reduce) {
+            /* Matikan semua transisi dan animasi */
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+            /* Hentikan animasi scroller testimoni */
+            .testimonials-grid { animation: none !important; }
+            .loading-spinner .dot { animation: none !important; }
+        }
     </style>
 </head>
 <body>
@@ -1158,11 +1174,11 @@
 
             <div id="main-menu" class="page">
                 <div id="category-grid" style="scroll-margin-top: 30px;">
-                    <div class="category-card"><img src="https://raw.githubusercontent.com/wayanku/storybali-undangan/main/foto%20katalog%20pernikahan%20.jpg" class="category-card-image"><div class="category-card-content"><h4 class="category-card-title">Pernikahan Bali</h4><button class="category-button">Lihat Jenis Tema</button></div></div>
-                    <div class="category-card"><img src="https://raw.githubusercontent.com/wayanku/storybali-undangan/main/foto%20katalog%20pernikahan%20.jpg" class="category-card-image"><div class="category-card-content"><h4 class="category-card-title">Pernikahan Muslim</h4><button class="category-button">Lihat Jenis Tema</button></div></div>
-                    <div class="category-card"><img src="https://raw.githubusercontent.com/wayanku/storybali-undangan/main/foto%20katalog%20metatah.jpg" class="category-card-image"><div class="category-card-content"><h4 class="category-card-title">Metatah / Potong Gigi</h4><button class="category-button">Lihat Jenis Tema</button></div></div>
-                    <div class="category-card"><img src="https://picsum.photos/id/164/400/400" class="category-card-image"><div class="category-card-content"><h4 class="category-card-title">3 Bulanan</h4><button class="category-button">Lihat Jenis Tema</button></div></div>
-                    <div class="category-card"><img src="https://raw.githubusercontent.com/wayanku/storybali-undangan/main/foto%20katalog%20ulang%20tahun.jpg" class="category-card-image"><div class="category-card-content"><h4 class="category-card-title">Ulang Tahun</h4><button class="category-button">Lihat Jenis Tema</button></div></div>
+                    <div class="category-card"><img src="https://raw.githubusercontent.com/wayanku/storybali-undangan/main/foto%20katalog%20pernikahan%20.jpg" class="category-card-image" loading="lazy"><div class="category-card-content"><h4 class="category-card-title">Pernikahan Bali</h4><button class="category-button">Lihat Jenis Tema</button></div></div>
+                    <div class="category-card"><img src="https://raw.githubusercontent.com/wayanku/storybali-undangan/main/foto%20katalog%20pernikahan%20.jpg" class="category-card-image" loading="lazy"><div class="category-card-content"><h4 class="category-card-title">Pernikahan Muslim</h4><button class="category-button">Lihat Jenis Tema</button></div></div>
+                    <div class="category-card"><img src="https://raw.githubusercontent.com/wayanku/storybali-undangan/main/foto%20katalog%20metatah.jpg" class="category-card-image" loading="lazy"><div class="category-card-content"><h4 class="category-card-title">Metatah / Potong Gigi</h4><button class="category-button">Lihat Jenis Tema</button></div></div>
+                    <div class="category-card"><img src="https://picsum.photos/id/164/400/400" class="category-card-image" loading="lazy"><div class="category-card-content"><h4 class="category-card-title">3 Bulanan</h4><button class="category-button">Lihat Jenis Tema</button></div></div>
+                    <div class="category-card"><img src="https://raw.githubusercontent.com/wayanku/storybali-undangan/main/foto%20katalog%20ulang%20tahun.jpg" class="category-card-image" loading="lazy"><div class="category-card-content"><h4 class="category-card-title">Ulang Tahun</h4><button class="category-button">Lihat Jenis Tema</button></div></div>
                 </div>
 
             </div>
@@ -1225,7 +1241,7 @@
                     <div class="testimonial-card">
                         <div class="quote-icon">“</div>
                         <div class="testimonial-header">
-                            <img src="https://i.pravatar.cc/150?img=1" alt="Avatar Gungde & Ayu" class="client-avatar">
+                            <img src="https://i.pravatar.cc/150?img=1" alt="Avatar Gungde & Ayu" class="client-avatar" loading="lazy">
                             <div class="client-info">
                                 <p class="client-name">Gungde & Ayu</p>
                                 <div class="rating-stars"><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg></div>
@@ -1236,7 +1252,7 @@
                     <div class="testimonial-card">
                         <div class="quote-icon">“</div>
                         <div class="testimonial-header">
-                            <img src="https://i.pravatar.cc/150?img=32" alt="Avatar Budi & Santi" class="client-avatar">
+                            <img src="https://i.pravatar.cc/150?img=32" alt="Avatar Budi & Santi" class="client-avatar" loading="lazy">
                             <div class="client-info">
                                 <p class="client-name">Budi & Santi</p>
                                 <div class="rating-stars"><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg></div>
@@ -1247,7 +1263,7 @@
                     <div class="testimonial-card">
                         <div class="quote-icon">“</div>
                         <div class="testimonial-header">
-                            <img src="https://i.pravatar.cc/150?img=5" alt="Avatar Eka & Putri" class="client-avatar">
+                            <img src="https://i.pravatar.cc/150?img=5" alt="Avatar Eka & Putri" class="client-avatar" loading="lazy">
                             <div class="client-info">
                                 <p class="client-name">Eka & Putri</p>
                                 <div class="rating-stars"><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg></div>
@@ -1258,7 +1274,7 @@
                     <div class="testimonial-card">
                         <div class="quote-icon">“</div>
                         <div class="testimonial-header">
-                            <img src="https://i.pravatar.cc/150?img=47" alt="Avatar Komang & Dewi" class="client-avatar">
+                            <img src="https://i.pravatar.cc/150?img=47" alt="Avatar Komang & Dewi" class="client-avatar" loading="lazy">
                             <div class="client-info">
                                 <p class="client-name">Komang & Dewi</p>
                                 <div class="rating-stars"><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg></div>
@@ -1275,7 +1291,7 @@
     <div class="payment-methods-section">
         <div class="container">
             <h3>Mendukung Berbagai Jenis Pembayaran</h3>
-            <img src="https://github.com/wayanku/storybali-undangan/blob/main/CAHNNEL-PEMBAYARAN@4x-1.png?raw=true" alt="Metode Pembayaran" class="payment-methods-image">
+            <img src="https://github.com/wayanku/storybali-undangan/blob/main/CAHNNEL-PEMBAYARAN@4x-1.png?raw=true" alt="Metode Pembayaran" class="payment-methods-image" loading="lazy">
         </div>
     </div>
 
@@ -1312,16 +1328,16 @@
         <div class="social-icons-wrapper">
             <!-- GANTI '#' DENGAN LINK MEDIA SOSIAL ANDA -->
             <a href="https://wa.me/message/RNPBCG25N5V2A1" target="_blank" rel="noopener noreferrer" class="social-icon" title="WhatsApp">
-                <img src="https://github.com/wayanku/storybali-undangan/blob/main/sosial%20media/logo.png?raw=true" alt="WhatsApp">
+                <img src="https://github.com/wayanku/storybali-undangan/blob/main/sosial%20media/logo.png?raw=true" alt="WhatsApp" loading="lazy">
             </a>
             <a href="#" target="_blank" rel="noopener noreferrer" class="social-icon" title="Instagram">
-                <img src="https://github.com/wayanku/storybali-undangan/blob/main/sosial%20media/instagram.png?raw=true" alt="Instagram">
+                <img src="https://github.com/wayanku/storybali-undangan/blob/main/sosial%20media/instagram.png?raw=true" alt="Instagram" loading="lazy">
             </a>
             <a href="#" target="_blank" rel="noopener noreferrer" class="social-icon" title="TikTok">
-                <img src="https://github.com/wayanku/storybali-undangan/blob/main/sosial%20media/tik-tok.png?raw=true" alt="TikTok">
+                <img src="https://github.com/wayanku/storybali-undangan/blob/main/sosial%20media/tik-tok.png?raw=true" alt="TikTok" loading="lazy">
             </a>
             <a href="#" target="_blank" rel="noopener noreferrer" class="social-icon" title="YouTube">
-                <img src="https://github.com/wayanku/storybali-undangan/blob/main/sosial%20media/youtube.png?raw=true" alt="YouTube">
+                <img src="https://github.com/wayanku/storybali-undangan/blob/main/sosial%20media/youtube.png?raw=true" alt="YouTube" loading="lazy">
             </a>
         </div>
         <button id="social-toggle-btn" class="social-icon" title="Hubungi Kami">
@@ -1378,6 +1394,7 @@
             const navHome = document.getElementById('nav-home');
             const navCategoryLinks = document.querySelectorAll('.nav-category-link');
 
+            let lastFocusedElement; // Variabel untuk menyimpan elemen yang terakhir difokuskan
             
             const animationDuration = 400; // Durasi animasi dalam milidetik
 
@@ -1563,7 +1580,7 @@
                     item.style.animationDelay = `${index * 0.1}s`;
 
                     item.innerHTML = `
-                        <img src="${theme.image}" alt="${themeName}" class="catalog-item-image">
+                        <img src="${theme.image}" alt="${themeName}" class="catalog-item-image" loading="lazy">
                         <div class="catalog-item-details">
                             <div class="catalog-item-header">
                                 <h4 class="catalog-item-title">
@@ -1591,9 +1608,26 @@
                 document.querySelectorAll('.view-theme-btn').forEach(button => {
                     button.addEventListener('click', function(event) {
                         event.preventDefault(); // Mencegah link berpindah halaman
-                        customModal.classList.add('active');
+                        lastFocusedElement = this; // Simpan tombol yang diklik
+                        showModal();
                     });
                 });
+            }
+
+            // --- PERBAIKAN AKSESIBILITAS: Fungsi untuk menampilkan dan menutup modal ---
+            function showModal() {
+                customModal.classList.add('active');
+                // Pindahkan fokus ke tombol tutup di dalam modal setelah transisi selesai
+                setTimeout(() => {
+                    modalCloseBtn.focus();
+                }, 150); // Sedikit jeda untuk memastikan modal terlihat
+            }
+
+            function hideModal() {
+                customModal.classList.remove('active');
+                if (lastFocusedElement) {
+                    lastFocusedElement.focus(); // Kembalikan fokus ke elemen pemicu
+                }
             }
 
             // Event listener untuk tombol kategori -> pindah ke halaman tema
@@ -1645,7 +1679,7 @@
             // Event listener untuk menutup modal
             modalCloseBtn.addEventListener('click', function(event) {
                 event.preventDefault();
-                customModal.classList.remove('active');
+                hideModal();
             });
 
             // --- Fungsionalitas Navigasi Melayang ---
