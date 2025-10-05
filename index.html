@@ -82,6 +82,17 @@
             50% { transform: translateX(3px); }
             100% { transform: translateX(0); }
         }
+        /* Animasi untuk Skeleton Loading */
+        @keyframes shimmer {
+            0% { background-position: -480px 0; }
+            100% { background-position: 480px 0; }
+        }
+        .skeleton {
+            animation: shimmer 1.5s linear infinite;
+            background: linear-gradient(to right, #f0f2f0 8%, #e5e7eb 18%, #f0f2f0 33%);
+            background-size: 1000px 100%;
+            border-radius: 8px;
+        }
 
 
         /* Pengaturan Dasar Body */
@@ -404,6 +415,17 @@
             display: block; /* Mencegah spasi ekstra di bawah gambar */
             /* Memberi sudut membulat pada gambar */
             border-radius: 8px;
+            /* Latar belakang skeleton saat gambar memuat */
+            background-color: #f0f2f0;
+        }
+
+        /* Wrapper untuk gambar kategori agar bisa diberi efek skeleton */
+        .category-card-image-wrapper {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1 / 1; /* Menjaga rasio gambar persegi */
+            border-radius: 8px;
+            overflow: hidden; /* Penting untuk menjaga border-radius */
         }
 
         .category-card-content {
@@ -564,6 +586,21 @@
             padding: 10px;
         }
 
+        /* Label "Populer" di atas gambar katalog */
+        .catalog-item-label {
+            position: absolute;
+            top: 20px; /* 10px padding kartu + 10px jarak dari tepi */
+            left: 20px;
+            background-color: var(--accent-color);
+            color: var(--accent-text-color);
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 0.75em;
+            font-weight: 700;
+            z-index: 2;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
         .catalog-item:hover {
             transform: translateY(-5px);
             box-shadow: 0 8px 25px rgba(73, 86, 59, 0.15);
@@ -576,6 +613,8 @@
             display: block; /* Mencegah spasi ekstra di bawah gambar */
             /* INI PERBAIKANNYA: Memberi sudut membulat pada gambar */
             border-radius: 8px;
+            /* Latar belakang skeleton saat gambar memuat */
+            background-color: #f0f2f0;
         }
 
         .catalog-item-details {
@@ -604,6 +643,44 @@
             display: flex; /* Menggunakan flexbox untuk menyejajarkan ikon dan teks */
             align-items: center;
             min-width: 0; /* Perbaikan krusial: Mencegah flex item meluap dan menyebabkan overflow */
+        }
+
+        /* --- Styling untuk Rating Bintang --- */
+        .catalog-item-rating {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 4px; /* Jarak dari judul */
+            margin-bottom: 10px; /* Jarak ke harga */
+        }
+
+        .star-rating-display {
+            position: relative;
+            display: inline-flex;
+            font-size: 16px; /* Ukuran bintang */
+            color: #e2e8f0; /* Warna untuk bintang kosong (latar belakang) */
+        }
+
+        .star-rating-display::before {
+            content: '★★★★★';
+            letter-spacing: 2px;
+        }
+
+        .star-rating-filled::before {
+            position: absolute;
+            top: 0;
+            left: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            width: var(--rating-width, 0%); /* Gunakan variabel CSS untuk lebar */
+            color: #FFC107; /* Warna kuning cerah untuk bintang terisi */
+            content: '★★★★★';
+            letter-spacing: 2px;
+        }
+
+        .rating-count {
+            font-size: 0.8em;
+            color: var(--secondary-text);
         }
 
         .catalog-item-title svg {
@@ -989,7 +1066,7 @@
         .rating-stars svg {
             width: 18px;
             height: 18px;
-            fill: #f59e0b; /* Warna kuning untuk bintang */
+            fill: #FFC107; /* Warna kuning cerah untuk bintang */
         }
         .testimonial-card p.client-name {
             font-weight: 700;
@@ -1007,6 +1084,22 @@
             mask: linear-gradient(90deg, transparent, white 20%, white 80%, transparent);
         }
     </style>
+    <style>
+        /* Skeleton untuk Testimoni */
+        .testimonial-skeleton-card {
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid var(--card-border);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 300px; /* Lebar tetap agar konsisten */
+            flex-shrink: 0; /* Mencegah kartu menyusut */
+        }
+    </style>
+
+
     <style>
         .testimonials-grid {
             display: flex; /* Menggunakan flexbox untuk item berdampingan */
@@ -1158,11 +1251,11 @@
 <body>
 
     <!-- Kontainer Gambar Sampul -->
-    <div class="cover-image-container">
+    <div class="cover-image-container skeleton">
         <!-- Gambar-gambar untuk slideshow -->
-        <img src="https://github.com/wayanku/storybali-undangan/blob/main/foto%20nikah%202,foto%20nikah1,foto%20nikah%203/foto%20nikah1.webp?raw=true" alt="Foto Pernikahan 1" class="cover-slide active-slide">
-        <img src="https://github.com/wayanku/storybali-undangan/blob/main/foto%20nikah%202,foto%20nikah1,foto%20nikah%203/foto%20nikah%202.webp?raw=true" alt="Foto Pernikahan 2" class="cover-slide">
-        <img src="https://github.com/wayanku/storybali-undangan/blob/main/foto%20nikah%202,foto%20nikah1,foto%20nikah%203/foto%20nikah%203.webp?raw=true" alt="Foto Pernikahan 3" class="cover-slide">
+        <img src="https://github.com/wayanku/storybali-undangan/blob/main/foto%20nikah%202,foto%20nikah1,foto%20nikah%203/foto%20nikah1.webp?raw=true" alt="Foto Pernikahan 1" class="cover-slide active-slide" loading="eager">
+        <img src="https://github.com/wayanku/storybali-undangan/blob/main/foto%20nikah%202,foto%20nikah1,foto%20nikah%203/foto%20nikah%202.webp?raw=true" alt="Foto Pernikahan 2" class="cover-slide" loading="lazy">
+        <img src="https://github.com/wayanku/storybali-undangan/blob/main/foto%20nikah%202,foto%20nikah1,foto%20nikah%203/foto%20nikah%203.webp?raw=true" alt="Foto Pernikahan 3" class="cover-slide" loading="lazy">
     </div>
 
     <div class="main-content-wrapper">
@@ -1174,11 +1267,27 @@
 
             <div id="main-menu" class="page">
                 <div id="category-grid" style="scroll-margin-top: 30px;">
-                    <div class="category-card"><img src="https://raw.githubusercontent.com/wayanku/storybali-undangan/main/foto%20katalog%20pernikahan%20.jpg" class="category-card-image" loading="lazy"><div class="category-card-content"><h4 class="category-card-title">Pernikahan Bali</h4><button class="category-button">Lihat Jenis Tema</button></div></div>
-                    <div class="category-card"><img src="https://raw.githubusercontent.com/wayanku/storybali-undangan/main/foto%20katalog%20pernikahan%20.jpg" class="category-card-image" loading="lazy"><div class="category-card-content"><h4 class="category-card-title">Pernikahan Muslim</h4><button class="category-button">Lihat Jenis Tema</button></div></div>
-                    <div class="category-card"><img src="https://raw.githubusercontent.com/wayanku/storybali-undangan/main/foto%20katalog%20metatah.jpg" class="category-card-image" loading="lazy"><div class="category-card-content"><h4 class="category-card-title">Metatah / Potong Gigi</h4><button class="category-button">Lihat Jenis Tema</button></div></div>
-                    <div class="category-card"><img src="https://picsum.photos/id/164/400/400" class="category-card-image" loading="lazy"><div class="category-card-content"><h4 class="category-card-title">3 Bulanan</h4><button class="category-button">Lihat Jenis Tema</button></div></div>
-                    <div class="category-card"><img src="https://raw.githubusercontent.com/wayanku/storybali-undangan/main/foto%20katalog%20ulang%20tahun.jpg" class="category-card-image" loading="lazy"><div class="category-card-content"><h4 class="category-card-title">Ulang Tahun</h4><button class="category-button">Lihat Jenis Tema</button></div></div>
+                    <!-- Kartu Kategori akan di-generate oleh JavaScript -->
+                    <div class="category-card">
+                        <div class="category-card-image-wrapper skeleton"></div>
+                        <div class="category-card-content"><div class="skeleton" style="height: 20px; width: 80%; margin-bottom: 15px;"></div><div class="skeleton" style="height: 38px; width: 100%;"></div></div>
+                    </div>
+                    <div class="category-card">
+                        <div class="category-card-image-wrapper skeleton"></div>
+                        <div class="category-card-content"><div class="skeleton" style="height: 20px; width: 80%; margin-bottom: 15px;"></div><div class="skeleton" style="height: 38px; width: 100%;"></div></div>
+                    </div>
+                    <div class="category-card">
+                        <div class="category-card-image-wrapper skeleton"></div>
+                        <div class="category-card-content"><div class="skeleton" style="height: 20px; width: 80%; margin-bottom: 15px;"></div><div class="skeleton" style="height: 38px; width: 100%;"></div></div>
+                    </div>
+                    <div class="category-card">
+                        <div class="category-card-image-wrapper skeleton"></div>
+                        <div class="category-card-content"><div class="skeleton" style="height: 20px; width: 80%; margin-bottom: 15px;"></div><div class="skeleton" style="height: 38px; width: 100%;"></div></div>
+                    </div>
+                    <div class="category-card">
+                        <div class="category-card-image-wrapper skeleton"></div>
+                        <div class="category-card-content"><div class="skeleton" style="height: 20px; width: 80%; margin-bottom: 15px;"></div><div class="skeleton" style="height: 38px; width: 100%;"></div></div>
+                    </div>
                 </div>
 
             </div>
@@ -1213,18 +1322,18 @@
             <div class="features-section">
                 <h3>Fitur Unggulan Kami</h3>
                 <div class="features-grid">
-                    <div class="feature-item"><div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M13,9H18.5L13,3.5V9M6,2H14L20,8V20A2,2 0 0,1 18,22H6A2,2 0 0,1 4,20V4A2,2 0 0,1 6,2M11,15.5V13H7V15.5L9,14.25L11,15.5M17,15.5V13H13V15.5L15,14.25L17,15.5Z"/></svg></div><span class="feature-name">Smart Dashboard</span></div>
-                    <div class="feature-item"><div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M18,16.08C17.24,16.08 16.56,16.38 16.04,16.85L8.91,12.7C8.96,12.47 9,12.24 9,12C9,11.76 8.96,11.53 8.91,11.3L16.04,7.15C16.56,7.62 17.24,7.92 18,7.92C19.66,7.92 21,6.58 21,5C21,3.42 19.66,2 18,2C16.34,2 15,3.42 15,5C15,5.24 15.04,5.47 15.09,5.7L7.96,9.85C7.44,9.38 6.76,9.08 6,9.08C4.34,9.08 3,10.42 3,12C3,13.58 4.34,14.92 6,14.92C6.76,14.92 7.44,14.62 7.96,14.15L15.09,18.3C15.04,18.53 15,18.76 15,19C15,20.58 16.34,22 18,22C19.66,22 21,20.58 21,19C21,17.42 19.66,16.08 18,16.08Z"/></svg></div><span class="feature-name">Unlimited Share</span></div>
-                    <div class="feature-item"><div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V8L14 2M18 20H6V4H13V9H18V20M12 13.5C12.8 13.5 13.5 12.8 13.5 12C13.5 11.2 12.8 10.5 12 10.5S10.5 11.2 10.5 12C10.5 12.8 11.2 13.5 12 13.5M16 17H8V18H16V17M16 15H8V16H16V15Z"/></svg></div><span class="feature-name">Buku Tamu</span></div>
-                    <div class="feature-item"><div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M15,14C12.33,14 7,15.33 7,18V20H23V18C23,15.33 17.67,14 15,14M15,12A4,4 0 0,0 19,8A4,4 0 0,0 15,4A4,4 0 0,0 11,8A4,4 0 0,0 15,12M5,13.28L1,10.78L5,8.28V13.28M6,18V20H1V18C1,15.33 4.33,14 7,14C6.5,14 6,14.08 6,14.24V18Z"/></svg></div><span class="feature-name">Custom Tamu</span></div>
-                    <div class="feature-item"><div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M17.5,12A1.5,1.5 0 0,1 16,10.5A1.5,1.5 0 0,1 17.5,9A1.5,1.5 0 0,1 19,10.5A1.5,1.5 0 0,1 17.5,12M14.5,8A1.5,1.5 0 0,1 13,6.5A1.5,1.5 0 0,1 14.5,5A1.5,1.5 0 0,1 16,6.5A1.5,1.5 0 0,1 14.5,8M9.5,8A1.5,1.5 0 0,1 8,6.5A1.5,1.5 0 0,1 9.5,5A1.5,1.5 0 0,1 11,6.5A1.5,1.5 0 0,1 9.5,8M6.5,12A1.5,1.5 0 0,1 5,10.5A1.5,1.5 0 0,1 6.5,9A1.5,1.5 0 0,1 8,10.5A1.5,1.5 0 0,1 6.5,12M12,3A9,9 0 0,0 3,12A9,9 0 0,0 12,21A1.5,1.5 0 0,0 13.5,19.5C13.5,19.2 13.3,19 13,19C10.2,19 8,16.8 8,14C8,11.2 10.2,9 13,9C13.3,9 13.5,8.8 13.5,8.5A1.5,1.5 0 0,0 12,7C9.2,7 7,9.2 7,12C7,14.8 9.2,17 12,17C14.8,17 17,14.8 17,12A5,5 0 0,0 12,7Z"/></svg></div><span class="feature-name">Free Ubah Tema</span></div>
-                    <div class="feature-item"><div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M12,3V12.26C11.5,12.09 11,12 10.5,12C8,12 6,14 6,16.5C6,19 8,21 10.5,21C13,21 15,19 15,16.5V6H19V3H12Z"/></svg></div><span class="feature-name">Musik Autoplay</span></div>
-                    <div class="feature-item"><div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M4,4H10V10H4V4M20,4H14V10H20V4M4,20H10V14H4V20M14,14H16V16H14V14M16,16H18V18H16V16M18,14H20V16H18V14M14,18H16V20H14V18M18,18H20V20H18V18M12,12H14V14H12V12M14,12H16V10H14V12M10,12H12V14H10V12M12,10H14V8H12V10M8,12H10V10H8V12M12,6H10V4H12V6M6,12H8V14H6V12M12,14H10V16H12V14M16,12H18V14H16V12Z"/></svg></div><span class="feature-name">QR Code Check-in</span></div>
-                    <div class="feature-item"><div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M21,16H3V4H21M21,2H3C1.89,2 1,2.89 1,4V16A2,2 0 0,0 3,18H10V20H8V22H16V20H14V18H21A2,2 0 0,0 23,16V4C23,2.89 22.1,2 21,2Z"/></svg></div><span class="feature-name">Layar Sapa</span></div>
-                    <div class="feature-item"><div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M12,21.35L10.55,20.03C5.4,15.36 2,12.27 2,8.5C2,5.41 4.42,3 7.5,3C9.24,3 10.91,3.81 12,5.08C13.09,3.81 14.76,3 16.5,3C19.58,3 22,5.41 22,8.5C22,12.27 18.6,15.36 13.45,20.03L12,21.35Z"/></svg></div><span class="feature-name">Our Story</span></div>
-                    <div class="feature-item"><div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M20,8L12,13L4,8V6L12,11L20,6M20,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V6C22,4.89 21.1,4 20,4Z"/></svg></div><span class="feature-name">Amplop Digital</span></div>
-                    <div class="feature-item"><div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M22,16V4A2,2 0 0,0 20,2H8A2,2 0 0,0 6,4V16A2,2 0 0,0 8,18H20A2,2 0 0,0 22,16M11,12L13.03,14.71L16,11L20,16H8M2,6V20A2,2 0 0,0 4,22H18V20H4V6H2Z"/></svg></div><span class="feature-name">Galeri Foto</span></div>
-                    <div class="feature-item"><div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M17,10.5V7A1,1 0 0,0 16,6H4A1,1 0 0,0 3,7V17A1,1 0 0,0 4,18H16A1,1 0 0,0 17,17V13.5L21,17.5V6.5L17,10.5Z"/></svg></div><span class="feature-name">Live Streaming</span></div>
+                    <!-- Skeleton loading untuk fitur -->
+                    <script>
+                        // Buat 12 skeleton item untuk fitur
+                        for (let i = 0; i < 12; i++) {
+                            document.write(`
+                                <div class="feature-item" style="animation: none; background-color: transparent; box-shadow: none;">
+                                    <div class="feature-icon skeleton" style="width: 36px; height: 36px; border-radius: 15px; margin-bottom: 8px;"></div>
+                                    <div class="skeleton" style="height: 10px; width: 80%; border-radius: 4px;"></div>
+                                </div>
+                            `);
+                        }
+                    </script>
                 </div>
             </div>
         </div>
@@ -1235,53 +1344,26 @@
         <div class="container">
             <h3>Apa Kata Mereka?</h3>
             <p>Lihat apa yang klien kami katakan tentang layanan kami.</p>
-            <div class="testimonials-scroller">
+            <div class="testimonials-scroller" id="testimonials-scroller">
                 <div class="testimonials-grid">
-                    <!-- Testimoni akan diduplikasi untuk efek loop yang mulus -->
-                    <div class="testimonial-card">
-                        <div class="quote-icon">“</div>
-                        <div class="testimonial-header">
-                            <img src="https://i.pravatar.cc/150?img=1" alt="Avatar Gungde & Ayu" class="client-avatar" loading="lazy">
-                            <div class="client-info">
-                                <p class="client-name">Gungde & Ayu</p>
-                                <div class="rating-stars"><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg></div>
-                            </div>
-                        </div>
-                        <p class="quote">Prosesnya cepat dan hasilnya memuaskan banget! Tim Storybali sangat membantu dan responsif. Undangannya jadi pusat perhatian di hari H.</p>
-                    </div>
-                    <div class="testimonial-card">
-                        <div class="quote-icon">“</div>
-                        <div class="testimonial-header">
-                            <img src="https://i.pravatar.cc/150?img=32" alt="Avatar Budi & Santi" class="client-avatar" loading="lazy">
-                            <div class="client-info">
-                                <p class="client-name">Budi & Santi</p>
-                                <div class="rating-stars"><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg></div>
-                            </div>
-                        </div>
-                        <p class="quote">Desainnya modern dan elegan, persis seperti yang kami mau. Fitur amplop digital juga sangat memudahkan tamu. Recommended!</p>
-                    </div>
-                    <div class="testimonial-card">
-                        <div class="quote-icon">“</div>
-                        <div class="testimonial-header">
-                            <img src="https://i.pravatar.cc/150?img=5" alt="Avatar Eka & Putri" class="client-avatar" loading="lazy">
-                            <div class="client-info">
-                                <p class="client-name">Eka & Putri</p>
-                                <div class="rating-stars"><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg></div>
-                            </div>
-                        </div>
-                        <p class="quote">Suka banget sama semua fiturnya, lengkap dan mudah digunakan. Adminnya juga sabar banget jawabin semua pertanyaan. Mantap!</p>
-                    </div>
-                    <div class="testimonial-card">
-                        <div class="quote-icon">“</div>
-                        <div class="testimonial-header">
-                            <img src="https://i.pravatar.cc/150?img=47" alt="Avatar Komang & Dewi" class="client-avatar" loading="lazy">
-                            <div class="client-info">
-                                <p class="client-name">Komang & Dewi</p>
-                                <div class="rating-stars"><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg><svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg></div>
-                            </div>
-                        </div>
-                        <p class="quote">Terima kasih Storybali! Undangannya keren dan beda dari yang lain. Banyak teman yang nanya bikin di mana. Sukses selalu!</p>
-                    </div>
+                    <!-- Skeleton loading untuk testimoni -->
+                    <script>
+                        for (let i = 0; i < 8; i++) { // Buat 8 skeleton (untuk loop)
+                            document.write(`
+                                <div class="testimonial-skeleton-card">
+                                    <div style="display: flex; align-items: center; gap: 15px;">
+                                        <div class="skeleton" style="width: 50px; height: 50px; border-radius: 50%; flex-shrink: 0;"></div>
+                                        <div style="width: 100%;">
+                                            <div class="skeleton" style="height: 18px; width: 60%; margin-bottom: 8px;"></div>
+                                            <div class="skeleton" style="height: 16px; width: 40%;"></div>
+                                        </div>
+                                    </div>
+                                    <div class="skeleton" style="height: 16px; width: 100%; margin-top: 5px;"></div>
+                                    <div class="skeleton" style="height: 16px; width: 80%;"></div>
+                                </div>
+                            `);
+                        }
+                    </script>
                 </div>
             </div>
         </div>
@@ -1291,7 +1373,9 @@
     <div class="payment-methods-section">
         <div class="container">
             <h3>Mendukung Berbagai Jenis Pembayaran</h3>
-            <img src="https://github.com/wayanku/storybali-undangan/blob/main/CAHNNEL-PEMBAYARAN@4x-1.png?raw=true" alt="Metode Pembayaran" class="payment-methods-image" loading="lazy">
+            <div id="payment-methods-container">
+                <div class="skeleton" style="width: 85%; height: 50px; margin: 0 auto; border-radius: 12px;"></div>
+            </div>
         </div>
     </div>
 
@@ -1390,10 +1474,12 @@
             const socialToggleBtn = document.getElementById('social-toggle-btn');
             const customModal = document.getElementById('custom-modal');
             const modalCloseBtn = document.getElementById('modal-close-btn');
+            const coverContainer = document.querySelector('.cover-image-container');
             const coverSlides = document.querySelectorAll('.cover-slide');
             const navHome = document.getElementById('nav-home');
             const navCategoryLinks = document.querySelectorAll('.nav-category-link');
 
+            const categoryGrid = document.getElementById('category-grid');
             let lastFocusedElement; // Variabel untuk menyimpan elemen yang terakhir difokuskan
             
             const animationDuration = 400; // Durasi animasi dalam milidetik
@@ -1405,8 +1491,8 @@
                     {
                         type: 'withPhoto',
                         themes: [
-                            { image: 'https://github.com/wayanku/storybali-undangan/blob/main/foto%20nikah%202,foto%20nikah1,foto%20nikah%203/891cb82d-73ed-42b7-a091-70253afc6819%20(1).webp?raw=true', previewUrl: 'https://wayanku.github.io/pernikahan-tema-1/' },
-                            { image: 'https://picsum.photos/id/1043/400/400', previewUrl: 'https://wayanku.github.io/pernikahan-tema-2/' },
+                            { image: 'https://github.com/wayanku/storybali-undangan/blob/main/foto%20nikah%202,foto%20nikah1,foto%20nikah%203/891cb82d-73ed-42b7-a091-70253afc6819%20(1).webp?raw=true', previewUrl: 'https://wayanku.github.io/pernikahan-tema-1/', label: 'Populer', rating: 4.9, reviews: 152 },
+                            { image: 'https://picsum.photos/id/1043/400/400', previewUrl: 'https://wayanku.github.io/pernikahan-tema-2/', rating: 4.2, reviews: 98 },
                             { image: 'https://picsum.photos/id/1044/400/400' },
                             { image: 'https://picsum.photos/id/1045/400/400' },
                         ]
@@ -1414,7 +1500,7 @@
                     {
                         type: 'withoutPhoto',
                         themes: [
-                            { image: 'https://picsum.photos/id/1048/400/400' }, // Tanpa Foto 1
+                            { image: 'https://picsum.photos/id/1048/400/400', label: 'Populer', rating: 4.9, reviews: 76 }, // Tanpa Foto 1
                             { image: 'https://picsum.photos/id/1050/400/400' }, // Tanpa Foto 2
                             { image: 'https://picsum.photos/id/1051/400/400' }, // Tanpa Foto 3
                             { image: 'https://picsum.photos/id/1052/400/400' }, // Tanpa Foto 4
@@ -1423,11 +1509,11 @@
                 ],
                 "Pernikahan Muslim": [
                     { type: 'withPhoto', themes: [
-                        { image: 'https://picsum.photos/id/1060/400/400' }, { image: 'https://picsum.photos/id/1062/400/400' },
+                        { image: 'https://picsum.photos/id/1060/400/400', label: 'Populer', rating: 5.0, reviews: 88 }, { image: 'https://picsum.photos/id/1062/400/400' },
                         { image: 'https://picsum.photos/id/1063/400/400' }, { image: 'https://picsum.photos/id/1064/400/400' }
                     ] },
                     { type: 'withoutPhoto', themes: [
-                        { image: 'https://picsum.photos/id/1065/400/400' }, { image: 'https://picsum.photos/id/1066/400/400' },
+                        { image: 'https://picsum.photos/id/1065/400/400', label: 'Populer', rating: 4.8, reviews: 45 }, { image: 'https://picsum.photos/id/1066/400/400' },
                         { image: 'https://picsum.photos/id/1067/400/400' }, { image: 'https://picsum.photos/id/1068/400/400' }
                     ] }
                 ],
@@ -1435,22 +1521,22 @@
                     {
                         type: 'withPhoto',
                         themes: [
-                            { image: 'https://picsum.photos/id/211/400/400' }, { image: 'https://picsum.photos/id/212/400/400' },
+                            { image: 'https://picsum.photos/id/211/400/400', label: 'Populer', rating: 4.9, reviews: 112 }, { image: 'https://picsum.photos/id/212/400/400' },
                             { image: 'https://picsum.photos/id/214/400/400' }, { image: 'https://picsum.photos/id/215/400/400' }
                         ]
                     },
                     { type: 'withoutPhoto', themes: [
-                        { image: 'https://picsum.photos/id/216/400/400' }, { image: 'https://picsum.photos/id/218/400/400' },
+                        { image: 'https://picsum.photos/id/216/400/400', label: 'Populer', rating: 4.7, reviews: 65 }, { image: 'https://picsum.photos/id/218/400/400' },
                         { image: 'https://picsum.photos/id/219/400/400' }, { image: 'https://picsum.photos/id/220/400/400' }
                     ] }
                 ],
                 "3 Bulanan": [
                     { type: 'withPhoto', themes: [
-                        { image: 'https://picsum.photos/id/315/400/400' }, { image: 'https://picsum.photos/id/316/400/400' },
+                        { image: 'https://picsum.photos/id/315/400/400', label: 'Populer', rating: 5.0, reviews: 43 }, { image: 'https://picsum.photos/id/316/400/400' },
                         { image: 'https://picsum.photos/id/317/400/400' }, { image: 'https://picsum.photos/id/318/400/400' }
                     ] },
                     { type: 'withoutPhoto', themes: [
-                        { image: 'https://picsum.photos/id/319/400/400' }, { image: 'https://picsum.photos/id/320/400/400' },
+                        { image: 'https://picsum.photos/id/319/400/400', label: 'Populer', rating: 4.8, reviews: 21 }, { image: 'https://picsum.photos/id/320/400/400' },
                         { image: 'https://picsum.photos/id/321/400/400' }, { image: 'https://picsum.photos/id/322/400/400' }
                     ] }
                 ],
@@ -1458,20 +1544,137 @@
                     {
                         type: 'withPhoto',
                         themes: [
-                            { image: 'https://picsum.photos/id/431/400/400' }, { image: 'https://picsum.photos/id/433/400/400' },
+                            { image: 'https://picsum.photos/id/431/400/400', label: 'Populer', rating: 4.9, reviews: 99 }, { image: 'https://picsum.photos/id/433/400/400' },
                             { image: 'https://picsum.photos/id/434/400/400' }, { image: 'https://picsum.photos/id/435/400/400' }
                         ]
                     },
                     {
                         type: 'withoutPhoto',
                         themes: [
-                            { image: 'https://picsum.photos/id/436/400/400' }, { image: 'https://picsum.photos/id/438/400/400' },
+                            { image: 'https://picsum.photos/id/436/400/400', label: 'Populer', rating: 4.7, reviews: 50 }, { image: 'https://picsum.photos/id/438/400/400' },
                             { image: 'https://picsum.photos/id/439/400/400' }, { image: 'https://picsum.photos/id/440/400/400' }
                         ]
                     }
                 ],
                 // Anda bisa menambahkan kategori lain di sini
             };
+
+            // --- Data untuk Kategori di Halaman Utama ---
+            const categoryData = [
+                { name: 'Pernikahan Bali', image: 'https://raw.githubusercontent.com/wayanku/storybali-undangan/main/foto%20katalog%20pernikahan%20.jpg' },
+                { name: 'Pernikahan Muslim', image: 'https://raw.githubusercontent.com/wayanku/storybali-undangan/main/foto%20katalog%20pernikahan%20.jpg' },
+                { name: 'Metatah / Potong Gigi', image: 'https://raw.githubusercontent.com/wayanku/storybali-undangan/main/foto%20katalog%20metatah.jpg' },
+                { name: '3 Bulanan', image: 'https://picsum.photos/id/164/400/400' },
+                { name: 'Ulang Tahun', image: 'https://raw.githubusercontent.com/wayanku/storybali-undangan/main/foto%20katalog%20ulang%20tahun.jpg' }
+            ];
+
+            // --- Fungsi untuk memuat kategori di halaman utama ---
+            function loadCategories() {
+                // Tunda pemuatan konten asli untuk mensimulasikan loading
+                setTimeout(() => {
+                    categoryGrid.innerHTML = ''; // Kosongkan skeleton
+                    categoryData.forEach((cat, index) => {
+                        const card = document.createElement('div');
+                        card.className = 'category-card';
+                        card.style.animationDelay = `${index * 0.1}s`;
+                        card.innerHTML = `
+                            <div class="category-card-image-wrapper">
+                                <img src="${cat.image}" class="category-card-image" loading="lazy" alt="Kategori ${cat.name}">
+                            </div>
+                            <div class="category-card-content">
+                                <h4 class="category-card-title">${cat.name}</h4>
+                                <button class="category-button">Lihat Jenis Tema</button>
+                            </div>
+                        `;
+                        categoryGrid.appendChild(card);
+                    });
+
+                    // Pasang kembali event listener setelah konten baru dibuat
+                    document.querySelectorAll('.category-button').forEach(button => {
+                        button.addEventListener('click', handleCategoryClick);
+                    });
+
+                }, 500); // Jeda 500ms sebelum memuat konten asli
+            }
+
+            // --- Data dan Fungsi untuk memuat Fitur Unggulan ---
+            const featuresData = [
+                { name: 'Smart Dashboard', svg: '<path d="M13,9H18.5L13,3.5V9M6,2H14L20,8V20A2,2 0 0,1 18,22H6A2,2 0 0,1 4,20V4A2,2 0 0,1 6,2M11,15.5V13H7V15.5L9,14.25L11,15.5M17,15.5V13H13V15.5L15,14.25L17,15.5Z"/>' },
+                { name: 'Unlimited Share', svg: '<path d="M18,16.08C17.24,16.08 16.56,16.38 16.04,16.85L8.91,12.7C8.96,12.47 9,12.24 9,12C9,11.76 8.96,11.53 8.91,11.3L16.04,7.15C16.56,7.62 17.24,7.92 18,7.92C19.66,7.92 21,6.58 21,5C21,3.42 19.66,2 18,2C16.34,2 15,3.42 15,5C15,5.24 15.04,5.47 15.09,5.7L7.96,9.85C7.44,9.38 6.76,9.08 6,9.08C4.34,9.08 3,10.42 3,12C3,13.58 4.34,14.92 6,14.92C6.76,14.92 7.44,14.62 7.96,14.15L15.09,18.3C15.04,18.53 15,18.76 15,19C15,20.58 16.34,22 18,22C19.66,22 21,20.58 21,19C21,17.42 19.66,16.08 18,16.08Z"/>' },
+                { name: 'Buku Tamu', svg: '<path d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V8L14 2M18 20H6V4H13V9H18V20M12 13.5C12.8 13.5 13.5 12.8 13.5 12C13.5 11.2 12.8 10.5 12 10.5S10.5 11.2 10.5 12C10.5 12.8 11.2 13.5 12 13.5M16 17H8V18H16V17M16 15H8V16H16V15Z"/>' },
+                { name: 'Custom Tamu', svg: '<path d="M15,14C12.33,14 7,15.33 7,18V20H23V18C23,15.33 17.67,14 15,14M15,12A4,4 0 0,0 19,8A4,4 0 0,0 15,4A4,4 0 0,0 11,8A4,4 0 0,0 15,12M5,13.28L1,10.78L5,8.28V13.28M6,18V20H1V18C1,15.33 4.33,14 7,14C6.5,14 6,14.08 6,14.24V18Z"/>' },
+                { name: 'Free Ubah Tema', svg: '<path d="M17.5,12A1.5,1.5 0 0,1 16,10.5A1.5,1.5 0 0,1 17.5,9A1.5,1.5 0 0,1 19,10.5A1.5,1.5 0 0,1 17.5,12M14.5,8A1.5,1.5 0 0,1 13,6.5A1.5,1.5 0 0,1 14.5,5A1.5,1.5 0 0,1 16,6.5A1.5,1.5 0 0,1 14.5,8M9.5,8A1.5,1.5 0 0,1 8,6.5A1.5,1.5 0 0,1 9.5,5A1.5,1.5 0 0,1 11,6.5A1.5,1.5 0 0,1 9.5,8M6.5,12A1.5,1.5 0 0,1 5,10.5A1.5,1.5 0 0,1 6.5,9A1.5,1.5 0 0,1 8,10.5A1.5,1.5 0 0,1 6.5,12M12,3A9,9 0 0,0 3,12A9,9 0 0,0 12,21A1.5,1.5 0 0,0 13.5,19.5C13.5,19.2 13.3,19 13,19C10.2,19 8,16.8 8,14C8,11.2 10.2,9 13,9C13.3,9 13.5,8.8 13.5,8.5A1.5,1.5 0 0,0 12,7C9.2,7 7,9.2 7,12C7,14.8 9.2,17 12,17C14.8,17 17,14.8 17,12A5,5 0 0,0 12,7Z"/>' },
+                { name: 'Musik Autoplay', svg: '<path d="M12,3V12.26C11.5,12.09 11,12 10.5,12C8,12 6,14 6,16.5C6,19 8,21 10.5,21C13,21 15,19 15,16.5V6H19V3H12Z"/>' },
+                { name: 'QR Code Check-in', svg: '<path d="M4,4H10V10H4V4M20,4H14V10H20V4M4,20H10V14H4V20M14,14H16V16H14V14M16,16H18V18H16V16M18,14H20V16H18V14M14,18H16V20H14V18M18,18H20V20H18V18M12,12H14V14H12V12M14,12H16V10H14V12M10,12H12V14H10V12M12,10H14V8H12V10M8,12H10V10H8V12M12,6H10V4H12V6M6,12H8V14H6V12M12,14H10V16H12V14M16,12H18V14H16V12Z"/>' },
+                { name: 'Layar Sapa', svg: '<path d="M21,16H3V4H21M21,2H3C1.89,2 1,2.89 1,4V16A2,2 0 0,0 3,18H10V20H8V22H16V20H14V18H21A2,2 0 0,0 23,16V4C23,2.89 22.1,2 21,2Z"/>' },
+                { name: 'Our Story', svg: '<path d="M12,21.35L10.55,20.03C5.4,15.36 2,12.27 2,8.5C2,5.41 4.42,3 7.5,3C9.24,3 10.91,3.81 12,5.08C13.09,3.81 14.76,3 16.5,3C19.58,3 22,5.41 22,8.5C22,12.27 18.6,15.36 13.45,20.03L12,21.35Z"/>' },
+                { name: 'Amplop Digital', svg: '<path d="M20,8L12,13L4,8V6L12,11L20,6M20,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V6C22,4.89 21.1,4 20,4Z"/>' },
+                { name: 'Galeri Foto', svg: '<path d="M22,16V4A2,2 0 0,0 20,2H8A2,2 0 0,0 6,4V16A2,2 0 0,0 8,18H20A2,2 0 0,0 22,16M11,12L13.03,14.71L16,11L20,16H8M2,6V20A2,2 0 0,0 4,22H18V20H4V6H2Z"/>' },
+                { name: 'Live Streaming', svg: '<path d="M17,10.5V7A1,1 0 0,0 16,6H4A1,1 0 0,0 3,7V17A1,1 0 0,0 4,18H16A1,1 0 0,0 17,17V13.5L21,17.5V6.5L17,10.5Z"/>' },
+            ];
+
+            function loadFeatures() {
+                const featuresGrid = document.querySelector('.features-grid');
+                // Tunda pemuatan untuk mensimulasikan loading
+                setTimeout(() => {
+                    featuresGrid.innerHTML = ''; // Hapus skeleton
+                    featuresData.forEach((feature, index) => {
+                        const item = document.createElement('div');
+                        item.className = 'feature-item';
+                        // Atur delay animasi staggered
+                        item.style.animationDelay = `${0.7 + index * 0.05}s`;
+                        item.innerHTML = `
+                            <div class="feature-icon"><svg viewBox="0 0 24 24">${feature.svg}</svg></div>
+                            <span class="feature-name">${feature.name}</span>
+                        `;
+                        featuresGrid.appendChild(item);
+                    });
+                }, 800); // Jeda 800ms sebelum memuat fitur asli
+            }
+
+            // --- Data dan Fungsi untuk memuat Testimoni Statis ---
+            const testimonialsData = [
+                { name: 'Gungde & Ayu', avatar: 'https://i.pravatar.cc/150?img=1', quote: 'Prosesnya cepat dan hasilnya memuaskan banget! Tim Storybali sangat membantu dan responsif. Undangannya jadi pusat perhatian di hari H.' },
+                { name: 'Budi & Santi', avatar: 'https://i.pravatar.cc/150?img=32', quote: 'Desainnya modern dan elegan, persis seperti yang kami mau. Fitur amplop digital juga sangat memudahkan tamu. Recommended!' },
+                { name: 'Eka & Putri', avatar: 'https://i.pravatar.cc/150?img=5', quote: 'Suka banget sama semua fiturnya, lengkap dan mudah digunakan. Adminnya juga sabar banget jawabin semua pertanyaan. Mantap!' },
+                { name: 'Komang & Dewi', avatar: 'https://i.pravatar.cc/150?img=47', quote: 'Terima kasih Storybali! Undangannya keren dan beda dari yang lain. Banyak teman yang nanya bikin di mana. Sukses selalu!' }
+            ];
+
+            function loadStaticTestimonials() {
+                const testimonialsGrid = document.querySelector("#testimonials-scroller .testimonials-grid");
+                setTimeout(() => {
+                    testimonialsGrid.innerHTML = ''; // Hapus skeleton
+                    const allTestimonials = [...testimonialsData, ...testimonialsData]; // Duplikasi untuk loop
+
+                    allTestimonials.forEach((testimonial, index) => {
+                        const card = document.createElement('div');
+                        card.className = 'testimonial-card';
+                        if (index >= testimonialsData.length) {
+                            card.setAttribute('aria-hidden', 'true');
+                        }
+                        card.innerHTML = `
+                            <div class="quote-icon">“</div>
+                            <div class="testimonial-header">
+                                <img src="${testimonial.avatar}" alt="Avatar ${testimonial.name}" class="client-avatar" loading="lazy">
+                                <div class="client-info">
+                                    <p class="client-name">${testimonial.name}</p>
+                                    <div class="rating-stars">${'<svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg>'.repeat(5)}</div>
+                                </div>
+                            </div>
+                            <p class="quote">${testimonial.quote}</p>
+                        `;
+                        testimonialsGrid.appendChild(card);
+                    });
+                }, 1200); // Jeda 1.2 detik
+            }
+
+            // --- Fungsi untuk memuat gambar Metode Pembayaran ---
+            function loadPaymentMethods() {
+                const paymentContainer = document.getElementById('payment-methods-container');
+                setTimeout(() => {
+                    paymentContainer.innerHTML = '<img src="https://github.com/wayanku/storybali-undangan/blob/main/CAHNNEL-PEMBAYARAN@4x-1.png?raw=true" alt="Metode Pembayaran" class="payment-methods-image" loading="lazy">';
+                }, 1500); // Jeda 1.5 detik
+            }
 
             // --- Fungsionalitas Slideshow Sampul ---
             let currentSlideIndex = 0;
@@ -1490,6 +1693,16 @@
 
             // Ganti slide setiap 5 detik (5000 milidetik)
             setInterval(changeSlide, 5000);
+
+            // Hapus skeleton dari cover image setelah gambar pertama selesai dimuat
+            const firstSlide = document.querySelector('.cover-slide.active-slide');
+            if (firstSlide.complete) { // Jika gambar sudah di-cache
+                coverContainer.classList.remove('skeleton');
+            } else {
+                firstSlide.addEventListener('load', () => {
+                    coverContainer.classList.remove('skeleton');
+                });
+            }
 
             // Fungsi untuk transisi antar halaman
             function switchPage(fromPage, toPage) {
@@ -1531,13 +1744,37 @@
                 const originalPrice = isWithoutPhoto ? 'Rp 60.000' : 'Rp 100.000';
                 const discount = '50%';
                 
-                // Tampilkan spinner
-                catalogGrid.innerHTML = '<div class="loading-spinner"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
+                // Tampilkan kerangka (skeleton) loading
+                generateSkeletonCatalog(4); // Tampilkan 4 kartu kerangka
 
                 // Beri jeda singkat agar spinner sempat terlihat
                 setTimeout(() => {
                     generateItems(isWithoutPhoto, finalPrice, originalPrice, discount);
-                }, 300); // 300ms delay
+                }, 500); // 500ms delay
+            }
+            
+            // Fungsi baru untuk membuat kerangka loading katalog
+            function generateSkeletonCatalog(count) {
+                catalogGrid.innerHTML = ''; // Kosongkan grid
+                for (let i = 0; i < count; i++) {
+                    const skeletonItem = document.createElement('div');
+                    skeletonItem.className = 'catalog-item';
+                    skeletonItem.style.animation = 'none'; // Matikan animasi fade-in untuk skeleton
+                    skeletonItem.innerHTML = `
+                        <div class="skeleton" style="width: 100%; aspect-ratio: 1 / 1; margin-bottom: 15px;"></div>
+                        <div class="catalog-item-details">
+                            <div class="skeleton" style="height: 20px; width: 70%; margin-bottom: 10px;"></div>
+                            <div class="skeleton" style="height: 16px; width: 50%; margin-bottom: 15px;"></div>
+                            <div class="catalog-item-price-wrapper">
+                                <div class="skeleton" style="height: 24px; width: 40%; margin-bottom: 10px;"></div>
+                            </div>
+                            <div class="catalog-item-actions">
+                                <div class="skeleton" style="height: 40px; width: 100%;"></div>
+                            </div>
+                        </div>
+                    `;
+                    catalogGrid.appendChild(skeletonItem);
+                }
             }
 
             function generateItems(isWithoutPhoto, finalPrice, originalPrice, discount) {
@@ -1549,12 +1786,34 @@
                 const themeType = isWithoutPhoto ? 'withoutPhoto' : 'withPhoto';
                 const themeSet = categoryThemeData.find(set => set.type === themeType);
                 const themes = themeSet ? themeSet.themes : []; // Ambil daftar tema atau array kosong
-                
-                catalogGrid.innerHTML = ''; // Kosongkan grid sebelum mengisi
+
+                // --- PENYEMPURNAAN: Jangan langsung hapus, transisikan! ---
+                const skeletonItems = catalogGrid.querySelectorAll('.catalog-item');
+                skeletonItems.forEach(item => {
+                    item.style.opacity = '0'; // Mulai fade out skeleton
+                });
 
                 themes.forEach((theme, index) => {
                     const themeNumber = index + 1;
                     const themeName = isWithoutPhoto ? `Tanpa Foto ${themeNumber}` : `Tema ${themeNumber}`;
+
+                    
+                    // Buat HTML untuk label jika ada
+                    const labelHtml = theme.label ? `<span class="catalog-item-label">${theme.label}</span>` : '';
+
+                    // Buat HTML untuk rating bintang jika ada
+                    let ratingHtml = '';
+                    if (theme.rating) {
+                        const ratingPercentage = (theme.rating / 5) * 100;
+                        const reviewCount = theme.reviews ? `(${theme.reviews})` : '';
+                        ratingHtml = `
+                            <div class="catalog-item-rating">
+                                <div class="star-rating-display">
+                                    <div class="star-rating-filled" style="--rating-width: ${ratingPercentage}%;"></div>
+                                </div>
+                                <span class="rating-count">${theme.rating.toFixed(1)} ${reviewCount}</span>
+                            </div>`;
+                    }
 
                     // --- PERBAIKAN: Logika tombol "Lihat" disesuaikan ---
                     // Link pratinjau hanya muncul jika TIDAK dalam mode "Tanpa Foto"
@@ -1578,8 +1837,11 @@
                     const item = document.createElement('div');
                     item.className = 'catalog-item';
                     item.style.animationDelay = `${index * 0.1}s`;
+                    // --- PENYEMPURNAAN: Mulai dengan transparan untuk efek fade-in ---
+                    item.style.opacity = '0';
 
                     item.innerHTML = `
+                        ${labelHtml}
                         <img src="${theme.image}" alt="${themeName}" class="catalog-item-image" loading="lazy">
                         <div class="catalog-item-details">
                             <div class="catalog-item-header">
@@ -1588,6 +1850,7 @@
                                     <span>${themeName}</span>
                                 </h4>
                             </div>
+                            ${ratingHtml}
                             <div class="catalog-item-price-wrapper">
                                 <p class="catalog-item-price">${finalPrice}</p>
                                 <div class="discount-info">
@@ -1601,7 +1864,16 @@
                             </div>
                         </div>
                     `;
-                    catalogGrid.appendChild(item);
+                    // --- PENYEMPURNAAN: Ganti skeleton atau tambahkan item baru ---
+                    if (index < skeletonItems.length) {
+                        // Ganti skeleton yang ada dengan item baru
+                        catalogGrid.replaceChild(item, skeletonItems[index]);
+                    } else {
+                        // Jika item lebih banyak dari skeleton, tambahkan sisanya
+                        catalogGrid.appendChild(item);
+                    }
+                    // Picu reflow dan mulai fade-in
+                    setTimeout(() => item.style.opacity = '1', 50);
                 });
 
                 // Tambahkan event listener ke semua tombol 'Lihat' yang memicu modal
@@ -1630,18 +1902,18 @@
                 }
             }
 
+            // Fungsi handler untuk klik kategori, dipisahkan agar bisa dipasang ulang
+            function handleCategoryClick(event) {
+                const categoryCard = this.closest('.category-card');
+                const categoryName = categoryCard.querySelector('.category-card-title').textContent;
+                themeTitle.textContent = `Pilihan Tema ${categoryName}`;
+                updateActiveNav(categoryName); // Sinkronisasi navigasi
+                history.pushState({page: 'catalog'}, `Katalog - ${categoryName}`, '#katalog');
+                switchPage(mainMenu, themePage); 
+            }
+
             // Event listener untuk tombol kategori -> pindah ke halaman tema
-            categoryButtons.forEach(button => {
-                button.addEventListener('click', function(event) {
-                    const categoryCard = this.closest('.category-card');
-                    const categoryName = categoryCard.querySelector('.category-card-title').textContent;
-                    themeTitle.textContent = `Pilihan Tema ${categoryName}`;
-                    updateActiveNav(categoryName); // Sinkronisasi navigasi
-                    // Tambahkan state ke history browser sebelum beralih halaman
-                    history.pushState({page: 'catalog'}, `Katalog - ${categoryName}`, '#katalog');
-                    switchPage(mainMenu, themePage); 
-                });
-            });
+            document.querySelectorAll('.category-button').forEach(button => button.addEventListener('click', handleCategoryClick));
 
             // Event listener untuk tombol kembali -> pindah ke menu utama
             backButton.addEventListener('click', function() {
@@ -1722,20 +1994,87 @@
                 });
             });
 
-            // --- Fungsionalitas Slider Testimoni ---
-            const scroller = document.querySelector(".testimonials-scroller");
-            const grid = scroller.querySelector(".testimonials-grid");
-            
-            // Duplikasi item di dalam grid untuk membuat efek loop yang tak terbatas
-            const gridContent = Array.from(grid.children);
-            gridContent.forEach(item => {
-                const duplicatedItem = item.cloneNode(true);
-                duplicatedItem.setAttribute("aria-hidden", true); // Baik untuk aksesibilitas
-                grid.appendChild(duplicatedItem);
-            });
+            // --- Fungsionalitas Slider Testimoni dari Google Sheets ---
+            function loadTestimonials() {
+                const testimonialsGrid = document.querySelector(".testimonials-grid");
+                const testimonialsScroller = document.querySelector(".testimonials-scroller");
+                // GANTI DENGAN URL WEB APP ANDA DARI LANGKAH 3
+                const testimonialsApiUrl = 'PASTE_YOUR_WEB_APP_URL_HERE'; 
 
+                // --- PENYEMPURNAAN: Tampilkan skeleton loading untuk testimoni ---
+                testimonialsGrid.innerHTML = ''; // Kosongkan dulu
+                for (let i = 0; i < 4; i++) { // Buat 4 kartu skeleton
+                    const skeletonCard = document.createElement('div');
+                    skeletonCard.className = 'testimonial-skeleton-card';
+                    skeletonCard.innerHTML = `
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <div class="skeleton" style="width: 50px; height: 50px; border-radius: 50%; flex-shrink: 0;"></div>
+                            <div style="width: 100%;">
+                                <div class="skeleton" style="height: 18px; width: 60%; margin-bottom: 8px;"></div>
+                                <div class="skeleton" style="height: 16px; width: 40%;"></div>
+                            </div>
+                        </div>
+                        <div class="skeleton" style="height: 16px; width: 100%; margin-top: 5px;"></div>
+                        <div class="skeleton" style="height: 16px; width: 80%;"></div>
+                    `;
+                    testimonialsGrid.appendChild(skeletonCard);
+                }
+                testimonialsScroller.classList.remove('testimonials-scroller'); // Hentikan animasi scroll sementara
 
+                fetch(testimonialsApiUrl)
+                    .then(response => response.json())
+                    .then(result => {
+                        if (result.success && result.data.length > 0) {
+                            testimonialsGrid.innerHTML = ''; // Kosongkan grid
+                            const testimonials = result.data;
 
+                            // Fungsi untuk membuat HTML bintang
+                            const createStarsHtml = (rating) => {
+                                let stars = '';
+                                for (let i = 0; i < rating; i++) {
+                                    stars += '<svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg>';
+                                }
+                                return stars;
+                            };
+
+                            // Buat kartu untuk setiap testimoni
+                            testimonials.forEach(testimonial => {
+                                const card = document.createElement('div');
+                                card.className = 'testimonial-card';
+                                card.innerHTML = `
+                                    <div class="quote-icon">“</div>
+                                    <div class="testimonial-header">
+                                        <img src="${testimonial.avatar_url}" alt="Avatar ${testimonial.nama}" class="client-avatar" loading="lazy">
+                                        <div class="client-info">
+                                            <p class="client-name">${testimonial.nama}</p>
+                                            <div class="rating-stars">${createStarsHtml(testimonial.rating)}</div>
+                                        </div>
+                                    </div>
+                                    <p class="quote">${testimonial.kutipan}</p>
+                                `;
+                                testimonialsGrid.appendChild(card);
+                            });
+
+                            // Duplikasi item untuk efek scroll tak terbatas
+                            const gridContent = Array.from(testimonialsGrid.children);
+                            gridContent.forEach(item => {
+                                const duplicatedItem = item.cloneNode(true);
+                                duplicatedItem.setAttribute("aria-hidden", true);
+                                testimonialsGrid.appendChild(duplicatedItem);
+                            });
+                            testimonialsScroller.classList.add('testimonials-scroller'); // Aktifkan kembali animasi scroll
+                        } else {
+                            testimonialsGrid.innerHTML = '<p style="color: var(--secondary-text); width: 100%;">Gagal memuat testimoni.</p>';
+                        }
+                    }).catch(error => console.error('Error fetching testimonials:', error));
+            }
+
+            // Panggil fungsi-fungsi pemuatan konten
+            loadCategories();
+            loadFeatures();
+            loadStaticTestimonials(); // Memuat testimoni statis dengan efek skeleton
+            loadPaymentMethods(); // Memuat gambar pembayaran dengan efek skeleton
+            // loadTestimonials(); // Aktifkan ini jika ingin memuat dari Google Sheets
         });
     </script>
 
