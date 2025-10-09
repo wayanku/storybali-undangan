@@ -589,8 +589,8 @@
         /* Label "Populer" di atas gambar katalog */
         .catalog-item-label {
             position: absolute;
-            top: 20px; /* 10px padding kartu + 10px jarak dari tepi */
-            left: 20px;
+            top: 10px; /* Jarak 10px dari tepi atas gambar */
+            left: 10px; /* Jarak 10px dari tepi kiri gambar */
             background-color: var(--accent-color);
             color: var(--accent-text-color);
             padding: 4px 10px;
@@ -599,6 +599,31 @@
             font-weight: 700;
             z-index: 2;
             box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        /* Wrapper untuk gambar agar bisa menampung label */
+        .catalog-image-wrapper {
+            position: relative;
+            width: 100%;
+            display: block; /* Pastikan wrapper tidak memiliki spasi ekstra */
+        }
+        
+        /* Label "Tersedia" untuk pratinjau di pojok kiri bawah */
+        .catalog-item-preview-tag {
+            position: absolute;
+            /* PERUBAHAN: Posisi di pojok kanan bawah gambar */
+            bottom: 10px; 
+            right: 10px;
+            background-color: rgba(255, 255, 255, 0.8); /* Latar putih transparan */
+            -webkit-backdrop-filter: blur(4px);
+            backdrop-filter: blur(4px);
+            color: var(--primary-text); /* Teks hijau tua */
+            padding: 4px 10px;
+            border-radius: 8px;
+            /* PERUBAHAN: Ukuran font disamakan dengan label Populer */
+            font-size: 0.7em;
+            font-weight: 700;
+            z-index: 2;
         }
 
         .catalog-item:hover {
@@ -1801,6 +1826,9 @@
                     // Buat HTML untuk label jika ada
                     const labelHtml = theme.label ? `<span class="catalog-item-label">${theme.label}</span>` : '';
 
+                    // Buat HTML untuk label pratinjau jika ada URL
+                    const previewTagHtml = theme.previewUrl ? `<span class="catalog-item-preview-tag">Tersedia</span>` : '';
+
                     // Buat HTML untuk rating bintang jika ada
                     let ratingHtml = '';
                     if (theme.rating) {
@@ -1841,8 +1869,11 @@
                     item.style.opacity = '0';
 
                     item.innerHTML = `
-                        ${labelHtml}
-                        <img src="${theme.image}" alt="${themeName}" class="catalog-item-image" loading="lazy">
+                        <div class="catalog-image-wrapper">
+                            ${labelHtml}
+                            ${previewTagHtml}
+                            <img src="${theme.image}" alt="${themeName}" class="catalog-item-image" loading="lazy">
+                        </div>
                         <div class="catalog-item-details">
                             <div class="catalog-item-header">
                                 <h4 class="catalog-item-title">
