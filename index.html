@@ -1571,28 +1571,23 @@
     <style>
         /* --- CSS untuk Navigasi Kaca Melayang --- */
         .floating-nav {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            min-width: 300px; /* Menambahkan lebar minimum */
-            transform: translateX(-50%);
-            width: auto; /* Agar lebar menyesuaikan konten */
-            max-width: 95%; /* Batas lebar maksimum */
+            position: fixed; /* Tetap menempel di layar */
+            bottom: 0; /* Menempel di bagian paling bawah */
+            left: 0;
+            width: 100%; /* Lebar penuh */
             z-index: 999;
-            padding: 6px; /* Padding lebih kecil untuk tampilan lebih compact */
             
-            /* Efek Glassmorphism */
-            background: rgba(255, 255, 255, 0.25); /* Latar transparan */
-            -webkit-backdrop-filter: blur(10px); /* Blur untuk Safari */
-            backdrop-filter: blur(10px); /* Efek blur kaca */
-            border-radius: 28px; /* Lengkungan lebih landai */
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            box-shadow: 0 8px 32px 0 rgba(73, 86, 59, 0.2); /* Bayangan lembut */
+            /* Mengubah dari Glassmorphism ke Bar Solid */
+            background: var(--card-bg); /* Latar belakang solid seperti header */
+            border-top: 1px solid var(--card-border); /* Garis pemisah di atas */
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05); /* Bayangan ke atas */
 
             display: flex;
-            gap: 4px; /* Jarak antar tombol sedikit dilebarkan */
+            justify-content: space-around; /* Menyebar tombol secara merata */
             align-items: center;
             transition: bottom 0.3s ease;
+            padding: 5px 0; /* Padding vertikal */
+            padding-bottom: calc(5px + env(safe-area-inset-bottom)); /* Penyesuaian untuk iPhone X ke atas */
         }
 
         .floating-nav a {
@@ -1601,18 +1596,19 @@
             align-items: center;
             justify-content: center;
             text-decoration: none;
-            color: var(--primary-text);
+            color: var(--secondary-text); /* Warna teks diubah agar tidak terlalu kuat */
             font-size: 0.65em; /* Sedikit lebih besar agar mudah dibaca */
             font-weight: 600;
             gap: 3px;
-            padding: 6px 12px; /* Padding horizontal ditambah agar lebih lebar */
-            border-radius: 25px; /* Lebih bulat */
+            padding: 4px 8px; /* Padding disesuaikan */
+            border-radius: 12px; /* Sudut lebih landai */
             transition: all 0.25s ease;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.1); /* Bayangan teks agar lebih terbaca */
+            flex: 1; /* Agar setiap tombol mengambil ruang yang sama */
+            min-width: 0; /* Perbaikan untuk flexbox */
         }
 
         .floating-nav a:hover {
-            background-color: rgba(255, 255, 255, 0.2);
+            color: var(--accent-color); /* Ubah warna teks saat di-hover */
         }
 
         .floating-nav a svg {
