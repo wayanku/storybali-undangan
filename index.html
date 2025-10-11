@@ -109,6 +109,11 @@
             background-size: 1000px 100%;
             border-radius: 8px;
         }
+        @keyframes cart-shake {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-8deg); }
+            75% { transform: rotate(8deg); }
+        }
 
 
         /* Pengaturan Dasar Body */
@@ -503,6 +508,17 @@
             fill: var(--secondary-text);
             transition: fill 0.2s ease;
         }
+        /* --- CSS untuk Animasi Terbang ke Keranjang --- */
+        .fly-to-cart-clone {
+            position: fixed;
+            z-index: 2000; /* Di atas segalanya */
+            border-radius: 12px; /* Cocokkan dengan radius gambar asli */
+            transition: all 0.7s cubic-bezier(0.5, -0.5, 1, 1); /* Kurva ease-in yang menarik */
+            pointer-events: none; /* Agar tidak bisa diklik */
+        }
+        .cart-icon-wrapper.shake {
+            animation: cart-shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+        }
         .cart-item-remove:hover svg {
             fill: #e53e3e;
         }
@@ -590,8 +606,7 @@
         }
         /* Styling untuk item keranjang yang dipilih */
         .cart-item-full.selected {
-            border-color: var(--accent-color);
-            box-shadow: 0 0 0 2px var(--accent-color);
+            /* Efek border dan shadow dinonaktifkan, indikasi hanya melalui radio button */
         }
         /* --- Perbaikan Tampilan Halaman Checkout --- */
         .checkout-container {
@@ -2175,6 +2190,10 @@
             const birthdayForm = document.getElementById('birthday-data-form');
             let activeFormType = ''; // Untuk melacak form mana yang aktif
 
+            // --- Audio untuk Efek Suara ---
+            const orderSound = new Audio('https://github.com/wayanku/storybali-undangan/raw/main/apple-pay-sound-effect_43nu5Zaa.mp3');
+            orderSound.load(); // Memuat audio di awal agar siap dimainkan
+
             const categoryGrid = document.getElementById('category-grid');
             let lastFocusedElement; // Variabel untuk menyimpan elemen yang terakhir difokuskan
             
@@ -2657,6 +2676,48 @@
                     button.addEventListener('click', function() {
                         const itemId = this.dataset.itemId;
                         const itemToAdd = filteredItems.find(item => item.id === itemId);
+
+                        // --- Animasi Terbang ke Keranjang ---
+                        const catalogItem = this.closest('.catalog-item');
+                        const imageToAnimate = catalogItem.querySelector('.catalog-item-image');
+                        
+                        // Cek dulu apakah item sudah ada di keranjang
+                        const existingItem = shoppingCart.find(cartItem => cartItem.id === itemToAdd.id);
+                        if (existingItem) {
+                            // Jika sudah ada, hanya tampilkan notifikasi, jangan animasikan
+                            addToCart(itemToAdd);
+                            return;
+                        }
+
+                        if (imageToAnimate) {
+                            const imgRect = imageToAnimate.getBoundingClientRect();
+                            const cartRect = cartIcon.getBoundingClientRect();
+
+                            const clone = imageToAnimate.cloneNode(true);
+                            clone.classList.add('fly-to-cart-clone');
+                            document.body.appendChild(clone);
+
+                            // Atur posisi awal clone
+                            clone.style.cssText = `left: ${imgRect.left}px; top: ${imgRect.top}px; width: ${imgRect.width}px; height: ${imgRect.height}px;`;
+
+                            // Paksa browser menggambar posisi awal sebelum transisi
+                            requestAnimationFrame(() => {
+                                // Atur posisi akhir untuk animasi
+                                clone.style.left = `${cartRect.left + (cartRect.width / 2)}px`;
+                                clone.style.top = `${cartRect.top + (cartRect.height / 2)}px`;
+                                clone.style.width = '0px';
+                                clone.style.height = '0px';
+                                clone.style.opacity = '0';
+                                clone.style.transform = 'rotate(180deg)';
+                            });
+
+                            // Hapus clone setelah animasi selesai
+                            setTimeout(() => {
+                                clone.remove();
+                            }, 700); // Durasi harus sama dengan transisi CSS
+                        }
+                        // --- Akhir Animasi ---
+
                         addToCart(itemToAdd);
                     });
                 });
@@ -2666,6 +2727,17 @@
             function addToCart(item) {
                 if (!item) return;
                 // Cek apakah item sudah ada di keranjang
+
+                // --- Putar Efek Suara ---
+                // Reset waktu audio ke awal dan mainkan
+                orderSound.currentTime = 0;
+                orderSound.play().catch(error => console.log("Autoplay diblokir oleh browser:", error));
+
+
+                // --- Haptic Feedback ---
+                if (navigator.vibrate) {
+                    navigator.vibrate(50); // Getaran singkat 50ms
+                }
                 const existingItem = shoppingCart.find(cartItem => cartItem.id === item.id);
                 if (existingItem) {
                     // PERBAIKAN: Tampilkan notifikasi modal
@@ -2675,6 +2747,12 @@
                 shoppingCart.push(item);
                 updateCartUI();
                 saveCart(); // Simpan keranjang setelah menambahkan item
+
+                // Picu animasi getar pada keranjang
+                cartIcon.classList.add('shake');
+                setTimeout(() => {
+                    cartIcon.classList.remove('shake');
+                }, 400); // Durasi harus sama dengan animasi CSS
             }
 
             function removeFromCart(itemId) {
