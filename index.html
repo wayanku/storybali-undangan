@@ -2904,14 +2904,16 @@
                 let waMessage = '';
 
                 if (activeFormType === 'wedding') {
+                    // PERBAIKAN: Targetkan form yang aktif di dalam halaman checkout secara spesifik.
+                    const activeForm = document.querySelector('#checkout-form-page #wedding-data-form');
                     const weddingData = {
-                        groomName: document.getElementById('groom-name').value.trim(),
-                        groomFather: document.getElementById('groom-father').value.trim(),
-                        groomMother: document.getElementById('groom-mother').value.trim(),
-                        brideName: document.getElementById('bride-name').value.trim(),
-                        brideFather: document.getElementById('bride-father').value.trim(),
-                        brideMother: document.getElementById('bride-mother').value.trim(),
-                        eventDetails: document.getElementById('event-date').value.trim(),
+                        groomName: activeForm.querySelector('input[id="groom-name"]').value.trim(),
+                        groomFather: activeForm.querySelector('input[id="groom-father"]').value.trim(),
+                        groomMother: activeForm.querySelector('input[id="groom-mother"]').value.trim(),
+                        brideName: activeForm.querySelector('input[id="bride-name"]').value.trim(),
+                        brideFather: activeForm.querySelector('input[id="bride-father"]').value.trim(),
+                        brideMother: activeForm.querySelector('input[id="bride-mother"]').value.trim(),
+                        eventDetails: activeForm.querySelector('input[id="event-date"]').value.trim(),
                     };
                     if (!weddingData.groomName || !weddingData.brideName || !weddingData.eventDetails) {
                         alert('Mohon lengkapi nama kedua mempelai dan detail acara.');
@@ -2919,10 +2921,12 @@
                     }
                     waMessage = createWeddingOrderMessage(weddingData);
                 } else if (activeFormType === 'metatah') {
+                    // PERBAIKAN: Targetkan form yang aktif di dalam halaman checkout.
+                    const activeForm = document.querySelector('#checkout-form-page #metatah-data-form');
                     const data = {
-                        name: document.getElementById('metatah-name').value.trim(),
-                        parents: document.getElementById('metatah-parents').value.trim(),
-                        details: document.getElementById('metatah-details').value.trim(),
+                        name: activeForm.querySelector('input[id="metatah-name"]').value.trim(),
+                        parents: activeForm.querySelector('input[id="metatah-parents"]').value.trim(),
+                        details: activeForm.querySelector('input[id="metatah-details"]').value.trim(),
                     };
                     if (!data.name || !data.details) {
                         alert('Mohon lengkapi Nama dan Detail Acara.');
@@ -2930,11 +2934,13 @@
                     }
                     waMessage = createGeneralOrderMessage('Metatah', data);
                 } else if (activeFormType === 'birthday' || activeFormType === '3 bulanan') {
+                    // PERBAIKAN: Targetkan form yang aktif di dalam halaman checkout.
+                    const activeForm = document.querySelector('#checkout-form-page #birthday-data-form');
                     const data = {
-                        name: document.getElementById('birthday-name').value.trim(),
-                        date: document.getElementById('birthday-date').value.trim(),
-                        time: document.getElementById('birthday-time').value.trim(),
-                        location: document.getElementById('birthday-location').value.trim(),
+                        name: activeForm.querySelector('input[id="birthday-name"]').value.trim(),
+                        date: activeForm.querySelector('input[id="birthday-date"]').value.trim(),
+                        time: activeForm.querySelector('input[id="birthday-time"]').value.trim(),
+                        location: activeForm.querySelector('input[id="birthday-location"]').value.trim(),
                     };
                     if (!data.name || !data.date || !data.location) {
                         alert('Mohon lengkapi Nama, Tanggal, dan Alamat.');
@@ -3008,17 +3014,15 @@
                 message += `*DETAIL ACARA*\n`;
                 message += `${data.eventDetails}\n\n`;
 
+                // PERBAIKAN: Ambil tema yang dipilih dari halaman keranjang sebelumnya.
+                const selectedId = (shoppingCart.length > 1)
+                    ? document.querySelector('.cart-item-full.selected').dataset.itemId
+                    : shoppingCart[0].id;
+                
+                const selectedItem = shoppingCart.find(item => item.id === selectedId);
+
                 message += `*TEMA YANG DIPESAN*\n`;
-                shoppingCart.forEach((item, index) => {
-                    message += `${index + 1}. ${item.themeName} (${item.price})\n`;
-                    // Hanya proses item yang dipilih jika ada banyak item
-                    if (shoppingCart.length > 1) {
-                        const selectedId = document.querySelector('.cart-item-full.selected').dataset.itemId;
-                        if (item.id === selectedId) {
-                             message = `*TEMA YANG DIPESAN*\n- ${item.themeName} (${item.categoryName}) - ${item.price}\n`;
-                        }
-                    }
-                });
+                message += `- ${selectedItem.themeName} (${selectedItem.categoryName}) - ${selectedItem.price}`;
                 return message;
             }
 
@@ -3026,13 +3030,13 @@
             function createGeneralOrderMessage(type, data) {
                 let message = `Halo Storybali Undangan, saya ingin memesan undangan ${type} dengan detail:\n\n`;
                 if (type === 'Metatah') {
-                    message += `*Nama Anak:* ${data.name}\n`;
-                    message += `*Nama Ortu:* ${data.parents}\n`;
-                    message += `*Detail Acara:* ${data.details}\n\n`;
+                    message += `*Nama Anak:* ${data.name || '-'}\n`;
+                    message += `*Nama Ortu:* ${data.parents || '-'}\n`;
+                    message += `*Detail Acara:* ${data.details || '-'}\n\n`;
                 } else if (type === 'Ulang Tahun' || type === '3 Bulanan') {
                     // PERBAIKAN: Label dinamis berdasarkan tipe
                     const nameLabel = type === '3 Bulanan' ? '*Nama Bayi:*' : '*Nama:*';
-                    message += `${nameLabel} ${data.name}\n`;
+                    message += `${nameLabel} ${data.name || '-'}\n`;
                     message += `*Tanggal:* ${data.date}\n`;
                     message += `*Jam:* ${data.time}\n`;
                     message += `*Lokasi:* ${data.location}\n\n`;
