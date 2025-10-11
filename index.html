@@ -1650,6 +1650,18 @@
             padding-bottom: calc(5px + env(safe-area-inset-bottom)); /* Penyesuaian untuk iPhone X ke atas */
         }
 
+        /* PERBAIKAN: Menambahkan lapisan di bawah navigasi untuk menutupi area transparan di iPhone */
+        .floating-nav::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: env(safe-area-inset-bottom); /* Tinggi lapisan sama dengan area aman bawah */
+            background: var(--card-bg); /* Warna lapisan sama dengan navigasi */
+            z-index: -1; /* Posisikan di belakang konten navigasi */
+        }
+
         .floating-nav a {
             display: flex;
             flex-direction: column;
