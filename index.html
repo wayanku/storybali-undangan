@@ -512,7 +512,18 @@
         .fly-to-cart-clone {
             position: fixed;
             z-index: 2000; /* Di atas segalanya */
-            border-radius: 12px; /* Cocokkan dengan radius gambar asli */
+            /* PERBAIKAN: Mengubah dari gambar menjadi lingkaran angka */
+            background-color: #e53e3e; /* Warna merah */
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%; /* Membuatnya bundar */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9em;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
             transition: all 0.7s cubic-bezier(0.5, -0.5, 1, 1); /* Kurva ease-in yang menarik */
             pointer-events: none; /* Agar tidak bisa diklik */
         }
@@ -2742,32 +2753,30 @@
 
                         if (orderButton) {
                             const buttonRect = orderButton.getBoundingClientRect();
-                            const cartRect = cartIcon.getBoundingClientRect();
+                            const cartRect = document.querySelector('.top-header #cart-icon').getBoundingClientRect();
 
                             const clone = document.createElement('div'); // Buat elemen div baru
                             clone.innerText = '1'; // Isi dengan angka "1"
                             clone.classList.add('fly-to-cart-clone');
                             document.body.appendChild(clone);
 
-                            // Atur posisi awal clone
+                            // 1. Atur posisi awal clone (di tengah tombol 'Order')
                             clone.style.left = `${buttonRect.left + (buttonRect.width / 2) - 12}px`;
                             clone.style.top = `${buttonRect.top + (buttonRect.height / 2) - 12}px`;
 
-                            // Paksa browser menggambar posisi awal sebelum transisi
+                            // 2. Paksa browser menggambar posisi awal sebelum memulai transisi
                             requestAnimationFrame(() => {
-                                // Atur posisi akhir untuk animasi
-                                clone.style.left = `${cartRect.left + (cartRect.width / 2)}px`;
-                                clone.style.top = `${cartRect.top + (cartRect.height / 2)}px`;
-                                clone.style.width = '0px';
-                                clone.style.height = '0px';
-                                clone.style.opacity = '0';
-                                clone.style.transform = 'rotate(180deg)';
+                                // 3. Atur properti akhir untuk animasi (terbang ke keranjang)
+                                clone.style.left = `${cartRect.left + (cartRect.width / 2) - 12}px`; // Target X
+                                clone.style.top = `${cartRect.top + (cartRect.height / 2) - 12}px`; // Target Y
+                                clone.style.transform = 'scale(0.5)'; // Mengecil saat terbang
+                                clone.style.opacity = '0.5'; // Sedikit memudar
                             });
 
                             // Hapus clone setelah animasi selesai
                             setTimeout(() => {
                                 clone.remove();
-                            }, 700); // Durasi harus sama dengan transisi CSS
+                            }, 900); // PERBAIKAN: Durasi disamakan dengan transisi CSS (0.9s)
                         }
                         // --- Akhir Animasi ---
 
