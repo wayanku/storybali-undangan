@@ -615,7 +615,17 @@
             padding: 25px;
             box-shadow: var(--card-shadow);
             border: 1px solid var(--card-border);
-            margin-top: 20px;
+            margin-top: 25px; /* Sedikit lebih banyak ruang dari atas */
+        }
+        /* Pesan pemandu untuk memilih item */
+        .selection-guide {
+            background-color: rgba(116, 136, 115, 0.05); /* Latar hijau sangat transparan */
+            border: 1px solid rgba(116, 136, 115, 0.1);
+            padding: 12px 15px;
+            border-radius: 10px;
+            text-align: center;
+            color: var(--secondary-text);
+            margin-bottom: 20px;
         }
         #cart-page .cart-item-full {
             background-color: transparent;
@@ -623,11 +633,14 @@
             margin-bottom: 0;
             border-radius: 0;
         }
+        /* Beri garis pemisah antar item, kecuali yang terakhir */
+        #cart-full-list .cart-item-full:not(:last-child) {
+            border-bottom: 1px solid var(--card-border);
+        }
         #cart-page .cart-item-full:first-child {
             padding-top: 0;
         }
         #cart-page .cart-item-full:last-child {
-            border-bottom: none;
             padding-bottom: 0;
         }
         /* --- Styling untuk Indikator Pilihan di Keranjang --- */
@@ -685,16 +698,37 @@
         .price-row.total {
             margin-top: 10px;
             padding-top: 10px;
-            border-top: 1px dashed var(--card-border);
+            border-top: 1px solid var(--card-border); /* Garis solid lebih rapi */
             font-size: 1.1em;
             font-weight: 700;
             color: var(--primary-text);
         }
-        .price-row.total span:last-child {
+        .price-row.total span:last-child, #checkout-final-price {
             color: #e53e3e; /* Warna merah untuk total harga */
             font-weight: 800;
         }
 
+        /* --- Efek Sobekan Kertas Super Realistis untuk Nota --- */
+        .torn-paper-top {
+            position: relative;
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            /* Padding atas untuk memberi ruang pada efek sobekan */
+            padding-top: 25px !important;
+            margin-top: 20px !important; 
+            border: 1px solid var(--card-border);
+            border-top: none; /* Hapus border atas standar */
+        }
+        .torn-paper-top::before {
+            content: '';
+            position: absolute;
+            top: -1px; /* Posisikan tepat di atas kontainer */
+            left: -1px; right: -1px; /* Sedikit meluap untuk menutupi border */
+            height: 15px; /* Tinggi efek sobekan */
+            background-color: var(--bg-color); /* Warna latar belakang di belakang kertas */
+            mask-image: radial-gradient(10.75px at 50% 15px, #000 99%, #0000 0), linear-gradient(180deg, #000 5px, #0000 0);
+            mask-size: 20px 100%;
+        }
     </style>
     <style>
         /* --- Styling untuk Custom Modal (Pop-up) --- */
@@ -1716,6 +1750,12 @@
                 height: 22px;
             }
         }
+
+        /* Perbaikan untuk latar belakang di iPhone (area poni & bawah) */
+        body.checkout-active {
+            background-color: var(--bg-color);
+        }
+
     </style>
 </head>
 <body>
@@ -1804,6 +1844,10 @@
                 <div id="cart-checkout-view">
                     <div class="checkout-container">
                         <h3>Ringkasan Pesanan</h3>
+                        <!-- Kontainer untuk pesan pemandu (diisi oleh JS) -->
+                        <div id="selection-guide-container">
+                            <!-- Contoh: <p class="selection-guide">Silakan pilih satu tema...</p> -->
+                        </div>
                         <div id="cart-full-list">
                             <!-- Item keranjang akan di-generate oleh JavaScript -->
                         </div>
@@ -1824,13 +1868,13 @@
                                     <span id="checkout-final-price">Rp 0</span>
                                 </div>
                             </div>
-                            <p style="font-size: 0.85em; color: var(--secondary-text); margin: 0;">
+                            <p style="font-size: 0.85em; color: var(--secondary-text); margin: 20px 0 0 0; text-align: center;">
                                 <svg style="width:16px; height:16px; fill:currentColor; vertical-align: middle; margin-right: 5px;" viewBox="0 0 24 24"><path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,21C7.9,20 5,15.54 5,11.22V6.3L12,3.18L19,6.3V11.22C19,15.54 16.1,20 12,21M10.95,16.68L15.6,12L14.18,10.59L10.95,13.82L9.53,12.41L8.12,13.82L10.95,16.68Z" /></svg>
                                 Pembayaran dilakukan setelah undangan selesai dikerjakan.
                             </p>
                         </div>
                         <!-- Tombol checkout sekarang ada di dalam div untuk penataan -->
-                        <div class="catalog-item-actions" style="margin-top: 20px; border-top: 1px solid var(--card-border); padding-top: 20px;">
+                        <div class="catalog-item-actions" style="margin-top: 25px; border-top: 1px solid var(--card-border); padding-top: 20px;">
                             <button id="checkout-full-btn" class="btn-primary" disabled>
                             <svg viewBox="0 0 24 24"><path d="M18,8H16V6A4,4 0 0,0 12,2A4,4 0 0,0 8,6V8H6A2,2 0 0,0 4,10V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V10A2,2 0 0,0 18,8M10,6A2,2 0 0,1 12,4A2,2 0 0,1 14,6V8H10V6Z" /></svg>
                             Checkout
@@ -2481,6 +2525,10 @@
                     const isThemePage = toPage.id === 'theme-page';
                     const isFormPage = toPage.id === 'checkout-form-page';
 
+                    // PERBAIKAN: Tambahkan/hapus kelas pada body untuk mengubah latar belakang
+                    document.body.classList.toggle('checkout-active', isCartPage || isFormPage);
+
+
                     // Sembunyikan elemen berdasarkan halaman tujuan
                     topHeader.classList.toggle('hidden', isCartPage || isFormPage);
                     coverContainer.classList.toggle('hidden', isCartPage || isThemePage || isFormPage);
@@ -2626,13 +2674,13 @@
                     item.innerHTML = `
                         <div class="catalog-image-wrapper">
                             ${labelHtml}
-                            ${previewTagHtml}
                             <img src="${theme.image}" alt="${themeName}" class="catalog-item-image" loading="lazy" decoding="async">
+                            ${previewTagHtml}
                         </div>
                         <div class="catalog-item-details">
                             <div class="catalog-item-header">
                                 <h4 class="catalog-item-title">
-                                    <svg viewBox="0 0 24 24"><path d="M12,12L8,14.5V9.5L12,12M18,6V18H6V6H18M20,4H4A2,2 0 0,0 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V6A2,2 0 0,0 20,4Z" /></svg>
+                                    <svg viewBox="0 0 24 24"><path d="M17,18C15.89,18 15,18.89 15,20A2,2 0 0,0 17,22A2,2 0 0,0 19,20C19,18.89 18.1,18 17,18M1,2V4H3L6.6,11.59L5.24,14.04C5.09,14.32 5,14.65 5,15A2,2 0 0,0 7,17H19V15H7.42A0.25,0.25 0 0,1 7.17,14.75L7.2,14.64L8.1,13H15.55C16.3,13 16.96,12.58 17.3,11.97L20.88,5.5C20.95,5.34 21,5.17 21,5A1,1 0 0,0 20,4H5.21L4.27,2H1Z" /></svg>
                                     <span>${themeName}</span>
                                 </h4>
                             </div>
@@ -2678,27 +2726,32 @@
                         const itemToAdd = filteredItems.find(item => item.id === itemId);
 
                         // --- Animasi Terbang ke Keranjang ---
-                        const catalogItem = this.closest('.catalog-item');
-                        const imageToAnimate = catalogItem.querySelector('.catalog-item-image');
+                        const orderButton = this; // Tombol yang diklik
                         
                         // Cek dulu apakah item sudah ada di keranjang
                         const existingItem = shoppingCart.find(cartItem => cartItem.id === itemToAdd.id);
                         if (existingItem) {
                             // Jika sudah ada, hanya tampilkan notifikasi, jangan animasikan
-                            addToCart(itemToAdd);
+                            // PERUBAHAN: Panggil notifikasi dengan tombol custom
+                            showNotification(
+                                'Sudah di Keranjang', 
+                                'Tema ini sudah ada di dalam keranjang belanja Anda.',
+                                { text: 'Lihat Keranjang', action: 'openCart' }
+                            );
                             return;
                         }
 
-                        if (imageToAnimate) {
-                            const imgRect = imageToAnimate.getBoundingClientRect();
+                        if (orderButton) {
+                            const buttonRect = orderButton.getBoundingClientRect();
                             const cartRect = cartIcon.getBoundingClientRect();
 
-                            const clone = imageToAnimate.cloneNode(true);
+                            const clone = document.createElement('div');
+                            clone.innerText = '1'; // Angka di dalam lingkaran
                             clone.classList.add('fly-to-cart-clone');
                             document.body.appendChild(clone);
 
                             // Atur posisi awal clone
-                            clone.style.cssText = `left: ${imgRect.left}px; top: ${imgRect.top}px; width: ${imgRect.width}px; height: ${imgRect.height}px;`;
+                            clone.style.cssText = `left: ${buttonRect.left + (buttonRect.width / 2) - 12}px; top: ${buttonRect.top + (buttonRect.height / 2) - 12}px;`;
 
                             // Paksa browser menggambar posisi awal sebelum transisi
                             requestAnimationFrame(() => {
@@ -2827,15 +2880,10 @@
                 const emptyView = document.getElementById('cart-empty-view');
                 const priceSummary = document.getElementById('checkout-price-summary');
                 const backToShoppingBtn = document.getElementById('back-to-shopping-btn');
+                const selectionGuideContainer = document.getElementById('selection-guide-container');
 
                 cartFullList.innerHTML = ''; // Kosongkan daftar
-                
-                // PERBAIKAN: Hapus pesan pemandu yang mungkin sudah ada sebelumnya
-                // Ini mencegah pesan duplikat saat item ditambahkan.
-                const existingGuide = document.querySelector('p.selection-guide');
-                if (existingGuide) {
-                    existingGuide.remove();
-                }
+                selectionGuideContainer.innerHTML = ''; // Kosongkan kontainer pesan pemandu
 
                 if (shoppingCart.length === 0) {
                     checkoutView.classList.add('hidden');
@@ -2855,10 +2903,7 @@
                         updatePriceSummary(shoppingCart[0]); // Langsung tampilkan harga
                     } else {
                         checkoutFullBtn.disabled = true;
-                        // PERBAIKAN: Pesan sekarang disisipkan relatif terhadap kontainer yang lebih tinggi
-                        // dan setelah pesan lama dihapus, jadi tidak akan duplikat.
-                        const container = document.getElementById('cart-full-list').parentElement;
-                        container.insertAdjacentHTML('afterbegin', '<p class="selection-guide" style="text-align:center; color:var(--secondary-text); margin-bottom:15px; margin-top: -10px;">Silakan pilih satu tema untuk di-checkout.</p>');
+                        selectionGuideContainer.innerHTML = '<p class="selection-guide">Silakan pilih satu tema untuk di-checkout.</p>';
                         priceSummary.classList.add('hidden'); // Sembunyikan harga sampai ada yang dipilih
                     }
 
@@ -3068,17 +3113,36 @@
             }
 
             // --- Fungsi untuk Modal Notifikasi ---
-            function showNotification(title, message) {
+            function showNotification(title, message, buttonConfig = null) {
                 document.getElementById('notification-modal-title').textContent = title;
                 document.getElementById('notification-modal-message').textContent = message;
                 document.getElementById('notification-modal-icon').innerHTML = '<svg viewBox="0 0 24 24"><path d="M13,13H11V7H13M13,17H11V15H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"></path></svg>';
+                
+                const closeBtn = document.getElementById('notification-modal-close-btn');
+                
+                // Hapus event listener lama untuk menghindari duplikasi
+                const newBtn = closeBtn.cloneNode(true);
+                closeBtn.parentNode.replaceChild(newBtn, closeBtn);
+
+                if (buttonConfig && buttonConfig.action === 'openCart') {
+                    newBtn.textContent = buttonConfig.text || 'Lihat Keranjang';
+                    newBtn.onclick = () => {
+                        notificationModal.classList.remove('active');
+                        // Panggil fungsi untuk pindah ke halaman keranjang
+                        cartIcon.click(); 
+                    };
+                } else {
+                    // Perilaku default
+                    newBtn.textContent = 'Mengerti';
+                    newBtn.onclick = () => {
+                        notificationModal.classList.remove('active');
+                    };
+                }
+
                 notificationModal.classList.add('active');
-                document.getElementById('notification-modal-close-btn').focus();
+                newBtn.focus();
             }
 
-            document.getElementById('notification-modal-close-btn').addEventListener('click', () => {
-                notificationModal.classList.remove('active');
-            });
             notificationModal.addEventListener('click', (e) => {
                 if (e.target === notificationModal) {
                     notificationModal.classList.remove('active');
