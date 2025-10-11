@@ -1842,30 +1842,30 @@
                     <!-- Form Pernikahan -->
                     <form id="wedding-data-form" class="checkout-form hidden">
                         <div class="form-section-title">Mempelai Pria</div>
-                        <div class="checkout-form-group"><label for="groom-name">Nama Lengkap Mempelai Pria</label><input type="text" id="groom-name" placeholder="Nama Pria"></div>
-                        <div class="checkout-form-group"><label for="groom-father">Nama Ayah</label><input type="text" id="groom-father" placeholder="Nama Ayah Pria"></div>
-                        <div class="checkout-form-group"><label for="groom-mother">Nama Ibu</label><input type="text" id="groom-mother" placeholder="Nama Ibu Pria"></div>
+                        <div class="checkout-form-group"><label for="groom-name-page">Nama Lengkap Mempelai Pria</label><input type="text" id="groom-name-page" placeholder="Nama Pria"></div>
+                        <div class="checkout-form-group"><label for="groom-father-page">Nama Ayah</label><input type="text" id="groom-father-page" placeholder="Nama Ayah Pria"></div>
+                        <div class="checkout-form-group"><label for="groom-mother-page">Nama Ibu</label><input type="text" id="groom-mother-page" placeholder="Nama Ibu Pria"></div>
                         <div class="form-section-title">Mempelai Wanita</div>
-                        <div class="checkout-form-group"><label for="bride-name">Nama Lengkap Mempelai Wanita</label><input type="text" id="bride-name" placeholder="Nama Wanita"></div>
-                        <div class="checkout-form-group"><label for="bride-father">Nama Ayah</label><input type="text" id="bride-father" placeholder="Nama Ayah Wanita"></div>
-                        <div class="checkout-form-group"><label for="bride-mother">Nama Ibu</label><input type="text" id="bride-mother" placeholder="Nama Ibu Wanita"></div>
+                        <div class="checkout-form-group"><label for="bride-name-page">Nama Lengkap Mempelai Wanita</label><input type="text" id="bride-name-page" placeholder="Nama Wanita"></div>
+                        <div class="checkout-form-group"><label for="bride-father-page">Nama Ayah</label><input type="text" id="bride-father-page" placeholder="Nama Ayah Wanita"></div>
+                        <div class="checkout-form-group"><label for="bride-mother-page">Nama Ibu</label><input type="text" id="bride-mother-page" placeholder="Nama Ibu Wanita"></div>
                         <div class="form-section-title">Detail Acara</div>
-                        <div class="checkout-form-group"><label for="event-date">Tanggal, Waktu & Lokasi</label><input type="text" id="event-date" placeholder="Contoh: Minggu, 25 Desember 2024"></div>
+                        <div class="checkout-form-group"><label for="event-date-page">Tanggal, Waktu & Lokasi</label><input type="text" id="event-date-page" placeholder="Contoh: Minggu, 25 Desember 2024"></div>
                     </form>
 
                     <!-- Form Metatah -->
                     <form id="metatah-data-form" class="checkout-form hidden">
-                        <div class="checkout-form-group"><label for="metatah-name">Nama Lengkap (Yang Metatah)</label><input type="text" id="metatah-name" placeholder="Masukkan nama lengkap"></div>
-                        <div class="checkout-form-group"><label for="metatah-parents">Nama Orang Tua</label><input type="text" id="metatah-parents" placeholder="Contoh: I Wayan & Ni Made"></div>
-                        <div class="checkout-form-group"><label for="metatah-details">Waktu & Lokasi Acara</label><input type="text" id="metatah-details" placeholder="Contoh: 09:00 WITA di Gria..."></div>
+                        <div class="checkout-form-group"><label for="metatah-name-page">Nama Lengkap (Yang Metatah)</label><input type="text" id="metatah-name-page" placeholder="Masukkan nama lengkap"></div>
+                        <div class="checkout-form-group"><label for="metatah-parents-page">Nama Orang Tua</label><input type="text" id="metatah-parents-page" placeholder="Contoh: I Wayan & Ni Made"></div>
+                        <div class="checkout-form-group"><label for="metatah-details-page">Waktu & Lokasi Acara</label><input type="text" id="metatah-details-page" placeholder="Contoh: 09:00 WITA di Gria..."></div>
                     </form>
 
                     <!-- Form Ulang Tahun -->
                     <form id="birthday-data-form" class="checkout-form hidden">
-                        <div class="checkout-form-group"><label for="birthday-name">Nama (Yang Berulang Tahun)</label><input type="text" id="birthday-name" placeholder="Masukkan nama"></div>
-                        <div class="checkout-form-group"><label for="birthday-date">Tanggal Acara</label><input type="text" id="birthday-date" placeholder="Contoh: Minggu, 25 Desember 2024"></div>
-                        <div class="checkout-form-group"><label for="birthday-time">Jam Acara</label><input type="text" id="birthday-time" placeholder="Contoh: 15:00 WITA - Selesai"></div>
-                        <div class="checkout-form-group"><label for="birthday-location">Alamat Lokasi</label><input type="text" id="birthday-location" placeholder="Masukkan alamat lengkap"></div>
+                        <div class="checkout-form-group"><label for="birthday-name-page">Nama (Yang Berulang Tahun)</label><input type="text" id="birthday-name-page" placeholder="Masukkan nama"></div>
+                        <div class="checkout-form-group"><label for="birthday-date-page">Tanggal Acara</label><input type="text" id="birthday-date-page" placeholder="Contoh: Minggu, 25 Desember 2024"></div>
+                        <div class="checkout-form-group"><label for="birthday-time-page">Jam Acara</label><input type="text" id="birthday-time-page" placeholder="Contoh: 15:00 WITA - Selesai"></div>
+                        <div class="checkout-form-group"><label for="birthday-location-page">Alamat Lokasi</label><input type="text" id="birthday-location-page" placeholder="Masukkan alamat lengkap"></div>
                     </form>
 
                     <div class="catalog-item-actions" style="margin-top: 20px; border-top: 1px solid var(--card-border); padding-top: 20px;">
@@ -2907,13 +2907,13 @@
                     // PERBAIKAN: Targetkan form yang aktif di dalam halaman checkout secara spesifik.
                     const activeForm = document.querySelector('#checkout-form-page #wedding-data-form');
                     const weddingData = {
-                        groomName: activeForm.querySelector('input[id="groom-name"]').value.trim(),
-                        groomFather: activeForm.querySelector('input[id="groom-father"]').value.trim(),
-                        groomMother: activeForm.querySelector('input[id="groom-mother"]').value.trim(),
-                        brideName: activeForm.querySelector('input[id="bride-name"]').value.trim(),
-                        brideFather: activeForm.querySelector('input[id="bride-father"]').value.trim(),
-                        brideMother: activeForm.querySelector('input[id="bride-mother"]').value.trim(),
-                        eventDetails: activeForm.querySelector('input[id="event-date"]').value.trim(),
+                        groomName: activeForm.querySelector('input[id="groom-name-page"]').value.trim(),
+                        groomFather: activeForm.querySelector('input[id="groom-father-page"]').value.trim(),
+                        groomMother: activeForm.querySelector('input[id="groom-mother-page"]').value.trim(),
+                        brideName: activeForm.querySelector('input[id="bride-name-page"]').value.trim(),
+                        brideFather: activeForm.querySelector('input[id="bride-father-page"]').value.trim(),
+                        brideMother: activeForm.querySelector('input[id="bride-mother-page"]').value.trim(),
+                        eventDetails: activeForm.querySelector('input[id="event-date-page"]').value.trim(),
                     };
                     if (!weddingData.groomName || !weddingData.brideName || !weddingData.eventDetails) {
                         alert('Mohon lengkapi nama kedua mempelai dan detail acara.');
@@ -2924,9 +2924,9 @@
                     // PERBAIKAN: Targetkan form yang aktif di dalam halaman checkout.
                     const activeForm = document.querySelector('#checkout-form-page #metatah-data-form');
                     const data = {
-                        name: activeForm.querySelector('input[id="metatah-name"]').value.trim(),
-                        parents: activeForm.querySelector('input[id="metatah-parents"]').value.trim(),
-                        details: activeForm.querySelector('input[id="metatah-details"]').value.trim(),
+                        name: activeForm.querySelector('input[id="metatah-name-page"]').value.trim(),
+                        parents: activeForm.querySelector('input[id="metatah-parents-page"]').value.trim(),
+                        details: activeForm.querySelector('input[id="metatah-details-page"]').value.trim(),
                     };
                     if (!data.name || !data.details) {
                         alert('Mohon lengkapi Nama dan Detail Acara.');
@@ -2937,10 +2937,10 @@
                     // PERBAIKAN: Targetkan form yang aktif di dalam halaman checkout.
                     const activeForm = document.querySelector('#checkout-form-page #birthday-data-form');
                     const data = {
-                        name: activeForm.querySelector('input[id="birthday-name"]').value.trim(),
-                        date: activeForm.querySelector('input[id="birthday-date"]').value.trim(),
-                        time: activeForm.querySelector('input[id="birthday-time"]').value.trim(),
-                        location: activeForm.querySelector('input[id="birthday-location"]').value.trim(),
+                        name: activeForm.querySelector('input[id="birthday-name-page"]').value.trim(),
+                        date: activeForm.querySelector('input[id="birthday-date-page"]').value.trim(),
+                        time: activeForm.querySelector('input[id="birthday-time-page"]').value.trim(),
+                        location: activeForm.querySelector('input[id="birthday-location-page"]').value.trim(),
                     };
                     if (!data.name || !data.date || !data.location) {
                         alert('Mohon lengkapi Nama, Tanggal, dan Alamat.');
@@ -2999,10 +2999,10 @@
 
             // Fungsi untuk membuat pesan WhatsApp pesanan pernikahan
             function createWeddingOrderMessage(data) {
-                let message = `Halo Storybali Undangan, saya ingin memesan undangan pernikahan dengan detail berikut:\n\n`;
+                let message = `Halo Storybali Undangan, saya ingin memesan undangan pernikahan dengan detail:\n\n`;
                 
                 message += `*DATA MEMPELAI PRIA*\n`;
-                message += `Nama: ${data.groomName}\n`;
+                message += `Nama: ${data.groomName}\n`; // Perbaikan: Menggunakan data yang sudah ada
                 message += `Nama Ayah: ${data.groomFather}\n`;
                 message += `Nama Ibu: ${data.groomMother}\n\n`;
 
@@ -3012,7 +3012,7 @@
                 message += `Nama Ibu: ${data.brideMother}\n\n`;
 
                 message += `*DETAIL ACARA*\n`;
-                message += `${data.eventDetails}\n\n`;
+                message += `Tanggal & Lokasi: ${data.eventDetails}\n\n`;
 
                 // PERBAIKAN: Ambil tema yang dipilih dari halaman keranjang sebelumnya.
                 const selectedId = (shoppingCart.length > 1)
@@ -3028,15 +3028,15 @@
 
             // Fungsi umum untuk membuat pesan WA dari form Metatah & Ultah
             function createGeneralOrderMessage(type, data) {
-                let message = `Halo Storybali Undangan, saya ingin memesan undangan ${type} dengan detail:\n\n`;
+                let message = `Halo Storybali Undangan, saya ingin memesan undangan ${type === 'Birthday' ? 'Ulang Tahun' : type} dengan detail:\n\n`;
                 if (type === 'Metatah') {
                     message += `*Nama Anak:* ${data.name || '-'}\n`;
                     message += `*Nama Ortu:* ${data.parents || '-'}\n`;
                     message += `*Detail Acara:* ${data.details || '-'}\n\n`;
-                } else if (type === 'Ulang Tahun' || type === '3 Bulanan') {
+                } else if (type === 'Birthday' || type === '3 bulanan') {
                     // PERBAIKAN: Label dinamis berdasarkan tipe
                     const nameLabel = type === '3 Bulanan' ? '*Nama Bayi:*' : '*Nama:*';
-                    message += `${nameLabel} ${data.name || '-'}\n`;
+                    message += `${nameLabel} ${data.name || '-'}\n`; // Menggunakan nameLabel yang dinamis
                     message += `*Tanggal:* ${data.date}\n`;
                     message += `*Jam:* ${data.time}\n`;
                     message += `*Lokasi:* ${data.location}\n\n`;
