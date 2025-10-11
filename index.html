@@ -104,6 +104,11 @@
             100% { background-position: 480px 0; }
         }
         .skeleton {
+            /* Menambahkan properti untuk mencegah interaksi selama loading */
+            pointer-events: none;
+            user-select: none;
+        }
+        .skeleton-active {
             animation: shimmer 1.5s linear infinite;
             background: linear-gradient(to right, #f0f2f0 8%, #e5e7eb 18%, #f0f2f0 33%);
             background-size: 1000px 100%;
@@ -115,7 +120,6 @@
             75% { transform: rotate(8deg); }
         }
 
-
         /* Pengaturan Dasar Body */
         body {
             font-family: var(--font-family);
@@ -124,7 +128,7 @@
             display: flex;
             flex-direction: column; /* Susun elemen dari atas ke bawah */
             align-items: center; /* Tetap rata tengah horizontal */
-            min-height: 100vh;
+            min-height: 100vh; /* Memastikan body mengisi tinggi layar */
             color: var(--primary-text);
             box-sizing: border-box;
             -webkit-font-smoothing: antialiased;
@@ -220,7 +224,7 @@
             position: relative;
             width: 100%;
             height: 300px; /* Tinggi gambar sampul di mobile */
-            /* margin-bottom: 30px; */ /* Dihapus untuk menghilangkan celah hijau */
+            margin-bottom: 0; /* Pastikan tidak ada margin bawah */
             animation: fadeIn 0.6s ease-out;
             overflow: hidden; /* Sembunyikan slide yang tidak aktif */
             background-color: #f0f2f0; /* Warna latar saat gambar memuat */
@@ -1811,25 +1815,25 @@
             <div id="main-menu" class="page">
                 <div id="category-grid" style="scroll-margin-top: 30px;">
                     <!-- Kartu Kategori akan di-generate oleh JavaScript -->
-                    <div class="category-card">
-                        <div class="category-card-image-wrapper skeleton"></div>
-                        <div class="category-card-content"><div class="skeleton" style="height: 20px; width: 80%; margin-bottom: 15px;"></div><div class="skeleton" style="height: 38px; width: 100%;"></div></div>
+                    <div class="category-card skeleton">
+                        <div class="category-card-image-wrapper skeleton-active"></div>
+                        <div class="category-card-content"><div class="skeleton-active" style="height: 20px; width: 80%; margin-bottom: 15px;"></div><div class="skeleton-active" style="height: 38px; width: 100%;"></div></div>
                     </div>
-                    <div class="category-card">
-                        <div class="category-card-image-wrapper skeleton"></div>
-                        <div class="category-card-content"><div class="skeleton" style="height: 20px; width: 80%; margin-bottom: 15px;"></div><div class="skeleton" style="height: 38px; width: 100%;"></div></div>
+                    <div class="category-card skeleton">
+                        <div class="category-card-image-wrapper skeleton-active"></div>
+                        <div class="category-card-content"><div class="skeleton-active" style="height: 20px; width: 80%; margin-bottom: 15px;"></div><div class="skeleton-active" style="height: 38px; width: 100%;"></div></div>
                     </div>
-                    <div class="category-card">
-                        <div class="category-card-image-wrapper skeleton"></div>
-                        <div class="category-card-content"><div class="skeleton" style="height: 20px; width: 80%; margin-bottom: 15px;"></div><div class="skeleton" style="height: 38px; width: 100%;"></div></div>
+                    <div class="category-card skeleton">
+                        <div class="category-card-image-wrapper skeleton-active"></div>
+                        <div class="category-card-content"><div class="skeleton-active" style="height: 20px; width: 80%; margin-bottom: 15px;"></div><div class="skeleton-active" style="height: 38px; width: 100%;"></div></div>
                     </div>
-                    <div class="category-card">
-                        <div class="category-card-image-wrapper skeleton"></div>
-                        <div class="category-card-content"><div class="skeleton" style="height: 20px; width: 80%; margin-bottom: 15px;"></div><div class="skeleton" style="height: 38px; width: 100%;"></div></div>
+                    <div class="category-card skeleton">
+                        <div class="category-card-image-wrapper skeleton-active"></div>
+                        <div class="category-card-content"><div class="skeleton-active" style="height: 20px; width: 80%; margin-bottom: 15px;"></div><div class="skeleton-active" style="height: 38px; width: 100%;"></div></div>
                     </div>
-                    <div class="category-card">
-                        <div class="category-card-image-wrapper skeleton"></div>
-                        <div class="category-card-content"><div class="skeleton" style="height: 20px; width: 80%; margin-bottom: 15px;"></div><div class="skeleton" style="height: 38px; width: 100%;"></div></div>
+                    <div class="category-card skeleton">
+                        <div class="category-card-image-wrapper skeleton-active"></div>
+                        <div class="category-card-content"><div class="skeleton-active" style="height: 20px; width: 80%; margin-bottom: 15px;"></div><div class="skeleton-active" style="height: 38px; width: 100%;"></div></div>
                     </div>
                 </div>
 
@@ -1989,7 +1993,7 @@
         <div class="container">
             <h3>Mendukung Berbagai Jenis Pembayaran</h3>
             <div id="payment-methods-container">
-                <div class="skeleton" style="width: 85%; height: 50px; margin: 0 auto; border-radius: 12px;"></div>
+                <div class="skeleton-active" style="width: 85%; height: 50px; margin: 0 auto; border-radius: 12px;"></div>
             </div>
         </div>
     </div>
@@ -2209,6 +2213,13 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             
+            // Mencegah klik kanan untuk inspect element
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                // Menampilkan notifikasi custom saat klik kanan
+                showNotification('Dilarang Mengintip!', 'Jangan intip-intip ya 😉');
+            });
+
             // Definisikan semua elemen yang akan dimanipulasi
             const mainMenu = document.getElementById('main-menu');
             const topHeader = document.querySelector('.top-header');
@@ -2404,8 +2415,8 @@
                     skeletonItem.className = 'feature-item';
                     skeletonItem.style.cssText = 'animation: none; background-color: transparent; box-shadow: none;';
                     skeletonItem.innerHTML = `
-                        <div class="feature-icon skeleton" style="width: 36px; height: 36px; border-radius: 15px; margin-bottom: 8px;"></div>
-                        <div class="skeleton" style="height: 10px; width: 80%; border-radius: 4px;"></div>`;
+                        <div class="feature-icon skeleton-active" style="width: 36px; height: 36px; border-radius: 15px; margin-bottom: 8px;"></div>
+                        <div class="skeleton-active" style="height: 10px; width: 80%; border-radius: 4px;"></div>`;
                     featuresGrid.appendChild(skeletonItem);
                 }
             }
@@ -2445,14 +2456,14 @@
                     skeletonCard.className = 'testimonial-skeleton-card';
                     skeletonCard.innerHTML = `
                         <div style="display: flex; align-items: center; gap: 15px;">
-                            <div class="skeleton" style="width: 50px; height: 50px; border-radius: 50%; flex-shrink: 0;"></div>
+                            <div class="skeleton-active" style="width: 50px; height: 50px; border-radius: 50%; flex-shrink: 0;"></div>
                             <div style="width: 100%;">
-                                <div class="skeleton" style="height: 18px; width: 60%; margin-bottom: 8px;"></div>
-                                <div class="skeleton" style="height: 16px; width: 40%;"></div>
+                                <div class="skeleton-active" style="height: 18px; width: 60%; margin-bottom: 8px;"></div>
+                                <div class="skeleton-active" style="height: 16px; width: 40%;"></div>
                             </div>
                         </div>
-                        <div class="skeleton" style="height: 16px; width: 100%; margin-top: 5px;"></div>
-                        <div class="skeleton" style="height: 16px; width: 80%;"></div>`;
+                        <div class="skeleton-active" style="height: 16px; width: 100%; margin-top: 5px;"></div>
+                        <div class="skeleton-active" style="height: 16px; width: 80%;"></div>`;
                     testimonialsGrid.appendChild(skeletonCard);
                 }
             }
@@ -2594,15 +2605,15 @@
                     skeletonItem.className = 'catalog-item';
                     skeletonItem.style.animation = 'none'; // Matikan animasi fade-in untuk skeleton
                     skeletonItem.innerHTML = `
-                        <div class="skeleton" style="width: 100%; aspect-ratio: 1 / 1; margin-bottom: 15px;"></div>
+                        <div class="skeleton-active" style="width: 100%; aspect-ratio: 1 / 1; margin-bottom: 15px;"></div>
                         <div class="catalog-item-details">
-                            <div class="skeleton" style="height: 20px; width: 70%; margin-bottom: 10px;"></div>
-                            <div class="skeleton" style="height: 16px; width: 50%; margin-bottom: 15px;"></div>
+                            <div class="skeleton-active" style="height: 20px; width: 70%; margin-bottom: 10px;"></div>
+                            <div class="skeleton-active" style="height: 16px; width: 50%; margin-bottom: 15px;"></div>
                             <div class="catalog-item-price-wrapper">
-                                <div class="skeleton" style="height: 24px; width: 40%; margin-bottom: 10px;"></div>
+                                <div class="skeleton-active" style="height: 24px; width: 40%; margin-bottom: 10px;"></div>
                             </div>
                             <div class="catalog-item-actions">
-                                <div class="skeleton" style="height: 40px; width: 100%;"></div>
+                                <div class="skeleton-active" style="height: 40px; width: 100%;"></div>
                             </div>
                         </div>
                     `;
@@ -3372,14 +3383,14 @@
                     skeletonCard.className = 'testimonial-skeleton-card';
                     skeletonCard.innerHTML = `
                         <div style="display: flex; align-items: center; gap: 15px;">
-                            <div class="skeleton" style="width: 50px; height: 50px; border-radius: 50%; flex-shrink: 0;"></div>
+                            <div class="skeleton-active" style="width: 50px; height: 50px; border-radius: 50%; flex-shrink: 0;"></div>
                             <div style="width: 100%;">
-                                <div class="skeleton" style="height: 18px; width: 60%; margin-bottom: 8px;"></div>
-                                <div class="skeleton" style="height: 16px; width: 40%;"></div>
+                                <div class="skeleton-active" style="height: 18px; width: 60%; margin-bottom: 8px;"></div>
+                                <div class="skeleton-active" style="height: 16px; width: 40%;"></div>
                             </div>
                         </div>
-                        <div class="skeleton" style="height: 16px; width: 100%; margin-top: 5px;"></div>
-                        <div class="skeleton" style="height: 16px; width: 80%;"></div>
+                        <div class="skeleton-active" style="height: 16px; width: 100%; margin-top: 5px;"></div>
+                        <div class="skeleton-active" style="height: 16px; width: 80%;"></div>
                     `;
                     testimonialsGrid.appendChild(skeletonCard);
                 }
