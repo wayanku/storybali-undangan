@@ -2726,13 +2726,12 @@
                         const itemToAdd = filteredItems.find(item => item.id === itemId);
 
                         // --- Animasi Terbang ke Keranjang ---
-                        const orderButton = this; // Tombol yang diklik
+                        const orderButton = this; // Tombol "Order" yang diklik
                         
                         // Cek dulu apakah item sudah ada di keranjang
                         const existingItem = shoppingCart.find(cartItem => cartItem.id === itemToAdd.id);
                         if (existingItem) {
                             // Jika sudah ada, hanya tampilkan notifikasi, jangan animasikan
-                            // PERUBAHAN: Panggil notifikasi dengan tombol custom
                             showNotification(
                                 'Sudah di Keranjang', 
                                 'Tema ini sudah ada di dalam keranjang belanja Anda.',
@@ -2745,13 +2744,14 @@
                             const buttonRect = orderButton.getBoundingClientRect();
                             const cartRect = cartIcon.getBoundingClientRect();
 
-                            const clone = document.createElement('div');
-                            clone.innerText = '1'; // Angka di dalam lingkaran
+                            const clone = document.createElement('div'); // Buat elemen div baru
+                            clone.innerText = '1'; // Isi dengan angka "1"
                             clone.classList.add('fly-to-cart-clone');
                             document.body.appendChild(clone);
 
                             // Atur posisi awal clone
-                            clone.style.cssText = `left: ${buttonRect.left + (buttonRect.width / 2) - 12}px; top: ${buttonRect.top + (buttonRect.height / 2) - 12}px;`;
+                            clone.style.left = `${buttonRect.left + (buttonRect.width / 2) - 12}px`;
+                            clone.style.top = `${buttonRect.top + (buttonRect.height / 2) - 12}px`;
 
                             // Paksa browser menggambar posisi awal sebelum transisi
                             requestAnimationFrame(() => {
