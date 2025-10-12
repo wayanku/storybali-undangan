@@ -1879,46 +1879,57 @@
         .popup-container {
             font-family: 'Poppins', sans-serif; /* Menggunakan font khusus untuk pop-up */
             background: linear-gradient(135deg, #D4AF37, #B8860B); /* [DIUBAH] Gradasi Emas Mewah */
-            border-radius: 25px;
-            padding: 12px;
+            border-radius: 20px; /* [DIUBAH] Sudut lebih kecil */
+            padding: 10px; /* [DIUBAH] Padding luar diperkecil */
             width: 90%;
-            max-width: 340px; /* [DIUBAH] Ukuran pop-up diperkecil lagi */
+            max-width: 280px; /* [DIUBAH] Ukuran pop-up diperkecil lagi */
             text-align: center;
             position: relative;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), inset 0 2px 2px rgba(255, 255, 255, 0.3);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
             border: 1px solid rgba(255,255,255,0.2);
-            transform: rotateY(-30deg) rotateX(15deg) scale(0.8);
-            transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            /* [DIUBAH] Transform awal diatur ulang untuk animasi baru */
+            transform: scale(0.8);
+            opacity: 0;
+            /* [DIUBAH] Transisi diubah untuk efek parallax dan kemunculan */
+            transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease-out;
+            /* [BARU] Menjaga gaya 3D untuk elemen anak */
+            transform-style: preserve-3d;
         }
         
         .corner-ribbon {
             position: absolute;
             top: -20px;
-            left: -20px; /* Dipindahkan ke kiri */
-            width: 110px;
+            left: -15px; /* [DIUBAH] Dipindahkan ke kiri */
+            width: 80px; /* [DIUBAH] Ukuran pita diperkecil */
             height: auto;
             z-index: 3;
             pointer-events: none;
-            /* transform: scaleX(-1); Dihapus agar gambar tidak terbalik */
+            /* [BARU] Efek 3D untuk pita */
+            transform: translateZ(60px);
+            transition: transform 0.2s ease-out;
         }
         
         .popup-overlay.show .popup-container {
-            transform: rotateY(0) rotateX(0) scale(1);
+            /* [DIUBAH] Transform diatur oleh JS, di sini hanya scale dan opacity */
+            transform: scale(1);
+            opacity: 1;
         }
 
         .popup-content {
             background-color: #f9f9f9;
-            border-radius: 18px;
-            padding: 25px 20px;
+            border-radius: 15px; /* [DIUBAH] Sudut lebih kecil */
+            padding: 12px; /* [DIUBAH] Padding diseragamkan dan diperkecil */
             box-shadow: inset 0 5px 15px rgba(0, 0, 0, 0.1);
             position: relative;
             z-index: 2;
             overflow: hidden;
+            /* [BARU] Efek 3D untuk konten utama */
+            transform: translateZ(20px);
         }
 
         .popup-title {
             font-family: 'Playfair Display', serif; /* [DIUBAH] Font judul menjadi lebih elegan */
-            font-size: 2rem; /* [DIUBAH] Ukuran disesuaikan untuk font baru */
+            font-size: 1.5rem; /* [DIUBAH] Ukuran disesuaikan untuk font baru */
             font-weight: 900;
             color: #333;
             margin: 0;
@@ -1930,7 +1941,7 @@
         }
 
         .discount-offer img {
-            max-width: 75%; /* [DIUBAH] Lebar gambar diperkecil sedikit */
+            max-width: 60%; /* [DIUBAH] Lebar gambar diperkecil sedikit */
             height: auto;
         }
 
@@ -1940,7 +1951,7 @@
 
         /* [BARU] Styling untuk animasi harga di dalam pop-up */
         .price-animation-container {
-            margin: 10px 0 15px 0;
+            margin: 8px 0 10px 0; /* [DIUBAH] Margin diperkecil */
             display: flex;
             flex-direction: column;
             gap: 8px;
@@ -1949,8 +1960,8 @@
         .price-row-popup {
             display: flex;
             align-items: center;
-            gap: 10px;
-            font-size: 1rem; /* [DIUBAH] Ukuran font harga diperkecil */
+            gap: 8px; /* [DIUBAH] Jarak diperkecil */
+            font-size: 0.8rem; /* [DIUBAH] Ukuran font harga diperkecil */
             color: #555;
         }
         .original-price-popup {
@@ -1962,7 +1973,7 @@
         .final-price-popup {
             font-weight: 700;
             color: #e53e3e;
-            font-size: 1.1rem; /* [DIUBAH] Ukuran font diperkecil */
+            font-size: 0.85rem; /* [DIUBAH] Ukuran font diperkecil */
         }
         .arrow-popup {
             font-weight: 700;
@@ -1970,10 +1981,10 @@
         }
         
         .popup-subtitle {
-            font-size: 1rem;
+            font-size: 0.8rem; /* [DIUBAH] Ukuran font diperkecil */
             color: #666;
             /* Margin disesuaikan */
-            margin: 15px 0 15px 0;
+            margin: 10px 0; /* [DIUBAH] Margin diperkecil */
             font-weight: 400;
         }
 
@@ -1981,7 +1992,7 @@
             display: flex;
             justify-content: center;
             gap: 10px;
-            margin: 20px 0;
+            margin: 12px 0; /* [DIUBAH] Margin diperkecil */
         }
 
         .time-segment {
@@ -1992,12 +2003,12 @@
 
         .time-number {
             background-color: #2c3e50;
-            color: #ffffff;
-            font-size: 1.6rem; /* [DIUBAH] Ukuran angka timer diperkecil lagi */
+            color: #ffffff; /* [DIUBAH] Ukuran angka timer diperkecil lagi */
+            font-size: 1.3rem; /* [DIUBAH] Ukuran angka timer diperkecil lagi */
             font-weight: 700;
-            padding: 6px; /* [DIUBAH] Padding diperkecil */
+            padding: 4px; /* [DIUBAH] Padding diperkecil */
             border-radius: 6px;
-            min-width: 45px;
+            min-width: 35px; /* [DIUBAH] Lebar minimum diperkecil */
             box-shadow: 0 4px 10px rgba(0,0,0,0.2);
         }
 
@@ -2010,11 +2021,11 @@
 
         .popup-button {
             background: linear-gradient(180deg, #ff6b6b, #ee4b4b); /* [DIUBAH] Gradasi Merah Segar */
-            color: white; 
-            padding: 12px 28px; /* [DIUBAH] Ukuran tombol diperkecil lagi */
+            color: white; /* [DIUBAH] Ukuran tombol diperkecil lagi */
             border: none;
-            border-radius: 50px;
-            font-size: 1rem; /* [DIUBAH] Ukuran font tombol diperkecil lagi */
+            border-radius: 50px; /* [DIUBAH] Ukuran font tombol diperkecil lagi */
+            padding: 8px 20px; /* [DIUBAH] Ukuran tombol diperkecil lagi */
+            font-size: 0.8rem; /* [DIUBAH] Ukuran font tombol diperkecil lagi */
             font-weight: 700;
             cursor: pointer;
             text-transform: uppercase;
@@ -2044,14 +2055,14 @@
 
         .close-button {
             position: absolute;
-            top: -15px;
-            right: -15px;
-            width: 40px;
-            height: 40px;
+            top: -10px; /* [DIUBAH] Posisi disesuaikan */
+            right: -10px; /* [DIUBAH] Posisi disesuaikan */
+            width: 32px; /* [DIUBAH] Ukuran diperkecil */
+            height: 32px;
             background: white;
             border-radius: 50%;
             color: #B8860B; /* [DIUBAH] Warna Ikon 'x' menjadi Emas Tua */
-            font-size: 24px;
+            font-size: 20px; /* [DIUBAH] Ukuran ikon diperkecil */
             font-weight: 700;
             display: flex;
             justify-content: center;
@@ -2060,6 +2071,8 @@
             box-shadow: 0 5px 10px rgba(0,0,0,0.2);
             transition: transform 0.2s, background-color 0.2s;
             z-index: 10;
+            /* [BARU] Efek 3D untuk tombol tutup */
+            transform: translateZ(80px);
         }
         .close-button:hover{
             transform: scale(1.1) rotate(90deg);
@@ -2068,54 +2081,19 @@
 
         /* [BARU] Penyesuaian untuk layar kecil (Ponsel) */
         @media (max-width: 400px) {
-            .popup-container {
-                max-width: 300px; /* [DIUBAH] Perkecil lebar maksimal kotak pop-up */
-            }
-            .corner-ribbon {
-                width: 80px; /* [DIUBAH] Perkecil ukuran gambar pita */
-                top: -15px;
-                left: -15px;
-            }
-            .close-button {
-                width: 32px; /* [DIUBAH] Perkecil tombol tutup */
-                height: 32px;
-                font-size: 20px;
-            }
-            .popup-content {
-                padding: 10px; /* [DIUBAH] Kurangi padding internal lebih banyak */
-            }
-            .popup-title {
-                font-size: 1.6rem; /* [DIUBAH] Ukuran disesuaikan untuk font baru di mobile */
-            }
-            .discount-offer {
-                font-size: 3.5rem; /* [DIUBAH] Perkecil angka diskon */
-                margin: 5px 0;
-            }
-            .discount-offer span {
-                font-size: 1.6rem; /* [DIUBAH] Perkecil simbol persen */
-            }
-            .price-animation-container {
-                margin: 5px 0 8px 0; /* [DIUBAH] Kurangi margin */
-            }
-            .price-row-popup {
-                font-size: 0.75rem; /* [DIUBAH] Perkecil font harga */
-            }
-            .popup-subtitle {
-                font-size: 0.8rem; /* [DIUBAH] Perkecil subjudul */
-                margin: 10px 0;
-            }
-            .countdown-timer {
-                margin: 10px 0; /* [DIUBAH] Kurangi margin */
-            }
-            .time-number {
-                font-size: 1.1rem; /* [DIUBAH] Perkecil angka timer */
-                padding: 5px;
-                min-width: 34px;
-            }
-            .popup-button {
-                padding: 8px 20px; /* [DIUBAH] Perkecil tombol */
-                font-size: 0.8rem;
-            }
+            .popup-container { max-width: 240px; } /* [DIUBAH] Perkecil lebar maksimal kotak pop-up */
+            .corner-ribbon { width: 70px; top: -15px; left: -15px; } /* [DIUBAH] Perkecil ukuran gambar pita */
+            .close-button { width: 30px; height: 30px; font-size: 18px; } /* [DIUBAH] Perkecil tombol tutup */
+            .popup-content { padding: 12px; } /* [DIUBAH] Kurangi padding internal lebih banyak */
+            .popup-title { font-size: 1.4rem; } /* [DIUBAH] Ukuran disesuaikan untuk font baru di mobile */
+            .discount-offer { margin: 5px 0; } /* [DIUBAH] Perkecil angka diskon */
+            .discount-offer img { max-width: 55%; } /* [DIUBAH] Perkecil gambar diskon */
+            .price-animation-container { margin: 8px 0 10px 0; } /* [DIUBAH] Kurangi margin */
+            .price-row-popup { font-size: 0.75rem; } /* [DIUBAH] Perkecil font harga */
+            .popup-subtitle { font-size: 0.75rem; margin: 10px 0; } /* [DIUBAH] Perkecil subjudul */
+            .countdown-timer { margin: 12px 0; gap: 8px; } /* [DIUBAH] Kurangi margin */
+            .time-number { font-size: 1rem; padding: 4px; min-width: 28px; } /* [DIUBAH] Perkecil angka timer */
+            .popup-button { padding: 7px 16px; font-size: 0.7rem; } /* [DIUBAH] Perkecil tombol */
         }
 
     </style>
@@ -3995,6 +3973,8 @@
             const actionButton = document.getElementById('actionButton');
             // [BARU] Elemen untuk banner di header
             const discountBanner = document.getElementById('claimed-discount-banner');
+            // [BARU] Elemen untuk parallax
+            const popupContainer = document.querySelector('.popup-container');
             const topHeader = document.querySelector('.top-header');
             let countdownFunction = null; // Deklarasikan di luar agar bisa diakses
             let isClaimed = false; // Status klaim
@@ -4102,6 +4082,31 @@
             actionButton.addEventListener('click', function(event) {
                 event.preventDefault(); // Mencegah link berpindah halaman
                 claimAndClose(); // [DIUBAH] Memanggil fungsi terpusat
+            });
+
+            // --- [BARU] Logika untuk Efek Parallax 3D pada Pop-up ---
+            popupOverlay.addEventListener('mousemove', (e) => {
+                if (!popupOverlay.classList.contains('show')) return;
+
+                const { clientX, clientY } = e;
+                const { offsetWidth, offsetHeight } = popupContainer;
+                const rect = popupContainer.getBoundingClientRect();
+
+                // Hitung posisi mouse relatif terhadap tengah pop-up
+                const x = clientX - rect.left - offsetWidth / 2;
+                const y = clientY - rect.top - offsetHeight / 2;
+
+                // Tentukan seberapa besar efek rotasi yang diinginkan
+                const rotateY = (x / (offsetWidth / 2)) * 10; // Rotasi maks 10 derajat
+                const rotateX = -(y / (offsetHeight / 2)) * 10; // Rotasi maks 10 derajat
+
+                // Terapkan transformasi ke container pop-up
+                popupContainer.style.transform = `scale(1) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+            });
+
+            // Reset transformasi saat mouse meninggalkan area pop-up
+            popupOverlay.addEventListener('mouseleave', () => {
+                popupContainer.style.transform = 'scale(1) rotateX(0deg) rotateY(0deg)';
             });
         });
     </script>
