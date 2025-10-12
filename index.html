@@ -30,6 +30,7 @@
     <link rel="preconnect" href="https://github.com">
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@900&display=swap" rel="stylesheet">
     
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-09HEX1NR8E"></script>
@@ -169,6 +170,7 @@
             align-items: center;
             gap: 10px;
             font-family: 'Poppins', sans-serif;
+            box-sizing: border-box; /* [BARU] Memastikan padding tidak menambah lebar */
             text-shadow: 1px 1px 3px rgba(0,0,0,0.3); /* [BARU] Shadow pada teks */
             animation: banner-pulse 2s ease-in-out infinite; /* [BARU] Animasi denyut halus */
         }
@@ -1907,26 +1909,25 @@
         }
 
         .popup-title {
-            font-size: 1.8rem; /* [DIUBAH] Ukuran judul diperkecil lagi */
+            font-family: 'Playfair Display', serif; /* [DIUBAH] Font judul menjadi lebih elegan */
+            font-size: 2rem; /* [DIUBAH] Ukuran disesuaikan untuk font baru */
             font-weight: 900;
             color: #333;
             margin: 0;
         }
 
         .discount-offer {
-            font-size: 5rem; /* [DIUBAH] Ukuran angka diskon diperkecil lagi */
-            font-weight: 900;
             margin: 10px 0; /* Sedikit menambah margin */
-            background: linear-gradient(45deg, #432818, #6f4e37); /* [DIUBAH] Gradasi Coklat Tua */
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            text-shadow: none; /* Shadow dihilangkan agar teks lebih tajam */
+            line-height: 0; /* Menghilangkan spasi ekstra */
+        }
+
+        .discount-offer img {
+            max-width: 75%; /* [DIUBAH] Lebar gambar diperkecil sedikit */
+            height: auto;
         }
 
         .discount-offer span {
-            font-size: 2.5rem; /* [DIUBAH] Ukuran persen diperkecil */
-            vertical-align: middle;
+            /* Tidak lagi digunakan karena diganti gambar */
         }
 
         /* [BARU] Styling untuk animasi harga di dalam pop-up */
@@ -2076,7 +2077,7 @@
                 padding: 10px; /* [DIUBAH] Kurangi padding internal lebih banyak */
             }
             .popup-title {
-                font-size: 1.3rem; /* [DIUBAH] Perkecil judul */
+                font-size: 1.6rem; /* [DIUBAH] Ukuran disesuaikan untuk font baru di mobile */
             }
             .discount-offer {
                 font-size: 3.5rem; /* [DIUBAH] Perkecil angka diskon */
@@ -2560,12 +2561,14 @@
     <!-- HTML untuk Pop-up Diskon -->
     <div id="discountPopup" class="popup-overlay">
         <div class="popup-container">
-            <img src="https://i.postimg.cc/NjYdJZ0v/tl-1.webp" alt="Pita Diskon" class="corner-ribbon">
+            <img src="https://github.com/wayanku/storybali-undangan/blob/main/sosial%20media/lonceng%20diskon.webp?raw=true" alt="Pita Diskon" class="corner-ribbon">
             
             <div id="closePopup" class="close-button">&times;</div>
             <div class="popup-content">
                 <h2 class="popup-title">DISKON</h2>
-                <div id="discountOffer" class="discount-offer">50<span>%</span></div>
+                <div id="discountOffer" class="discount-offer">
+                    <img src="https://github.com/wayanku/storybali-undangan/blob/main/sosial%20media/gambar%20diskon%2050%25.webp?raw=true" alt="Diskon 50%">
+                </div>
                 
                 <!-- [BARU] Kontainer untuk animasi harga -->
                 <div class="price-animation-container">
@@ -3950,25 +3953,13 @@
                 document.body.style.overflow = 'auto'; // Kembalikan fungsi scroll
             }
 
-            // [DIUBAH] Tampilkan pop-up jika belum diklaim
-            if (!isClaimed) {
-                setTimeout(showPopup, 3000);
-            }
-            // Mulai countdown
-            countdownFunction = setInterval(startCountdown, 1000);
-
-            closeButton.addEventListener('click', closePopup);
-            popupOverlay.addEventListener('click', function(event) {
-                if (event.target === popupOverlay) {
+            // [BARU] Fungsi terpusat untuk mengklaim diskon dan menutup pop-up
+            function claimAndClose() {
+                if (isClaimed) {
+                    // Jika sudah diklaim, cukup tutup pop-up
                     closePopup();
+                    return;
                 }
-            });
-
-            // Menambahkan event listener untuk tombol "Klaim Sekarang"
-            actionButton.addEventListener('click', function(event) {
-                event.preventDefault(); // Mencegah link berpindah halaman
-                
-                if (isClaimed) return; // Jangan lakukan apa-apa jika sudah diklaim
 
                 isClaimed = true;
 
@@ -3980,6 +3971,26 @@
 
                 // 3. Sesuaikan padding header agar konten tidak tertimpa
                 topHeader.style.paddingTop = '0';
+            }
+
+            // [DIUBAH] Tampilkan pop-up jika belum diklaim
+            if (!isClaimed) {
+                setTimeout(showPopup, 3000);
+            }
+            // Mulai countdown
+            countdownFunction = setInterval(startCountdown, 1000);
+
+            closeButton.addEventListener('click', claimAndClose); // [DIUBAH] Tombol 'X' sekarang juga mengklaim diskon
+            popupOverlay.addEventListener('click', function(event) {
+                if (event.target === popupOverlay) {
+                    closePopup();
+                }
+            });
+
+            // Menambahkan event listener untuk tombol "Klaim Sekarang"
+            actionButton.addEventListener('click', function(event) {
+                event.preventDefault(); // Mencegah link berpindah halaman
+                claimAndClose(); // [DIUBAH] Memanggil fungsi terpusat
             });
         });
     </script>
