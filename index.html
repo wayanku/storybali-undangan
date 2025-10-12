@@ -2115,6 +2115,42 @@
         }
 
     </style>
+    <style>
+        /* --- Styling untuk Notifikasi "Social Proof" --- */
+        .toast-notification {
+            position: fixed;
+            bottom: -100px; /* Mulai dari posisi tersembunyi di bawah layar */
+            left: 20px;
+            z-index: 1050; /* Di atas social float, di bawah modal */
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 12px 18px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            border: 1px solid var(--card-border);
+            max-width: 320px;
+            width: calc(100% - 40px);
+            opacity: 0;
+            transition: bottom 0.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.5s ease;
+            pointer-events: none; /* Agar tidak bisa diklik */
+        }
+
+        .toast-notification.show {
+            bottom: 100px; /* Posisi saat terlihat (di atas navigasi bawah) */
+            opacity: 1;
+        }
+
+        .toast-icon { flex-shrink: 0; }
+        .toast-icon svg { width: 24px; height: 24px; fill: var(--accent-color); }
+        .toast-content { text-align: left; }
+        .toast-message { font-size: 0.9em; font-weight: 500; color: var(--primary-text); margin: 0; }
+        .toast-time { font-size: 0.8em; color: var(--secondary-text); margin-top: 2px; display: block; }
+        @media (max-width: 480px) {
+            .toast-notification.show { bottom: 90px; left: 15px; width: calc(100% - 30px); }
+        }
+    </style>
 </head>
 <body>
 
@@ -2605,6 +2641,18 @@
             </div>
         </div>
     </div>
+
+    <!-- [BARU] Social Proof Notification -->
+    <div id="social-proof-toast" class="toast-notification">
+        <div class="toast-icon">
+            <svg viewBox="0 0 24 24"><path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M11,16.5L6.5,12L7.91,10.59L11,13.67L16.59,8.09L18,9.5L11,16.5Z" /></svg>
+        </div>
+        <div class="toast-content">
+            <p id="toast-message" class="toast-message">Seseorang dari Denpasar baru saja memesan.</p>
+            <span id="toast-time" class="toast-time">beberapa detik yang lalu</span>
+        </div>
+    </div>
+
 
     <!-- JavaScript untuk Fungsionalitas Ajaib -->
     <script>
@@ -3879,6 +3927,44 @@
             loadPaymentMethods(); // Memuat gambar pembayaran dengan efek skeleton
             updateCartUI(); // PERBAIKAN: Panggil updateCartUI saat halaman dimuat
             // loadTestimonials(); // Aktifkan ini jika ingin memuat dari Google Sheets
+        });
+
+        // --- [BARU] Logika untuk Social Proof Notification ---
+        document.addEventListener('DOMContentLoaded', function() {
+            const toast = document.getElementById('social-proof-toast');
+            const toastMessage = document.getElementById('toast-message');
+
+            // Data dummy untuk notifikasi
+            const locations = ["Denpasar", "Badung", "Gianyar", "Tabanan", "Jakarta", "Surabaya", "Singaraja"];
+            const themes = ["Pernikahan Bali", "Metatah", "Ulang Tahun", "Pernikahan Muslim"];
+
+            function showSocialProof() {
+                // Pilih data acak
+                const randomLocation = locations[Math.floor(Math.random() * locations.length)];
+                const randomTheme = themes[Math.floor(Math.random() * themes.length)];
+
+                // Buat pesan
+                toastMessage.textContent = `Seseorang dari ${randomLocation} baru saja memesan tema ${randomTheme}.`;
+
+                // Tampilkan notifikasi
+                toast.classList.add('show');
+
+                // Sembunyikan setelah beberapa detik
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 5000); // Notifikasi akan terlihat selama 5 detik
+            }
+
+            // Fungsi untuk memulai interval notifikasi
+            function startNotificationLoop() {
+                // Tampilkan notifikasi pertama setelah 15 detik
+                setTimeout(showSocialProof, 15000);
+
+                // Ulangi setiap 20-35 detik (interval acak)
+                setInterval(showSocialProof, Math.floor(Math.random() * (35000 - 20000 + 1)) + 20000);
+            }
+
+            startNotificationLoop();
         });
 
         // --- Logika untuk Pop-up Diskon ---
