@@ -7,7 +7,7 @@
     <meta name="description" content="Storybali Undangan menyediakan undangan digital premium untuk pernikahan, metatah, ulang tahun, dan acara lainnya di Bali. Desain elegan dan modern.">
     <meta name="keywords" content="undangan digital, undangan bali, undangan pernikahan, undangan metatah, undangan online, e-invitation">
     <meta name="author" content="Storybali Undangan">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Favicon (ikon di tab browser) -->
     <link rel="icon" href="https://wayanku.github.io/storybali-undangan/IMG_6302%20(2).JPG" type="image/x-icon">
@@ -53,10 +53,10 @@
             /* --- Light Mode (Default) --- */
             --bg-color: #e5e7eb;
             --card-bg: #ffffff;
-            --card-border: #d1d5db;
+            --card-border: #d1d5db; 
             --primary-text: #49563B;
-            --secondary-text: #808D7B;
-            --accent-color: #748873; /* Warna hijau baru sesuai permintaan */
+            --secondary-text: #54614A; /* [FIX] Warna digelapkan untuk kontras (sebelumnya #808D7B) */
+            --accent-color: #6A7C69; /* [FIX] Warna digelapkan untuk kontras tombol (sebelumnya #748873) */
             --accent-hover: #627661; /* Warna hover yang disesuaikan */
 
             /* --- Dark Mode --- */
@@ -988,7 +988,7 @@
         }
 
         .category-card-title {
-            margin: 0;
+            margin: 0; 
             font-size: 1em;
             font-weight: 600;
             color: var(--primary-text);
@@ -2198,11 +2198,13 @@
         <div class="container">
             <div class="header-content">
                 <h1>Storybali Undangan</h1>
-                <h2 style="color: var(--secondary-text);">Pilih Kategori Undangan Impian Anda</h2>
+                <h2>Pilih Kategori Undangan Impian Anda</h2>
             </div>
 
             <div id="main-menu" class="page">
-                <div id="category-grid" style="scroll-margin-top: 30px;">
+                <!-- [FIX] Menambahkan h3 untuk urutan heading yang benar -->
+                <h3 style="font-size: 1.4em; font-weight: 600; margin-bottom: 25px; color: var(--primary-text);">Kategori Undangan</h3>
+                <div id="category-grid">
                     <!-- Kartu Kategori akan di-generate oleh JavaScript -->
                     <div class="category-card skeleton">
                         <div class="category-card-image-wrapper skeleton-active"></div>
@@ -2842,7 +2844,7 @@
                                 <img src="${cat.image}" class="category-card-image" loading="lazy" decoding="async" alt="Kategori ${cat.name}">
                             </div>
                             <div class="category-card-content">
-                                <h4 class="category-card-title">${cat.name}</h4>
+                                <h5 class="category-card-title">${cat.name}</h5>
                                 <button class="category-button">Lihat Jenis Tema</button>
                             </div>
                         `;
@@ -3706,7 +3708,7 @@
             // Fungsi handler untuk klik kategori, dipisahkan agar bisa dipasang ulang
             function handleCategoryClick(event) {
                 const categoryCard = this.closest('.category-card');
-                const categoryName = categoryCard.querySelector('.category-card-title').textContent;
+                const categoryName = categoryCard.querySelector('h5.category-card-title').textContent;
                 themeTitle.textContent = `Pilihan Tema ${categoryName}`;
                 updateActiveNav(categoryName); // Sinkronisasi navigasi
                 history.pushState({page: 'catalog'}, `Katalog - ${categoryName}`, '#katalog');
