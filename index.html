@@ -25,9 +25,10 @@
     <!-- Impor Font Premium dari Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <!-- Preconnect ke domain gambar untuk mempercepat pemuatan -->
-    <link rel="preconnect" href="https://raw.githubusercontent.com">
-    <link rel="preconnect" href="https://github.com">
+    <!-- [FIX] Preconnect ke domain gambar pihak ketiga yang penting -->
+    <link rel="preconnect" href="https://fastly.picsum.photos">
+    <link rel="preconnect" href="https://i.pravatar.cc">
+
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@900&display=swap" rel="stylesheet">
@@ -53,11 +54,11 @@
             /* --- Light Mode (Default) --- */
             --bg-color: #e5e7eb;
             --card-bg: #ffffff;
-            --card-border: #d1d5db; 
+            --card-border: #d1d5db;
             --primary-text: #49563B;
-            --secondary-text: #54614A; /* [FIX] Warna digelapkan untuk kontras (sebelumnya #808D7B) */
-            --accent-color: #6A7C69; /* [FIX] Warna digelapkan untuk kontras tombol (sebelumnya #748873) */
-            --accent-hover: #627661; /* Warna hover yang disesuaikan */
+            --secondary-text: #4A553E; /* [FIX] Digelapkan lagi untuk kontras footer (sebelumnya #54614A) */
+            --accent-color: #5A6B59; /* [FIX] Digelapkan untuk kontras tombol & fitur (sebelumnya #6A7C69) */
+            --accent-hover: #4E5C4D; /* [FIX] Disesuaikan dengan warna aksen baru */
 
             /* --- Dark Mode --- */
             --dark-bg: #1f2937;
@@ -988,7 +989,7 @@
         }
 
         .category-card-title {
-            margin: 0; 
+            margin: 0;
             font-size: 1em;
             font-weight: 600;
             color: var(--primary-text);
@@ -2189,7 +2190,14 @@
     <!-- Kontainer Gambar Sampul -->
     <div class="cover-image-container skeleton">
         <!-- Gambar-gambar untuk slideshow -->
-        <img src="https://wayanku.github.io/storybali-undangan/foto%20nikah%202,foto%20nikah1,foto%20nikah%203/foto%20nikah1.webp" alt="Foto Pernikahan 1" class="cover-slide active-slide" loading="eager" decoding="async">
+        <!-- [FIX] Menggunakan <picture> untuk gambar LCP dan menambahkan fetchpriority -->
+        <picture>
+            <!-- Sediakan versi gambar yang lebih kecil untuk mobile jika ada -->
+            <!-- <source media="(max-width: 600px)" srcset="path/to/small-image.webp"> -->
+            <!-- Gambar default -->
+            <img src="https://wayanku.github.io/storybali-undangan/foto%20nikah%202,foto%20nikah1,foto%20nikah%203/foto%20nikah1.webp" alt="Foto Pernikahan 1" class="cover-slide active-slide" loading="eager" decoding="async" fetchpriority="high">
+        </picture>
+        <!-- Gambar slideshow lainnya bisa tetap menggunakan <img> dengan lazy loading -->
         <img src="https://wayanku.github.io/storybali-undangan/foto%20nikah%202,foto%20nikah1,foto%20nikah%203/foto%20nikah%202.webp" alt="Foto Pernikahan 2" class="cover-slide" loading="lazy" decoding="async">
         <img src="https://wayanku.github.io/storybali-undangan/foto%20nikah%202,foto%20nikah1,foto%20nikah%203/foto%20nikah%203.webp" alt="Foto Pernikahan 3" class="cover-slide" loading="lazy" decoding="async">
     </div>
@@ -2840,11 +2848,15 @@
                         card.className = 'category-card';
                         card.style.animationDelay = `${index * 0.1}s`;
                         card.innerHTML = `
-                            <div class="category-card-image-wrapper">
-                                <img src="${cat.image}" class="category-card-image" loading="lazy" decoding="async" alt="Kategori ${cat.name}">
-                            </div>
+                            <!-- [FIX] Menggunakan <picture> untuk gambar kategori -->
+                            <picture class="category-card-image-wrapper">
+                                <!-- Sediakan format AVIF/WebP jika ada -->
+                                <!-- <source type="image/webp" srcset="path/to/image.webp"> -->
+                                <!-- Gambar fallback (JPG/PNG) -->
+                                <img src="${cat.image}" class="category-card-image" loading="lazy" decoding="async" alt="Kategori ${cat.name}" width="200" height="200">
+                            </picture>
                             <div class="category-card-content">
-                                <h5 class="category-card-title">${cat.name}</h5>
+                                <h4 class="category-card-title">${cat.name}</h4>
                                 <button class="category-button">Lihat Jenis Tema</button>
                             </div>
                         `;
@@ -3708,7 +3720,7 @@
             // Fungsi handler untuk klik kategori, dipisahkan agar bisa dipasang ulang
             function handleCategoryClick(event) {
                 const categoryCard = this.closest('.category-card');
-                const categoryName = categoryCard.querySelector('h5.category-card-title').textContent;
+                const categoryName = categoryCard.querySelector('h4.category-card-title').textContent;
                 themeTitle.textContent = `Pilihan Tema ${categoryName}`;
                 updateActiveNav(categoryName); // Sinkronisasi navigasi
                 history.pushState({page: 'catalog'}, `Katalog - ${categoryName}`, '#katalog');
