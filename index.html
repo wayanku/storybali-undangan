@@ -29,9 +29,12 @@
     <link rel="preconnect" href="https://fastly.picsum.photos">
     <link rel="preconnect" href="https://i.pravatar.cc">
 
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@900&display=swap" rel="stylesheet">
+    <!-- [OPTIMIZATION] Menggabungkan semua permintaan font menjadi satu untuk mengurangi latensi jaringan -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:wght@900&family=Poppins:wght@400;700;900&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <!-- Fallback for browsers with JavaScript disabled -->
+    <noscript>
+      <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:wght@900&family=Poppins:wght@400;700;900&display=swap" rel="stylesheet">
+    </noscript>
 
     <!-- [BARU] Preload gambar untuk pop-up diskon agar tidak lambat muncul -->
     <link rel="preload" href="https://wayanku.github.io/storybali-undangan/sosial%20media/lonceng%20diskon.webp" as="image">
@@ -2398,7 +2401,8 @@
     </div>
 
     <!-- Footer Hak Cipta (dipindahkan ke sini) -->
-    <div class="container" style="padding-bottom: 30px; padding-top: 20px;">
+    <!-- [FIX] Menambahkan background-color agar kontras footer benar -->
+    <div class="container" style="padding-bottom: 30px; padding-top: 20px; background-color: var(--bg-color); width: 100%;">
         <footer class="footer">
             &copy; 2024 Storybali Undangan. All Rights Reserved.
         </footer>
