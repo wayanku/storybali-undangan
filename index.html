@@ -10,7 +10,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Favicon (ikon di tab browser) -->
-    <link rel="icon" href="https://wayanku.github.io/storybali-undangan/IMG_6302%20(2).JPG" type="image/x-icon">
+    <!-- [DIUBAH] Menggunakan set ikon lengkap dari generator -->
+    <link rel="apple-touch-icon" sizes="180x180" href="https://wayanku.github.io/storybali-undangan/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="https://wayanku.github.io/storybali-undangan/icons/favicon-96x96.png">
+    <link rel="icon" href="https://wayanku.github.io/storybali-undangan/icons/favicon.ico">
+    <link rel="icon" type="image/svg+xml" href="https://wayanku.github.io/storybali-undangan/icons/favicon.svg">
 
     <!-- Open Graph Meta Tags (untuk tampilan saat share di media sosial) -->
     <meta property="og:title" content="Storybali Undangan - Undangan Digital Bali">
@@ -18,6 +22,11 @@
     <meta property="og:image" content="https://wayanku.github.io/storybali-undangan/IMG_6302%20(2).JPG">
     <meta property="og:url" content="https://your-website-url.com"> <!-- GANTI DENGAN URL WEBSITE ANDA NANTI -->
     <meta property="og:type" content="website">
+
+    <!-- [DIUBAH] Menggunakan file manifest standar dari generator -->
+    <link rel="manifest" href="site.webmanifest">
+    <!-- Warna tema untuk address bar browser di mobile -->
+    <meta name="theme-color" content="#5A6B59">
 
     <!-- Google Site Verification Tag -->
     <meta name="google-site-verification" content="g8-s5Mbu3DeWRHtXBt80kARydxNiS1a_XnmNfdyePkI" />
@@ -935,10 +944,7 @@
             color: var(--secondary-text);
             animation: fadeIn 1s 1s ease-out forwards;
             opacity: 0;
-        }
-
-        /* --- Styling untuk Grid Kategori di Halaman Utama --- */
-        #category-grid {
+        }/* --- Styling untuk Grid Kategori di Halaman Utama --- */#category-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 18px; 
@@ -1661,6 +1667,33 @@
             -webkit-mask: linear-gradient(90deg, transparent, white 20%, white 80%, transparent);
             mask: linear-gradient(90deg, transparent, white 20%, white 80%, transparent);
         }
+        /* [BARU] Tombol navigasi untuk slider testimoni */
+        .testimonial-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            border: 1px solid var(--card-border);
+            cursor: pointer;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .testimonial-nav:hover { transform: translateY(-50%) scale(1.1); box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
+        .testimonial-nav svg { width: 24px; height: 24px; fill: var(--primary-text); }
+        #testimonial-prev { left: -20px; }
+        #testimonial-next { right: -20px; }
+        /* Sembunyikan tombol di mobile */
+        @media (max-width: 540px) {
+            .testimonial-nav { display: none; }
+        }
+
     </style>
     <style>
         /* Skeleton untuk Testimoni */
@@ -1679,14 +1712,28 @@
 
 
     <style>
+        /* [DIUBAH] CSS untuk slider testimoni, bukan lagi marquee */
         .testimonials-grid {
             display: flex; /* Menggunakan flexbox untuk item berdampingan */
             gap: 20px;
-            animation: scroll 40s linear infinite; /* Durasi animasi disesuaikan */
+            /* Hapus animasi */
+            /* animation: scroll 40s linear infinite; */
+            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            cursor: grab; /* [BARU] Indikator bahwa slider bisa di-drag */
         }
-        .testimonials-scroller:hover .testimonials-grid {
-            animation-play-state: paused; /* Jeda animasi saat kursor di atasnya */
+        .testimonials-grid.grabbing {
+            cursor: grabbing;
         }
+        /* [BARU] Indikator titik untuk slider testimoni */
+        .testimonial-dots {
+            text-align: center;
+            margin-top: 25px;
+        }
+        .testimonial-dot {
+            display: inline-block;
+            width: 10px; height: 10px; border-radius: 50%; background-color: var(--card-border); margin: 0 5px; cursor: pointer; transition: background-color 0.3s, transform 0.3s;
+        }
+        .testimonial-dot.active { background-color: var(--accent-color); transform: scale(1.2); }
     </style>
     <style>
         /* --- Styling untuk Bagian Metode Pembayaran --- */
@@ -1765,6 +1812,12 @@
             transition: stroke 0.25s ease;
         }
 
+        /* [BARU] Sembunyikan ikon 'filled' secara default */
+        .floating-nav a .icon-filled {
+            display: none;
+            fill: var(--accent-text-color); /* Warna ikon saat aktif */
+        }
+
         /* --- CSS untuk Indikator Loading (Spinner) --- */
         .loading-spinner {
             position: absolute;
@@ -1801,10 +1854,21 @@
 
         /* Style untuk tombol navigasi yang aktif */
         .floating-nav a.active {
-            background-color: var(--accent-color);
+            /* [DIUBAH] Menggunakan background gradasi halus */
+            background: var(--accent-color);
             color: var(--accent-text-color);
+            transform: translateY(-4px); /* Sedikit terangkat */
+            box-shadow: 0 8px 20px rgba(73, 86, 59, 0.2);
         }
-        .floating-nav a.active svg { stroke: var(--accent-text-color); }
+        .floating-nav a.active .icon-outline {
+            display: none; /* Sembunyikan ikon outline saat aktif */
+        }
+        .floating-nav a.active .icon-filled {
+            display: block; /* Tampilkan ikon filled saat aktif */
+        }
+        .floating-nav a.active svg { 
+            stroke: none; /* Hapus stroke untuk ikon filled */
+        }
 
         /* --- Aksesibilitas: Mengurangi Gerakan untuk Pengguna yang Membutuhkan --- */
         @media (prefers-reduced-motion: reduce) {
@@ -1851,10 +1915,7 @@
         body.checkout-active {
             background-color: var(--bg-color);
         }
-    </style>
-    <style>
-        /* --- CSS untuk Pop-up Diskon --- */
-        .popup-overlay {
+    </style><style>/* --- CSS untuk Pop-up Diskon --- */.popup-overlay {
             position: fixed;
             top: 0;
             left: 0;
@@ -2083,9 +2144,7 @@
         @media (max-width: 400px) {
             .popup-container { max-width: 240px; } /* [DIUBAH] Perkecil lebar maksimal kotak pop-up */
             .corner-ribbon { width: 70px; top: -15px; left: -15px; } /* [DIUBAH] Perkecil ukuran gambar pita */
-            .close-button { width: 30px; height: 30px; font-size: 18px; } /* [DIUBAH] Perkecil tombol tutup */
-            .popup-content { padding: 12px; } /* [DIUBAH] Kurangi padding internal lebih banyak */
-            .popup-title { font-size: 1.4rem; } /* [DIUBAH] Ukuran disesuaikan untuk font baru di mobile */
+            .close-button { width: 30px; height: 30px; font-size: 18px; } /* [DIUBAH] Perkecil tombol tutup */.popup-content { padding: 12px; } /* [DIUBAH] Kurangi padding internal lebih banyak */.popup-title { font-size: 1.4rem; } /* [DIUBAH] Ukuran disesuaikan untuk font baru di mobile */
             .discount-offer { margin: 5px 0; } /* [DIUBAH] Perkecil angka diskon */
             .discount-offer img { max-width: 55%; } /* [DIUBAH] Perkecil gambar diskon */
             .price-animation-container { margin: 8px 0 10px 0; } /* [DIUBAH] Kurangi margin */
@@ -2095,10 +2154,7 @@
             .time-number { font-size: 1rem; padding: 4px; min-width: 28px; } /* [DIUBAH] Perkecil angka timer */
             .popup-button { padding: 7px 16px; font-size: 0.7rem; } /* [DIUBAH] Perkecil tombol */
         }
-
-    </style>
-    <style>
-        /* --- Styling untuk Notifikasi "Social Proof" --- */
+    </style><style>/* --- Styling untuk Notifikasi "Social Proof" --- */
         .toast-notification {
             position: fixed;
             bottom: -100px; /* Mulai dari posisi tersembunyi di bawah layar */
@@ -2152,7 +2208,7 @@
         <div class="container">
             <div class="header-inner">
                 <!-- Logo ditambahkan di sini -->
-                <a href="#" class="header-logo" id="header-logo-link">
+                <a href="#" class="header-logo" id="header-logo-link" aria-label="Kembali ke Beranda">
                     <img src="https://wayanku.github.io/storybali-undangan/IMG_6302%20(2).JPG" alt="Storybali Logo">
                 </a>
                 <div class="search-container">
@@ -2183,7 +2239,7 @@
         <img src="https://wayanku.github.io/storybali-undangan/foto%20nikah%202,foto%20nikah1,foto%20nikah%203/foto%20nikah%203.webp" alt="Foto Pernikahan 3" class="cover-slide" loading="lazy" decoding="async">
     </div>
 
-    <div class="main-content-wrapper">
+    <main class="main-content-wrapper">
         <div class="container">
             <div class="header-content">
                 <h1>Storybali Undangan</h1>
@@ -2340,7 +2396,7 @@
             </div>
 
         </div> <!-- Penutup .container -->
-    </div> <!-- Penutup .main-content-wrapper -->
+    </main> <!-- Penutup .main-content-wrapper -->
 
     <!-- Bagian Fitur Unggulan (Full Width) -->
     <!-- ID ditambahkan di sini agar bisa di-scroll dari navigasi -->
@@ -2360,10 +2416,20 @@
         <div class="container">
             <h3>Apa Kata Mereka?</h3>
             <p>Lihat apa yang klien kami katakan tentang layanan kami.</p>
-            <div class="testimonials-scroller" id="testimonials-scroller">
+            <!-- [DIUBAH] Wrapper baru untuk slider, tombol, dan dots -->
+            <div class="testimonial-slider-wrapper" style="position: relative;">
+                <div class="testimonials-scroller" id="testimonials-scroller" role="region" aria-label="Testimoni Klien">
                 <div class="testimonials-grid">
                     <!-- Skeleton loading untuk testimoni akan di-generate oleh JavaScript utama -->
                 </div>
+                </div>
+                <!-- [BARU] Tombol Navigasi Slider -->
+                <button id="testimonial-prev" class="testimonial-nav" aria-label="Testimoni Sebelumnya"><svg viewBox="0 0 24 24"><path d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z" /></svg></button>
+                <button id="testimonial-next" class="testimonial-nav" aria-label="Testimoni Berikutnya"><svg viewBox="0 0 24 24"><path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" /></svg></button>
+            </div>
+            <!-- [BARU] Indikator Titik Slider -->
+            <div id="testimonial-dots-container" class="testimonial-dots">
+                <!-- Dots akan di-generate oleh JavaScript -->
             </div>
         </div>
     </div>
@@ -2402,7 +2468,7 @@
                     Konsultasi via WhatsApp
                 </a>
                 <!-- Tombol untuk menutup modal -->
-                <a href="#" id="modal-close-btn" class="btn-secondary">Tutup</a>
+                <a href="#" id="modal-close-btn" class="btn-secondary" aria-label="Tutup notifikasi">Tutup</a>
             </div>
         </div>
     </div>
@@ -2546,20 +2612,20 @@
     <div class="social-float">
         <div class="social-icons-wrapper">
             <!-- GANTI '#' DENGAN LINK MEDIA SOSIAL ANDA -->
-            <a href="https://wa.me/6285738517248" target="_blank" rel="noopener noreferrer" class="social-icon" title="WhatsApp">
+            <a href="https://wa.me/6285738517248" target="_blank" rel="noopener noreferrer" class="social-icon" title="WhatsApp" aria-label="Hubungi via WhatsApp">
                 <img src="https://wayanku.github.io/storybali-undangan/sosial%20media/logo.png" alt="WhatsApp" loading="lazy" decoding="async">
             </a>
-            <a href="#" target="_blank" rel="noopener noreferrer" class="social-icon" title="Instagram">
+            <a href="#" target="_blank" rel="noopener noreferrer" class="social-icon" title="Instagram" aria-label="Kunjungi Instagram kami">
                 <img src="https://wayanku.github.io/storybali-undangan/sosial%20media/instagram.png" alt="Instagram" loading="lazy" decoding="async">
             </a>
-            <a href="#" target="_blank" rel="noopener noreferrer" class="social-icon" title="TikTok">
+            <a href="#" target="_blank" rel="noopener noreferrer" class="social-icon" title="TikTok" aria-label="Kunjungi TikTok kami">
                 <img src="https://wayanku.github.io/storybali-undangan/sosial%20media/tik-tok.png" alt="TikTok" loading="lazy" decoding="async">
             </a>
-            <a href="#" target="_blank" rel="noopener noreferrer" class="social-icon" title="YouTube">
+            <a href="#" target="_blank" rel="noopener noreferrer" class="social-icon" title="YouTube" aria-label="Kunjungi YouTube kami">
                 <img src="https://wayanku.github.io/storybali-undangan/sosial%20media/youtube.png" alt="YouTube" loading="lazy" decoding="async">
             </a>
         </div>
-        <button id="social-toggle-btn" class="social-icon" title="Hubungi Kami">
+        <button id="social-toggle-btn" class="social-icon" title="Hubungi Kami" aria-label="Buka menu kontak media sosial">
             <svg class="toggle-icon" viewBox="0 0 24 24"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.76.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.81 3.07 1.24 4.74 1.24 5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2zm4.88 13.38c-.27.13-1.62.8-1.88.93-.25.13-.43.2-.62-.2-.18-.38-.75-1.23-.92-1.5-.17-.27-.33-.31-.62-.18-.28.13-1.25.48-1.52.58-.27.1-.54.15-.81.05-.27-.1-.58-.34-1.1-.83-.6-.55-1.15-1.23-1.32-1.61-.17-.38-.04-.58.11-.75.13-.15.28-.38.43-.51.13-.13.18-.23.28-.38.1-.15.05-.28-.02-.4-.08-.13-.75-1.8-1.02-2.46-.27-.66-.55-.57-.75-.57-.18 0-.38-.05-.58-.05s-.53.08-.81.38c-.27.3-.92.9-1.12 2.13s.23 2.3.26 2.45c.03.15.53 1.23 2.5 2.2.48.23.86.36 1.15.46.45.15.86.13 1.18.08.38-.05 1.18-.48 1.35-.93.17-.45.17-.83.12-.93-.05-.1-.18-.15-.43-.28z"/></svg>
             <!-- Ikon 'X' untuk menutup -->
             <svg class="close-icon" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -2568,24 +2634,34 @@
 
     <!-- Navigasi Kaca Melayang -->
     <nav class="floating-nav">
-        <a href="#" id="nav-home">
-            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h7.5"/></svg>
+        <a href="#" id="nav-home" aria-label="Navigasi Beranda">
+            <!-- [DIUBAH] Menambahkan dua versi ikon (outline dan filled) -->
+            <svg class="icon-outline" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h7.5"/></svg>
+            <svg class="icon-filled" style="fill:currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
             <span>Beranda</span>
         </a>
         <a href="#" class="nav-category-link" data-category="Pernikahan Bali">
-            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" /></svg>
+            <!-- [DIUBAH] Menambahkan dua versi ikon (outline dan filled) -->
+            <svg class="icon-outline" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" /></svg>
+            <svg class="icon-filled" style="fill:currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
             <span>Wedding</span>
         </a>
         <a href="#" class="nav-category-link" data-category="Metatah / Potong Gigi">
-            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18" /></svg>
+            <!-- [DIUBAH] Menambahkan dua versi ikon (outline dan filled) -->
+            <svg class="icon-outline" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18" /></svg>
+            <svg class="icon-filled" style="fill:currentColor" viewBox="0 0 24 24"><path d="M4 10v11h16V10l-8-5-8 5zm10 2h-4v2h4v-2zM4 23v-2h16v2H4z" transform="translate(0 -1)"/></svg>
             <span>Metatah</span>
         </a>
         <a href="#" class="nav-category-link" data-category="3 Bulanan">
-            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.182 15.182a4.5 4.5 0 01-6.364 0M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75s.168-.75.375-.75.375.336.375.75zm-.75 0h.008v.015h-.008V9.75zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75zm-.75 0h.008v.015h-.008V9.75z" /></svg>
+            <!-- [DIUBAH] Menambahkan dua versi ikon (outline dan filled) -->
+            <svg class="icon-outline" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.182 15.182a4.5 4.5 0 01-6.364 0M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75s.168-.75.375-.75.375.336.375.75zm-.75 0h.008v.015h-.008V9.75zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75zm-.75 0h.008v.015h-.008V9.75z" /></svg>
+            <svg class="icon-filled" style="fill:currentColor" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm-5-6c.78 2.34 2.72 4 5 4s4.22-1.66 5-4H7zm-1.12-4a3.49 3.49 0 0 1 3.48-3.5c1.93 0 3.5 1.57 3.5 3.5S11.41 13 9.48 13a3.49 3.49 0 0 1-3.6-3zm11.24 0a3.49 3.49 0 0 1-3.48-3.5c0-1.93 1.57-3.5 3.5-3.5s3.5 1.57 3.5 3.5a3.49 3.49 0 0 1-3.52 3.5z"/></svg>
             <span>Bayi</span>
         </a>
         <a href="#" class="nav-category-link" data-category="Ulang Tahun">
-            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 11.25v8.25a1.5 1.5 0 01-1.5 1.5H4.5A1.5 1.5 0 013 19.5v-8.25a1.5 1.5 0 011.5-1.5h15a1.5 1.5 0 011.5 1.5zM12 2.25a.75.75 0 00-.75.75v3a.75.75 0 001.5 0v-3a.75.75 0 00-.75-.75zM9 6.75a.75.75 0 00-.75.75v3a.75.75 0 001.5 0v-3a.75.75 0 00-.75-.75zM15 6.75a.75.75 0 00-.75.75v3a.75.75 0 001.5 0v-3a.75.75 0 00-.75-.75z" /></svg>
+            <!-- [DIUBAH] Menambahkan dua versi ikon (outline dan filled) -->
+            <svg class="icon-outline" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 11.25v8.25a1.5 1.5 0 01-1.5 1.5H4.5A1.5 1.5 0 013 19.5v-8.25a1.5 1.5 0 011.5-1.5h15a1.5 1.5 0 011.5 1.5zM12 2.25a.75.75 0 00-.75.75v3a.75.75 0 001.5 0v-3a.75.75 0 00-.75-.75zM9 6.75a.75.75 0 00-.75.75v3a.75.75 0 001.5 0v-3a.75.75 0 00-.75-.75zM15 6.75a.75.75 0 00-.75.75v3a.75.75 0 001.5 0v-3a.75.75 0 00-.75-.75z" /></svg>
+            <svg class="icon-filled" style="fill:currentColor" viewBox="0 0 24 24"><path d="M20 19V9H4v10h16zm0-12H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2zM11 11h2v5h-2v-5zm-4 0h2v5H7v-5zm8 0h2v5h-2v-5zM12 5c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></svg>
             <span>Ultah</span>
         </a>
     </nav>
@@ -2595,7 +2671,7 @@
         <div class="popup-container">
             <img src="https://wayanku.github.io/storybali-undangan/sosial%20media/lonceng%20diskon.webp" alt="Pita Diskon" class="corner-ribbon">
             
-            <div id="closePopup" class="close-button">&times;</div>
+            <div id="closePopup" class="close-button" role="button" aria-label="Tutup pop-up diskon">&times;</div>
             <div class="popup-content">
                 <h2 class="popup-title">DISKON</h2>
                 <div id="discountOffer" class="discount-offer">
@@ -2635,7 +2711,7 @@
     </div>
 
     <!-- [BARU] Social Proof Notification -->
-    <div id="social-proof-toast" class="toast-notification">
+    <div id="social-proof-toast" class="toast-notification" role="status" aria-live="polite">
         <div class="toast-icon">
             <svg viewBox="0 0 24 24"><path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M11,16.5L6.5,12L7.91,10.59L11,13.67L16.59,8.09L18,9.5L11,16.5Z" /></svg>
         </div>
@@ -2647,7 +2723,7 @@
 
 
     <!-- JavaScript untuk Fungsionalitas Ajaib -->
-    <script>
+    <script defer>
         // [DIPINDAHKAN] Fungsi untuk Animasi Angka (Harga) dibuat global
         function animatePrice(element, start, end, duration) {
             let startTimestamp = null;
@@ -2667,8 +2743,7 @@
             };
             window.requestAnimationFrame(step);
         }
-    </script>
-    <script>
+    </script><script defer>
         document.addEventListener('DOMContentLoaded', function() {
             
             // Mencegah klik kanan untuk inspect element
@@ -2909,7 +2984,7 @@
                 { name: 'Eka & Putri', avatar: 'https://i.pravatar.cc/150?img=5', quote: 'Suka banget sama semua fiturnya, lengkap dan mudah digunakan. Adminnya juga sabar banget jawabin semua pertanyaan. Mantap!' },
                 { name: 'Komang & Dewi', avatar: 'https://i.pravatar.cc/150?img=47', quote: 'Terima kasih Storybali! Undangannya keren dan beda dari yang lain. Banyak teman yang nanya bikin di mana. Sukses selalu!' }
             ];
-
+            
             function generateTestimonialSkeletons() {
                 const testimonialsGrid = document.querySelector("#testimonials-scroller .testimonials-grid");
                 testimonialsGrid.innerHTML = ''; // Kosongkan dulu
@@ -2933,13 +3008,18 @@
             function loadStaticTestimonials() {
                 const testimonialsGrid = document.querySelector("#testimonials-scroller .testimonials-grid");
                 setTimeout(() => {
-                    testimonialsGrid.innerHTML = ''; // Hapus skeleton
-                    const allTestimonials = [...testimonialsData, ...testimonialsData]; // Duplikasi untuk loop
+                    testimonialsGrid.innerHTML = ''; // Hapus skeleton                    
+                    // [DIUBAH] Duplikasi untuk efek loop tak terbatas di slider
+                    const sliderItems = [...testimonialsData, ...testimonialsData, ...testimonialsData];
 
-                    allTestimonials.forEach((testimonial, index) => {
+                    sliderItems.forEach((testimonial, index) => {
                         const card = document.createElement('div');
                         card.className = 'testimonial-card';
-                        if (index >= testimonialsData.length) {
+                        // [DIUBAH] Set aria-hidden untuk item duplikat
+                        if (index < testimonialsData.length || index >= testimonialsData.length * 2) {
+                            // Item di set pertama dan ketiga adalah duplikat untuk loop
+                        } else {
+                            // Item di set kedua (tengah) adalah yang asli
                             card.setAttribute('aria-hidden', 'true');
                         }
                         card.innerHTML = `
@@ -2955,6 +3035,8 @@
                         `;
                         testimonialsGrid.appendChild(card);
                     });
+                    // [BARU] Inisialisasi fungsionalitas slider setelah konten dimuat
+                    initializeTestimonialSlider();
                 }, 1200); // Jeda 1.2 detik
             }
 
@@ -3645,10 +3727,10 @@
 
             // Fungsi untuk membuat pesan WhatsApp pesanan pernikahan
             function createWeddingOrderMessage(data) {
-                let message = `Halo Storybali Undangan, saya ingin memesan undangan pernikahan dengan detail:\n\n`;
+                let message = `Halo Storybali Undangan, saya ingin memesan undangan pernikahan dengan detail:\n\n`;// Perbaikan: Menggunakan data yang sudah ada
                 
                 message += `*DATA MEMPELAI PRIA*\n`;
-                message += `Nama: ${data.groomName}\n`; // Perbaikan: Menggunakan data yang sudah ada
+                message += `Nama: ${data.groomName}\n`;
                 message += `Nama Ayah: ${data.groomFather}\n`;
                 message += `Nama Ibu: ${data.groomMother}\n\n`;
 
@@ -3842,6 +3924,105 @@
                 });
             });
 
+            // --- [BARU] Fungsionalitas Slider Testimoni ---
+            function initializeTestimonialSlider() {
+                const slider = document.querySelector('.testimonials-grid');
+                const prevBtn = document.getElementById('testimonial-prev');
+                const nextBtn = document.getElementById('testimonial-next');
+                const dotsContainer = document.getElementById('testimonial-dots-container');
+                
+                if (!slider || testimonialsData.length === 0) return;
+
+                const totalRealSlides = testimonialsData.length;
+                let currentIndex = totalRealSlides; // Mulai dari set duplikat pertama
+                let isDragging = false;
+                let startPos = 0;
+                let currentTranslate = 0;
+                let prevTranslate = 0;
+                let animationID;
+
+                // Buat dots
+                dotsContainer.innerHTML = '';
+                for (let i = 0; i < totalRealSlides; i++) {
+                    const dot = document.createElement('span');
+                    dot.className = 'testimonial-dot';
+                    dot.dataset.index = i;
+                    dotsContainer.appendChild(dot);
+                }
+                const dots = document.querySelectorAll('.testimonial-dot');
+
+                function updateSliderPosition() {
+                    slider.style.transform = `translateX(${currentTranslate}px)`;
+                    updateDots();
+                }
+
+                function updateDots() {
+                    dots.forEach(dot => dot.classList.remove('active'));
+                    const activeDotIndex = (currentIndex - totalRealSlides) % totalRealSlides;
+                    dots[activeDotIndex]?.classList.add('active');
+                }
+
+                function setPositionByIndex() {
+                    const cardWidth = slider.querySelector('.testimonial-card').offsetWidth;
+                    const gap = 20; // Sesuai dengan gap di CSS
+                    currentTranslate = -currentIndex * (cardWidth + gap);
+                    prevTranslate = currentTranslate;
+                    updateSliderPosition();
+                }
+
+                function slideTo(index) {
+                    currentIndex = index;
+                    setPositionByIndex();
+                }
+
+                function shiftSlide(direction) {
+                    currentIndex += direction;
+                    slider.style.transition = 'transform 0.4s cubic-bezier(0.25, 1, 0.5, 1)';
+                    setPositionByIndex();
+                }
+
+                slider.addEventListener('transitionend', () => {
+                    if (currentIndex <= totalRealSlides - 1) {
+                        slider.style.transition = 'none';
+                        currentIndex += totalRealSlides;
+                        setPositionByIndex();
+                    }
+                    if (currentIndex >= totalRealSlides * 2) {
+                        slider.style.transition = 'none';
+                        currentIndex -= totalRealSlides;
+                        setPositionByIndex();
+                    }
+                });
+
+                // Event Listeners
+                prevBtn.addEventListener('click', () => shiftSlide(-1));
+                nextBtn.addEventListener('click', () => shiftSlide(1));
+                dots.forEach(dot => {
+                    dot.addEventListener('click', (e) => {
+                        const targetIndex = parseInt(e.target.dataset.index) + totalRealSlides;
+                        shiftSlide(targetIndex - currentIndex);
+                    });
+                });
+
+                // Drag/Swipe functionality
+                slider.addEventListener('mousedown', dragStart);
+                slider.addEventListener('touchstart', dragStart);
+                slider.addEventListener('mouseup', dragEnd);
+                slider.addEventListener('mouseleave', dragEnd);
+                slider.addEventListener('touchend', dragEnd);
+                slider.addEventListener('mousemove', drag);
+                slider.addEventListener('touchmove', drag);
+
+                function dragStart(e) { isDragging = true; startPos = getPositionX(e); slider.classList.add('grabbing'); slider.style.transition = 'none'; animationID = requestAnimationFrame(animation); }
+                function drag(e) { if (isDragging) { const currentPosition = getPositionX(e); currentTranslate = prevTranslate + currentPosition - startPos; } }
+                function dragEnd(e) { cancelAnimationFrame(animationID); isDragging = false; const movedBy = currentTranslate - prevTranslate; if (movedBy < -100) shiftSlide(1); else if (movedBy > 100) shiftSlide(-1); else setPositionByIndex(); slider.classList.remove('grabbing'); }
+                function getPositionX(e) { return e.type.includes('mouse') ? e.pageX : e.touches[0].clientX; }
+                function animation() { updateSliderPosition(); if (isDragging) requestAnimationFrame(animation); }
+
+                // Inisialisasi posisi awal
+                setTimeout(() => { setPositionByIndex(); }, 100); // Jeda singkat untuk memastikan layout sudah benar
+            }
+
             // --- Fungsionalitas Slider Testimoni dari Google Sheets ---
             function loadTestimonials() {
                 const testimonialsGrid = document.querySelector(".testimonials-grid");
@@ -3974,13 +4155,13 @@
             // [BARU] Elemen untuk banner di header
             const discountBanner = document.getElementById('claimed-discount-banner');
             // [BARU] Elemen untuk parallax
-            const popupContainer = document.querySelector('.popup-container');
+            const popupContainer = document.querySelector('.popup-container'); // [DIUBAH] Variabel sudah ada, tidak perlu dideklarasi ulang
             const topHeader = document.querySelector('.top-header');
             let countdownFunction = null; // Deklarasikan di luar agar bisa diakses
             let isClaimed = false; // Status klaim
 
             // Durasi hitung mundur (contoh: 24 jam)
-            const countdownDuration = 24 * 60 * 60 * 1000; 
+            const countdownDuration = 24 * 60 * 60 * 1000; // [DIUBAH] Variabel sudah ada, tidak perlu dideklarasi ulang
             const countDownDate = new Date().getTime() + countdownDuration;
 
             function startCountdown() {
@@ -3992,7 +4173,7 @@
                 const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
                 const formatTime = (time) => time < 10 ? `0${time}` : time;
-
+                
                 // Update timer di pop-up jika terlihat
                 if (!popupOverlay.classList.contains('hidden')) {
                     document.getElementById("hours").innerText = formatTime(hours);
@@ -4071,7 +4252,7 @@
             // Mulai countdown
             countdownFunction = setInterval(startCountdown, 1000);
 
-            closeButton.addEventListener('click', claimAndClose); // [DIUBAH] Tombol 'X' sekarang juga mengklaim diskon
+            closeButton.addEventListener('click', claimAndClose);
             popupOverlay.addEventListener('click', function(event) {
                 if (event.target === popupOverlay) {
                     closePopup();
@@ -4109,8 +4290,7 @@
                 popupContainer.style.transform = 'scale(1) rotateX(0deg) rotateY(0deg)';
             });
         });
-    </script>
-    <script>
+    </script><script defer>
         // Skrip terpisah untuk memuat keranjang dari localStorage sebelum DOMContentLoaded
         // Ini memastikan data keranjang sudah siap saat skrip utama berjalan.
         const savedCart = localStorage.getItem('shoppingCart');
