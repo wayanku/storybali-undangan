@@ -29,6 +29,7 @@
     <link rel="preconnect" href="https://raw.githubusercontent.com">
     <link rel="preconnect" href="https://github.com">
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap" rel="stylesheet">
     
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-09HEX1NR8E"></script>
@@ -147,6 +148,29 @@
             padding-top: calc(10px + env(safe-area-inset-top));
             padding-bottom: 10px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            /* [BARU] Menambahkan transisi untuk perubahan padding */
+            transition: padding-top 0.3s ease;
+        }
+        /* [BARU] Styling untuk Banner Diskon di Header */
+        #claimed-discount-banner {
+            background: linear-gradient(45deg, #D4AF37, #B8860B);
+            color: white;
+            text-align: center;
+            padding: 8px 15px;
+            font-size: 0.85em;
+            font-weight: 600;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Poppins', sans-serif;
+        }
+        #claimed-discount-banner.hidden {
+            display: none;
+        }
+        #banner-countdown {
+            display: flex;
+            gap: 5px;
         }
         .header-inner {
             display: flex;
@@ -1773,12 +1797,204 @@
         body.checkout-active {
             background-color: var(--bg-color);
         }
+    </style>
+    <style>
+        /* --- CSS untuk Pop-up Diskon --- */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 3000; /* Di atas semua elemen lain */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 1000px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .popup-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .popup-container {
+            font-family: 'Poppins', sans-serif; /* Menggunakan font khusus untuk pop-up */
+            background: linear-gradient(135deg, #D4AF37, #B8860B); /* [DIUBAH] Gradasi Emas Mewah */
+            border-radius: 25px;
+            padding: 12px;
+            width: 90%;
+            max-width: 360px; /* Ukuran pop-up diperkecil */
+            text-align: center;
+            position: relative;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), inset 0 2px 2px rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255,255,255,0.2);
+            transform: rotateY(-30deg) rotateX(15deg) scale(0.8);
+            transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .corner-ribbon {
+            position: absolute;
+            top: -20px;
+            left: -20px; /* Dipindahkan ke kiri */
+            width: 110px;
+            height: auto;
+            z-index: 3;
+            pointer-events: none;
+            /* transform: scaleX(-1); Dihapus agar gambar tidak terbalik */
+        }
+        
+        .popup-overlay.show .popup-container {
+            transform: rotateY(0) rotateX(0) scale(1);
+        }
+
+        .popup-content {
+            background-color: #f9f9f9;
+            border-radius: 18px;
+            padding: 25px 20px;
+            box-shadow: inset 0 5px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 2;
+            overflow: hidden;
+        }
+
+        .popup-title {
+            font-size: 2rem; /* Ukuran judul diperkecil */
+            font-weight: 900;
+            color: #333;
+            margin: 0;
+        }
+
+        .discount-offer {
+            font-size: 5.5rem; /* Ukuran angka diskon diperkecil */
+            font-weight: 900;
+            margin: 10px 0; /* Sedikit menambah margin */
+            background: linear-gradient(45deg, #432818, #6f4e37); /* [DIUBAH] Gradasi Coklat Tua */
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: none; /* Shadow dihilangkan agar teks lebih tajam */
+        }
+
+        .discount-offer span {
+            font-size: 3rem;
+            vertical-align: middle;
+        }
+        
+        .popup-subtitle {
+            font-size: 1rem;
+            color: #666;
+            margin: 0 0 15px 0;
+            font-weight: 400;
+        }
+
+        .countdown-timer {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .time-segment {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .time-number {
+            background-color: #2c3e50;
+            color: #ffffff;
+            font-size: 1.8rem; /* Ukuran angka timer diperkecil */
+            font-weight: 700;
+            padding: 8px;
+            border-radius: 8px;
+            min-width: 45px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .time-label {
+            color: #7f8c8d;
+            font-size: 0.7rem;
+            margin-top: 5px;
+            text-transform: uppercase;
+        }
+
+        .popup-button {
+            background: linear-gradient(180deg, #ff6b6b, #ee4b4b); /* [DIUBAH] Gradasi Merah Segar */
+            color: white;
+            padding: 14px 30px; /* Ukuran tombol diperkecil */
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem; /* Ukuran font tombol diperkecil */
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: uppercase;
+            text-decoration: none;
+            display: inline-block;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 6px 0 #c13a3a, 0 10px 20px rgba(238, 75, 75, 0.4); /* [DIUBAH] Shadow Merah */
+            transition: all 0.15s ease-out;
+        }
+        
+        .popup-button:disabled {
+            background: #bdc3c7;
+            box-shadow: 0 6px 0 #95a5a6;
+            cursor: not-allowed;
+        }
+
+        .popup-button:not(:disabled):hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 0 #c13a3a, 0 12px 25px rgba(238, 75, 75, 0.5); /* [DIUBAH] Shadow Merah Hover */
+        }
+
+        .popup-button:not(:disabled):active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #c13a3a; /* [DIUBAH] Shadow Merah Active */
+        }
+
+        .close-button {
+            position: absolute;
+            top: -15px;
+            right: -15px;
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 50%;
+            color: #B8860B; /* [DIUBAH] Warna Ikon 'x' menjadi Emas Tua */
+            font-size: 24px;
+            font-weight: 700;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+            transition: transform 0.2s, background-color 0.2s;
+            z-index: 10;
+        }
+        .close-button:hover{
+            transform: scale(1.1) rotate(90deg);
+            background-color: #fff8e1; /* [DIUBAH] Latar Hover Krem */
+        }
 
     </style>
 </head>
 <body>
 
     <!-- Header Baru seperti Toko Online -->
+    <!-- [BARU] Banner Diskon Diklaim (awalnya tersembunyi) -->
+    <div id="claimed-discount-banner" class="hidden">
+        <span>DISKON DIKLAIM! Berakhir dalam:</span>
+        <div id="banner-countdown">
+            <span id="banner-hours">00</span>:
+            <span id="banner-minutes">00</span>:
+            <span id="banner-seconds">00</span>
+        </div>
+    </div>
     <header class="top-header">
         <div class="container">
             <div class="header-inner">
@@ -2211,6 +2427,37 @@
         </a>
     </nav>
 
+    <!-- HTML untuk Pop-up Diskon -->
+    <div id="discountPopup" class="popup-overlay">
+        <div class="popup-container">
+            <img src="https://i.postimg.cc/NjYdJZ0v/tl-1.webp" alt="Pita Diskon" class="corner-ribbon">
+            
+            <div id="closePopup" class="close-button">&times;</div>
+            <div class="popup-content">
+                <h2 class="popup-title">DISKON SPESIAL</h2>
+                <div id="discountOffer" class="discount-offer">50<span>%</span></div>
+                <p id="popupSubtitle" class="popup-subtitle">Penawaran ini akan berakhir dalam:</p>
+                
+                <div class="countdown-timer">
+                    <div class="time-segment">
+                        <span class="time-number" id="hours">00</span>
+                        <span class="time-label">Jam</span>
+                    </div>
+                    <div class="time-segment">
+                        <span class="time-number" id="minutes">00</span>
+                        <span class="time-label">Menit</span>
+                    </div>
+                    <div class="time-segment">
+                        <span class="time-number" id="seconds">00</span>
+                        <span class="time-label">Detik</span>
+                    </div>
+                </div>
+
+                <a href="#" id="actionButton" class="popup-button">Klaim Sekarang</a>
+            </div>
+        </div>
+    </div>
+
     <!-- JavaScript untuk Fungsionalitas Ajaib -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -2582,6 +2829,26 @@
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
 
+            // --- Fungsi untuk Animasi Angka (Harga) ---
+            function animatePrice(element, start, end, duration) {
+                let startTimestamp = null;
+                const step = (timestamp) => {
+                    if (!startTimestamp) startTimestamp = timestamp;
+                    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                    // Menggunakan easing function (easeOut) agar lebih natural
+                    const easedProgress = 1 - Math.pow(1 - progress, 3);
+                    const currentValue = Math.floor(easedProgress * (end - start) + start);
+                    
+                    // Format angka menjadi format mata uang Rupiah
+                    element.textContent = 'Rp ' + currentValue.toLocaleString('id-ID');
+                    
+                    if (progress < 1) {
+                        window.requestAnimationFrame(step);
+                    }
+                };
+                window.requestAnimationFrame(step);
+            }
+
             // Fungsi untuk membuat dan menampilkan katalog
             function generateCatalog() {
                 const isWithoutPhoto = btnWithoutPhoto.classList.contains('active');
@@ -2733,6 +3000,14 @@
                     }
                     // Picu reflow dan mulai fade-in
                     setTimeout(() => item.style.opacity = '1', 50);
+
+                    // --- [BARU] Jalankan animasi harga ---
+                    const priceElement = item.querySelector('.catalog-item-price');
+                    const originalPriceNum = parseInt(originalPrice.replace(/[^0-9]/g, ''));
+                    const finalPriceNum = parseInt(finalPrice.replace(/[^0-9]/g, ''));
+                    // Atur harga awal ke harga asli, lalu animasikan
+                    priceElement.textContent = originalPrice;
+                    animatePrice(priceElement, originalPriceNum, finalPriceNum, 800); // Animasi selama 800ms
                 });
 
                 // Tambahkan event listener ke semua tombol 'Lihat' yang memicu modal
@@ -3455,6 +3730,102 @@
             loadPaymentMethods(); // Memuat gambar pembayaran dengan efek skeleton
             updateCartUI(); // PERBAIKAN: Panggil updateCartUI saat halaman dimuat
             // loadTestimonials(); // Aktifkan ini jika ingin memuat dari Google Sheets
+        });
+
+        // --- Logika untuk Pop-up Diskon ---
+        document.addEventListener('DOMContentLoaded', function() {
+            const popupOverlay = document.getElementById('discountPopup');
+            const closeButton = document.getElementById('closePopup');
+            const actionButton = document.getElementById('actionButton');
+            // [BARU] Elemen untuk banner di header
+            const discountBanner = document.getElementById('claimed-discount-banner');
+            const topHeader = document.querySelector('.top-header');
+            let countdownFunction = null; // Deklarasikan di luar agar bisa diakses
+            let isClaimed = false; // Status klaim
+
+            // Durasi hitung mundur (contoh: 24 jam)
+            const countdownDuration = 24 * 60 * 60 * 1000; 
+            const countDownDate = new Date().getTime() + countdownDuration;
+
+            function startCountdown() {
+                const now = new Date().getTime();
+                const distance = countDownDate - now;
+
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                const formatTime = (time) => time < 10 ? `0${time}` : time;
+
+                // Update timer di pop-up jika terlihat
+                if (!popupOverlay.classList.contains('hidden')) {
+                    document.getElementById("hours").innerText = formatTime(hours);
+                    document.getElementById("minutes").innerText = formatTime(minutes);
+                    document.getElementById("seconds").innerText = formatTime(seconds);
+                }
+
+                // [BARU] Update timer di banner header jika terlihat
+                if (!discountBanner.classList.contains('hidden')) {
+                    document.getElementById("banner-hours").innerText = formatTime(hours);
+                    document.getElementById("banner-minutes").innerText = formatTime(minutes);
+                    document.getElementById("banner-seconds").innerText = formatTime(seconds);
+                }
+
+                if (distance < 0) {
+                    clearInterval(countdownFunction);
+                    // Logika saat waktu habis
+                    if (!popupOverlay.classList.contains('hidden')) {
+                        document.getElementById("discountOffer").innerHTML = "Waktu Habis!";
+                        document.getElementById("popupSubtitle").innerText = "Maaf, penawaran ini telah berakhir.";
+                        document.querySelector('.countdown-timer').style.display = 'none';
+                        actionButton.innerText = "Tawaran Berakhir";
+                        actionButton.disabled = true;
+                    }
+                    discountBanner.innerHTML = '<span>Penawaran Spesial Telah Berakhir</span>';
+                }
+            }
+
+            function showPopup() {
+                popupOverlay.classList.add('show');
+                document.body.style.overflow = 'hidden'; // Mencegah scroll di belakang
+            }
+
+            function closePopup() {
+                popupOverlay.classList.remove('show');
+                document.body.style.overflow = 'auto'; // Kembalikan fungsi scroll
+            }
+
+            // [DIUBAH] Tampilkan pop-up jika belum diklaim
+            if (!isClaimed) {
+                setTimeout(showPopup, 3000);
+            }
+            // Mulai countdown
+            countdownFunction = setInterval(startCountdown, 1000);
+
+            closeButton.addEventListener('click', closePopup);
+            popupOverlay.addEventListener('click', function(event) {
+                if (event.target === popupOverlay) {
+                    closePopup();
+                }
+            });
+
+            // Menambahkan event listener untuk tombol "Klaim Sekarang"
+            actionButton.addEventListener('click', function(event) {
+                event.preventDefault(); // Mencegah link berpindah halaman
+                
+                if (isClaimed) return; // Jangan lakukan apa-apa jika sudah diklaim
+
+                isClaimed = true;
+
+                // 1. Tutup pop-up
+                closePopup();
+
+                // 2. Tampilkan banner di header
+                discountBanner.classList.remove('hidden');
+
+                // 3. Sesuaikan padding header agar konten tidak tertimpa
+                topHeader.style.paddingTop = '0';
+            });
         });
     </script>
     <script>
