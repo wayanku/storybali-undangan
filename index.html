@@ -144,15 +144,21 @@
             75% { transform: rotate(8deg); }
         }
 
+        /* [FIX] Mencegah efek 'bounce' overscroll di iPhone memperlihatkan latar putih */
+         html {
+            background-color: var(--bg-color);
+            height: 100%; /* Memastikan html mengisi seluruh tinggi viewport */
+        }
+
         /* Pengaturan Dasar Body */
         body {
             font-family: var(--font-family);
-            background-color: var(--accent-color); /* Latar bawah menggunakan warna aksen */
+            background-color: var(--bg-color); /* [FIX] Latar utama diubah menjadi warna konten untuk mencegah bocor di sudut layar */
             margin: 0;
             display: flex;
             flex-direction: column; /* Susun elemen dari atas ke bawah */
             align-items: center; /* Tetap rata tengah horizontal */
-            min-height: 100vh; /* Memastikan body mengisi tinggi layar */
+            height: 100%; /* [FIX] Menggunakan height 100% untuk konsistensi dengan html */
             color: var(--primary-text);
             box-sizing: border-box;
             -webkit-font-smoothing: antialiased;
@@ -284,10 +290,6 @@
             outline: none;
             border-color: var(--accent-color);
             box-shadow: 0 0 0 3px rgba(116, 136, 115, 0.2);
-        }
-        /* Mencegah zoom otomatis di iPhone dengan mengatur font-size minimal 16px */
-        #search-input {
-            font-size: 16px;
         }
 
         /* Wrapper baru untuk konten bagian atas */
@@ -665,10 +667,6 @@
             outline: none;
             border-color: var(--accent-color);
             box-shadow: 0 0 0 3px rgba(116, 136, 115, 0.2);
-        }
-        /* Mencegah zoom otomatis di iPhone dengan mengatur font-size minimal 16px */
-        .checkout-form-group input {
-            font-size: 16px;
         }
         #cart-page .cart-summary {
             border: none;
@@ -1789,7 +1787,7 @@
             justify-content: center;
             text-decoration: none;
             color: var(--secondary-text); /* Warna teks diubah agar tidak terlalu kuat */
-            font-size: 0.65em; /* Sedikit lebih besar agar mudah dibaca */
+            font-size: 0.75em; /* [FIX] Ukuran font diperbesar agar tidak terlalu kecil di iPhone */
             font-weight: 600;
             gap: 3px;
             padding: 4px 8px; /* Padding disesuaikan, padding-bottom dihapus dari sini */
@@ -1897,8 +1895,8 @@
             }
             #search-input {
                 padding: 8px 10px 8px 35px;
-                /* Ukuran font diatur ke 16px untuk mencegah zoom otomatis di iOS */
-                font-size: 16px;
+                /* [FIX] Ukuran font diatur ke 16px untuk mencegah zoom otomatis di iOS */
+                font-size: 16px !important;
             }
             .search-container svg {
                 width: 16px;
