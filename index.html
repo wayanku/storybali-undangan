@@ -138,7 +138,7 @@
         /* Pengaturan Dasar Body */
         body {
             font-family: var(--font-family);
-            background-color: var(--accent-color); /* Latar bawah menggunakan warna aksen */
+            background-color: var(--bg-color); /* [PERBAIKAN] Latar utama diubah menjadi abu-abu */
             margin: 0;
             display: flex;
             flex-direction: column; /* Susun elemen dari atas ke bawah */
@@ -149,6 +149,12 @@
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
+        /* [PERBAIKAN] Latar hijau hanya diterapkan saat di halaman checkout/form */
+        body.checkout-active {
+            background-color: var(--accent-color);
+        }
+
+
         
         /* --- Header Toko Online --- */
         .top-header {
@@ -1653,8 +1659,11 @@
         }
         /* Animasi untuk slider testimoni */
         @keyframes scroll {
-            from { transform: translateX(0); }
-            to { transform: translateX(-100%); }
+            /* [PERBAIKAN] Mengubah logika animasi agar sesuai dengan konten yang diduplikasi */
+            to {
+                /* Geser ke kiri sejauh setengah dari total lebar scroll */
+                transform: translate(calc(-50% - 10px)); /* 50% dari lebar + setengah dari gap */
+            }
         }
         .testimonials-scroller {
             overflow: hidden;
@@ -1847,10 +1856,6 @@
             }
         }
 
-        /* Perbaikan untuk latar belakang di iPhone (area poni & bawah) */
-        body.checkout-active {
-            background-color: var(--bg-color);
-        }
     </style>
     <style>
         /* --- CSS untuk Pop-up Diskon --- */
@@ -2380,7 +2385,7 @@
 
     <!-- Footer Hak Cipta (dipindahkan ke sini) -->
     <!-- [FIX] Menambahkan background-color agar kontras footer benar -->
-    <div class="container" style="padding-bottom: 30px; padding-top: 20px; background-color: var(--bg-color); width: 100%;">
+    <div class="container" style="padding-bottom: 30px; padding-top: 20px; background-color: var(--bg-color); width: 100%; margin-bottom: 80px;">
         <footer class="footer">
             &copy; 2024 Storybali Undangan. All Rights Reserved.
         </footer>
@@ -2934,14 +2939,11 @@
                 const testimonialsGrid = document.querySelector("#testimonials-scroller .testimonials-grid");
                 setTimeout(() => {
                     testimonialsGrid.innerHTML = ''; // Hapus skeleton
-                    const allTestimonials = [...testimonialsData, ...testimonialsData]; // Duplikasi untuk loop
 
-                    allTestimonials.forEach((testimonial, index) => {
+                    // [PERBAIKAN] Buat set testimoni asli terlebih dahulu
+                    testimonialsData.forEach(testimonial => {
                         const card = document.createElement('div');
                         card.className = 'testimonial-card';
-                        if (index >= testimonialsData.length) {
-                            card.setAttribute('aria-hidden', 'true');
-                        }
                         card.innerHTML = `
                             <div class="quote-icon">“</div>
                             <div class="testimonial-header">
@@ -2955,6 +2957,15 @@
                         `;
                         testimonialsGrid.appendChild(card);
                     });
+
+                    // [PERBAIKAN] Duplikasi semua kartu yang sudah dibuat untuk efek scroll tak terbatas
+                    const originalCards = Array.from(testimonialsGrid.children);
+                    originalCards.forEach(card => {
+                        const clone = card.cloneNode(true);
+                        clone.setAttribute('aria-hidden', 'true'); // Tandai sebagai duplikat untuk aksesibilitas
+                        testimonialsGrid.appendChild(clone);
+                    });
+
                 }, 1200); // Jeda 1.2 detik
             }
 
@@ -3848,7 +3859,6 @@
                 const testimonialsScroller = document.querySelector(".testimonials-scroller");
                 // GANTI DENGAN URL WEB APP ANDA DARI LANGKAH 3
                 const testimonialsApiUrl = 'PASTE_YOUR_WEB_APP_URL_HERE'; 
-
                 // --- PENYEMPURNAAN: Tampilkan skeleton loading untuk testimoni ---
                 testimonialsGrid.innerHTML = ''; // Kosongkan dulu
                 for (let i = 0; i < 4; i++) { // Buat 4 kartu skeleton
@@ -3868,7 +3878,6 @@
                     testimonialsGrid.appendChild(skeletonCard);
                 }
                 testimonialsScroller.classList.remove('testimonials-scroller'); // Hentikan animasi scroll sementara
-
                 fetch(testimonialsApiUrl)
                     .then(response => response.json())
                     .then(result => {
