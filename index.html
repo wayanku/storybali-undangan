@@ -148,6 +148,8 @@
             box-sizing: border-box;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
+            /* [BARU] Mencegah double-tap to zoom di iOS untuk pengalaman sentuh yang lebih baik */
+            touch-action: manipulation;
         }
         /* [PERBAIKAN] Latar hijau hanya diterapkan saat di halaman checkout/form */
         body.checkout-active {
@@ -1696,6 +1698,19 @@
         .testimonials-scroller:hover .testimonials-grid {
             animation-play-state: paused; /* Jeda animasi saat kursor di atasnya */
         }
+    </style>
+    <style>
+        /* --- [BARU] CSS untuk Drag-to-Scroll Testimoni --- */
+        .testimonials-scroller {
+            overflow-x: auto; /* Memungkinkan scroll horizontal */
+            cursor: grab; /* Mengubah kursor menjadi tangan untuk menandakan bisa digeser */
+            /* [BARU] Menambahkan momentum scrolling di iOS agar terasa lebih natural */
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none; /* Menyembunyikan scrollbar di Firefox */
+        }
+        .testimonials-scroller::-webkit-scrollbar { display: none; } /* Menyembunyikan scrollbar di Chrome, Safari, Opera */
+        .testimonials-scroller.active { cursor: grabbing; } /* Kursor saat sedang aktif digeser */
+
     </style>
     <style>
         /* --- Styling untuk Bagian Metode Pembayaran --- */
@@ -3877,7 +3892,7 @@
                     `;
                     testimonialsGrid.appendChild(skeletonCard);
                 }
-                testimonialsScroller.classList.remove('testimonials-scroller'); // Hentikan animasi scroll sementara
+                // testimonialsScroller.classList.remove('testimonials-scroller'); // Hentikan animasi scroll sementara
                 fetch(testimonialsApiUrl)
                     .then(response => response.json())
                     .then(result => {
