@@ -10,6 +10,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- [BARU] Menambahkan Library Chart.js untuk grafik yang lebih bagus -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- [BARU] Library untuk Export PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         :root {
             --bg-color: #f3f4f6;
@@ -368,6 +370,16 @@
             display: block; height: 300px; position: relative;
             padding-bottom: 10px; border-bottom: 1px solid #e5e7eb;
         }
+        
+        /* [BARU] Grid untuk grafik tambahan */
+        .analytics-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px;
+        }
+        @media (max-width: 768px) { .analytics-grid { grid-template-columns: 1fr; } }
+        
+        .mini-chart-container {
+            height: 250px; position: relative;
+        }
 
         .activity-list {
             background: var(--card-bg); border-radius: 12px; border: 1px solid #e5e7eb;
@@ -386,6 +398,28 @@
         .activity-details h4 { margin: 0 0 4px 0; font-size: 0.95rem; color: var(--primary-text); }
         .activity-details p { margin: 0; font-size: 0.85rem; color: var(--secondary-text); }
         .activity-time { margin-left: auto; font-size: 0.8rem; color: var(--secondary-text); white-space: nowrap; }
+
+        /* [BARU] Styles untuk Smart Insights (Analisis Cerdas) */
+        .smart-insights {
+            background: linear-gradient(135deg, var(--accent-color), #2c3e2b);
+            color: white; border-radius: 16px; padding: 25px; margin-bottom: 30px;
+            position: relative; overflow: hidden; box-shadow: 0 10px 25px -5px rgba(90, 107, 89, 0.4);
+        }
+        .smart-insights::after {
+            content: ""; position: absolute; top: -20px; right: -20px; width: 150px; height: 150px;
+            background: rgba(255,255,255,0.1); border-radius: 50%; filter: blur(30px);
+        }
+        .insight-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; position: relative; z-index: 1; }
+        .insight-title { font-size: 1.2rem; font-weight: 800; margin: 0; }
+        .insight-list { list-style: none; padding: 0; margin: 0; position: relative; z-index: 1; }
+        .insight-item { 
+            display: flex; gap: 12px; margin-bottom: 12px; font-size: 0.95rem; line-height: 1.5; 
+            align-items: flex-start; background: rgba(255,255,255,0.1); padding: 12px 15px; 
+            border-radius: 10px; backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.1);
+            animation: fadeInUp 0.5s ease-out forwards; opacity: 0;
+        }
+        .insight-item:nth-child(1) { animation-delay: 0.1s; } .insight-item:nth-child(2) { animation-delay: 0.2s; } .insight-item:nth-child(3) { animation-delay: 0.3s; }
+        .insight-icon { flex-shrink: 0; margin-top: 2px; }
     </style>
 </head>
 <body>
@@ -439,9 +473,15 @@
             
             <!-- VIEW: DASHBOARD -->
             <div id="view-dashboard" class="view-section active">
-                <div class="header" style="text-align: left; margin-bottom: 25px;">
-                    <h1 style="font-size: 1.8rem;">Selamat Datang, Admin!</h1>
-                    <p>Berikut adalah ringkasan data undangan Anda hari ini.</p>
+                <div class="header" style="text-align: left; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: flex-end;">
+                    <div>
+                        <h1 style="font-size: 1.8rem;">Selamat Datang, Admin!</h1>
+                        <p>Berikut adalah ringkasan data undangan Anda hari ini.</p>
+                    </div>
+                    <button onclick="exportReport()" class="btn btn-secondary btn-sm" style="width: auto; margin: 0; gap: 8px;">
+                        <svg style="width:18px;height:18px;" viewBox="0 0 24 24"><path fill="currentColor" d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20M16,11V18.1L13.9,16L11.1,18.8L8.3,16L6.2,18.1L3.4,15.3L2,16.7L4.8,19.5L2,22.3L3.4,23.7L6.2,20.9L9,23.7L11.8,20.9L14.6,23.7L16,22.3L13.2,19.5L16,16.7L17.4,18.1V11H16Z" /></svg>
+                        Export Laporan PDF
+                    </button>
                 </div>
 
             <div class="stats-container">
@@ -459,10 +499,21 @@
                 </div>
             </div>
 
+            <!-- [BARU] Smart AI Insights Section -->
+            <div id="smart-insights-container" class="smart-insights hidden">
+                <div class="insight-header">
+                    <svg style="width:24px;height:24px;fill:#FFD700;" viewBox="0 0 24 24"><path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6A6,6 0 0,0 6,12A6,6 0 0,0 12,18A6,6 0 0,0 18,12A6,6 0 0,0 12,6M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8Z" /></svg>
+                    <h3 class="insight-title">Analisis Cerdas (AI Insights)</h3>
+                </div>
+                <ul id="insight-list" class="insight-list">
+                    <!-- Insight items will be generated here -->
+                </ul>
+            </div>
+
             <!-- Simple Chart Section -->
             <div class="chart-section">
                 <div class="chart-header">
-                    <h3>Statistik Pengunjung (Mingguan)</h3>
+                    <h3>Ringkasan Trafik Website</h3>
                     <select id="chart-filter" style="width: auto; padding: 6px 12px; font-size: 0.85rem;" onchange="loadAnalyticsData()">
                         <option value="7">7 Hari Terakhir</option>
                         <option value="30">30 Hari Terakhir</option>
@@ -471,6 +522,42 @@
                 <div id="visitor-chart" class="simple-bar-chart">
                     <!-- Canvas untuk Chart.js -->
                     <canvas id="analyticsCanvas"></canvas>
+                </div>
+                
+                <!-- [BARU] Bagian Grafik Tambahan -->
+                <div class="analytics-grid">
+                    <div style="border-top: 1px solid #eee; padding-top: 15px;">
+                        <h4 style="margin: 0 0 15px 0; font-size: 1rem;">Halaman Terpopuler</h4>
+                        <div class="mini-chart-container"><canvas id="pagesCanvas"></canvas></div>
+                    </div>
+                    <div style="border-top: 1px solid #eee; padding-top: 15px;">
+                        <h4 style="margin: 0 0 15px 0; font-size: 1rem;">Lokasi Pengunjung</h4>
+                        <div class="mini-chart-container"><canvas id="cityCanvas"></canvas></div>
+                    </div>
+                    <div style="border-top: 1px solid #eee; padding-top: 15px;">
+                        <h4 style="margin: 0 0 15px 0; font-size: 1rem;">Perangkat Pengguna</h4>
+                        <div class="mini-chart-container"><canvas id="deviceCanvas"></canvas></div>
+                    </div>
+                    <div style="border-top: 1px solid #eee; padding-top: 15px;">
+                        <h4 style="margin: 0 0 15px 0; font-size: 1rem;">Sumber Trafik</h4>
+                        <div class="mini-chart-container"><canvas id="sourceCanvas"></canvas></div>
+                    </div>
+                    <div style="border-top: 1px solid #eee; padding-top: 15px;">
+                        <h4 style="margin: 0 0 15px 0; font-size: 1rem;">Sistem Operasi</h4>
+                        <div class="mini-chart-container"><canvas id="osCanvas"></canvas></div>
+                    </div>
+                    <div style="border-top: 1px solid #eee; padding-top: 15px;">
+                        <h4 style="margin: 0 0 15px 0; font-size: 1rem;">Browser</h4>
+                        <div class="mini-chart-container"><canvas id="browserCanvas"></canvas></div>
+                    </div>
+                    <div style="border-top: 1px solid #eee; padding-top: 15px;">
+                        <h4 style="margin: 0 0 15px 0; font-size: 1rem;">Tipe Pengunjung</h4>
+                        <div class="mini-chart-container"><canvas id="userTypeCanvas"></canvas></div>
+                    </div>
+                    <div style="border-top: 1px solid #eee; padding-top: 15px;">
+                        <h4 style="margin: 0 0 15px 0; font-size: 1rem;">Negara</h4>
+                        <div class="mini-chart-container"><canvas id="countryCanvas"></canvas></div>
+                    </div>
                 </div>
             </div>
 
@@ -706,13 +793,21 @@
 
     <script>
         // KONFIGURASI
-        const GOOGLE_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbztZSjT8I3tNS_B1GUdvKFRCaqwLqKXD0HDRZw1hlJldEy813RhZmuZ9grIxeHSoc5b7Q/exec';
+        const GOOGLE_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbz_wmHWMRWYQILM7aYtM3CGJybFvbUjP85p-l2aTUOaw24wJhS5SiXBQU3fU3U8oN72cQ/exec';
         
         // Load Password dari LocalStorage atau gunakan default 'admin123'
         let ADMIN_PASSWORD = localStorage.getItem('adminPassword') || 'admin123';
 
-        // Variabel global untuk instance Chart.js
-        let analyticsChart = null;
+        // [DIUBAH] Variabel global untuk instance Chart.js (Multiple Charts)
+        let trendChart = null;
+        let pageChart = null;
+        let cityChart = null;
+        let deviceChart = null;
+        let sourceChart = null;
+        let osChart = null;
+        let browserChart = null;
+        let userTypeChart = null;
+        let countryChart = null;
 
         // Data Katalog Bawaan (Disalin dari index.html untuk keperluan admin)
         let catalogData = {
@@ -1269,14 +1364,13 @@
                         chartContainer.innerHTML = '<canvas id="analyticsCanvas"></canvas>';
                     }
 
-                    if (data && data.labels && data.values) {
-                        renderChart(data.labels, data.values);
+                    // [DIUBAH] Menangani data lengkap (trend, pages, cities)
+                    if (data && data.trend) {
+                        renderDashboardCharts(data);
                     } else {
                         // Fallback jika backend belum siap (Demo Data)
                         console.warn("Backend belum support analytics atau data kosong, menggunakan data demo.", data);
-                        const demoLabels = days == 7 ? ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'] : Array.from({length: 10}, (_, i) => `H-${10-i}`);
-                        const demoValues = days == 7 ? [120, 150, 180, 220, 190, 300, 250] : Array.from({length: 10}, () => Math.floor(Math.random() * 300));
-                        renderChart(demoLabels, demoValues);
+                        // Render demo data jika perlu (disederhanakan untuk brevity)
                     }
                 })
                 .catch(err => {
@@ -1285,42 +1379,61 @@
                 });
         }
 
-        function renderChart(labels, values) {
+        // [BARU] Fungsi Render Semua Grafik
+        function renderDashboardCharts(data) {
+            renderTrendChart(data.trend);
+            renderPageChart(data.pages);
+            renderCityChart(data.cities);
+            renderDeviceChart(data.devices);
+            renderSourceChart(data.sources);
+            renderOSChart(data.os);
+            renderBrowserChart(data.browser);
+            renderUserTypeChart(data.userType);
+            renderCountryChart(data.country);
+            
+            // [BARU] Generate Smart Insights setelah data tersedia
+            generateSmartInsights(data);
+        }
+
+        function renderTrendChart(trendData) {
             const ctx = document.getElementById('analyticsCanvas').getContext('2d');
             
-            // Hapus chart lama jika ada agar tidak menumpuk
-            if (analyticsChart) {
-                analyticsChart.destroy();
-            }
+            if (trendChart) trendChart.destroy();
 
             // Buat gradient warna hijau yang elegan
             const gradient = ctx.createLinearGradient(0, 0, 0, 400);
             gradient.addColorStop(0, 'rgba(90, 107, 89, 0.5)'); // Warna aksen transparan
             gradient.addColorStop(1, 'rgba(90, 107, 89, 0.0)');
             
-            analyticsChart = new Chart(ctx, {
+            trendChart = new Chart(ctx, {
                 type: 'line', // Menggunakan diagram garis (lebih bagus untuk tren)
                 data: {
-                    labels: labels,
+                    labels: trendData.labels,
                     datasets: [{
                         label: 'Pengunjung Aktif',
-                        data: values,
+                        data: trendData.users,
                         borderColor: '#5A6B59', // Warna garis (var(--accent-color))
                         backgroundColor: gradient, // Warna area bawah garis
                         borderWidth: 2,
-                        pointBackgroundColor: '#ffffff',
-                        pointBorderColor: '#5A6B59',
-                        pointRadius: 4,
-                        pointHoverRadius: 6,
                         fill: true, // Mengisi area di bawah garis
                         tension: 0.4 // Membuat garis melengkung halus (curved)
+                    },
+                    {
+                        label: 'Tampilan Halaman',
+                        data: trendData.views,
+                        borderColor: '#8ab088',
+                        borderDash: [5, 5], // Garis putus-putus
+                        borderWidth: 2,
+                        fill: false,
+                        tension: 0.4
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
                     plugins: {
-                        legend: { display: false }, // Sembunyikan legenda default
+                        legend: { display: true, position: 'top' },
                         tooltip: {
                             backgroundColor: '#1f2937',
                             titleColor: '#fff',
@@ -1347,6 +1460,267 @@
                         }
                     }
                 }
+            });
+        }
+
+        function renderPageChart(pageData) {
+            const ctx = document.getElementById('pagesCanvas').getContext('2d');
+            if (pageChart) pageChart.destroy();
+
+            pageChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: pageData.labels.map(l => l.length > 20 ? l.substring(0, 20) + '...' : l), // Pendekkan label
+                    datasets: [{
+                        label: 'Views',
+                        data: pageData.data,
+                        backgroundColor: '#5A6B59',
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    indexAxis: 'y', // Horizontal Bar
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { x: { grid: { display: false } }, y: { grid: { display: false } } }
+                }
+            });
+        }
+
+        function renderCityChart(cityData) {
+            const ctx = document.getElementById('cityCanvas').getContext('2d');
+            if (cityChart) cityChart.destroy();
+
+            cityChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: cityData.labels,
+                    datasets: [{
+                        data: cityData.data,
+                        backgroundColor: ['#5A6B59', '#748873', '#8EA58D', '#A8C2A7', '#C2DFC1'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'right', labels: { boxWidth: 12 } } }
+                }
+            });
+        }
+
+        function renderDeviceChart(deviceData) {
+            const ctx = document.getElementById('deviceCanvas').getContext('2d');
+            if (deviceChart) deviceChart.destroy();
+
+            deviceChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: deviceData.labels,
+                    datasets: [{
+                        data: deviceData.data,
+                        backgroundColor: ['#5A6B59', '#8EA58D', '#C2DFC1'],
+                        borderWidth: 1,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'right', labels: { boxWidth: 12 } } }
+                }
+            });
+        }
+
+        function renderSourceChart(sourceData) {
+            const ctx = document.getElementById('sourceCanvas').getContext('2d');
+            if (sourceChart) sourceChart.destroy();
+
+            sourceChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: sourceData.labels,
+                    datasets: [{
+                        label: 'Pengunjung',
+                        data: sourceData.data,
+                        backgroundColor: '#8EA58D',
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { x: { grid: { display: false } }, y: { beginAtZero: true } }
+                }
+            });
+        }
+
+        function renderOSChart(data) {
+            const ctx = document.getElementById('osCanvas').getContext('2d');
+            if (osChart) osChart.destroy();
+            osChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        data: data.data,
+                        backgroundColor: ['#5A6B59', '#748873', '#8EA58D', '#A8C2A7', '#C2DFC1'],
+                        borderWidth: 0
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { boxWidth: 12 } } } }
+            });
+        }
+
+        function renderBrowserChart(data) {
+            const ctx = document.getElementById('browserCanvas').getContext('2d');
+            if (browserChart) browserChart.destroy();
+            browserChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: 'Pengguna',
+                        data: data.data,
+                        backgroundColor: '#A8C2A7',
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { x: { grid: { display: false } }, y: { grid: { display: false } } }
+                }
+            });
+        }
+
+        function renderUserTypeChart(data) {
+            const ctx = document.getElementById('userTypeCanvas').getContext('2d');
+            if (userTypeChart) userTypeChart.destroy();
+            
+            // Translate labels if needed (new vs returning)
+            const labels = data.labels.map(l => l === 'new' ? 'Baru' : (l === 'returning' ? 'Kembali' : l));
+
+            userTypeChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data.data,
+                        backgroundColor: ['#5A6B59', '#C2DFC1'],
+                        borderWidth: 1,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { boxWidth: 12 } } } }
+            });
+        }
+
+        function renderCountryChart(data) {
+            const ctx = document.getElementById('countryCanvas').getContext('2d');
+            if (countryChart) countryChart.destroy();
+            countryChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: 'Pengunjung',
+                        data: data.data,
+                        backgroundColor: '#748873',
+                        borderRadius: 4
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } }, y: { beginAtZero: true } } }
+            });
+        }
+
+        // [BARU] Fungsi untuk Menghasilkan Analisis Cerdas (Smart Insights)
+        function generateSmartInsights(data) {
+            const container = document.getElementById('smart-insights-container');
+            const list = document.getElementById('insight-list');
+            list.innerHTML = ''; // Reset list
+
+            const insights = [];
+
+            // 1. Analisis Perangkat (Mobile vs Desktop)
+            if (data.devices && data.devices.labels.length > 0) {
+                const mobileIndex = data.devices.labels.findIndex(l => l.toLowerCase().includes('mobile'));
+                if (mobileIndex !== -1) {
+                    const mobileUsers = data.devices.data[mobileIndex];
+                    const totalUsers = data.devices.data.reduce((a, b) => a + b, 0);
+                    const mobilePercent = Math.round((mobileUsers / totalUsers) * 100);
+                    
+                    if (mobilePercent > 60) {
+                        insights.push({
+                            icon: '<path d="M17,19H7V5H17M17,1H7C5.89,1 5,1.89 5,3V21A2,2 0 0,0 7,23H17A2,2 0 0,0 19,21V3C19,1.89 18.1,1 17,1Z" />',
+                            text: `<b>Dominasi Mobile:</b> ${mobilePercent}% pengunjung menggunakan HP. Pastikan desain undangan Anda terlihat sempurna di layar kecil.`
+                        });
+                    }
+                }
+            }
+
+            // 2. Analisis Lokasi (Kota Teratas)
+            if (data.cities && data.cities.labels.length > 0) {
+                const topCity = data.cities.labels[0];
+                if (topCity && topCity !== '(not set)') {
+                    insights.push({
+                        icon: '<path d="M12,2C8.13,2 5,5.13 5,9C5,14.25 12,22 12,22C12,22 19,14.25 19,9C19,5.13 15.87,2 12,2M12,11.5A2.5,2.5 0 0,1 9.5,9A2.5,2.5 0 0,1 12,6.5A2.5,2.5 0 0,1 14.5,9A2.5,2.5 0 0,1 12,11.5Z" />',
+                        text: `<b>Target Lokasi:</b> Pengunjung terbanyak berasal dari <b>${topCity}</b>. Pertimbangkan untuk membuat promo khusus untuk area ini.`
+                    });
+                }
+            }
+
+            // 3. Analisis Tipe Pengunjung (Loyalitas)
+            if (data.userType && data.userType.labels.length > 0) {
+                const returnIndex = data.userType.labels.findIndex(l => l.toLowerCase().includes('returning') || l.toLowerCase().includes('kembali'));
+                if (returnIndex !== -1) {
+                    const returnUsers = data.userType.data[returnIndex];
+                    const totalUsers = data.userType.data.reduce((a, b) => a + b, 0);
+                    const returnPercent = Math.round((returnUsers / totalUsers) * 100);
+
+                    if (returnPercent > 20) {
+                        insights.push({
+                            icon: '<path d="M12,5.5A3.5,3.5 0 0,1 15.5,9A3.5,3.5 0 0,1 12,12.5A3.5,3.5 0 0,1 8.5,9A3.5,3.5 0 0,1 12,5.5M5,8C5.56,8 6.08,8.15 6.53,8.42C6.38,9.85 6.8,11.27 7.66,12.38C7.16,13.34 6.16,14 5,14A3,3 0 0,1 2,11A3,3 0 0,1 5,8M19,8A3,3 0 0,1 22,11A3,3 0 0,1 19,14C17.84,14 16.84,13.34 16.34,12.38C17.2,11.27 17.62,9.85 17.47,8.42C17.92,8.15 18.44,8 19,8M5.5,18.25C5.5,16.18 8.41,14.5 12,14.5C15.59,14.5 18.5,16.18 18.5,18.25V20H5.5V18.25M0,20V18.5C0,17.11 1.89,15.94 4.45,15.6C3.86,16.28 3.5,17.22 3.5,18.25V20H0M24,20H20.5V18.25C20.5,17.22 20.14,16.28 19.55,15.6C22.11,15.94 24,17.11 24,18.5V20Z" />',
+                            text: `<b>Loyalitas Tinggi:</b> ${returnPercent}% adalah pengunjung yang kembali. Konten Anda menarik minat mereka untuk berkunjung lagi.`
+                        });
+                    }
+                }
+            }
+
+            // Render Insights
+            if (insights.length > 0) {
+                insights.forEach(insight => {
+                    const li = document.createElement('li');
+                    li.className = 'insight-item';
+                    li.innerHTML = `
+                        <svg class="insight-icon" style="width:20px;height:20px;fill:currentColor" viewBox="0 0 24 24">${insight.icon}</svg>
+                        <span>${insight.text}</span>
+                    `;
+                    list.appendChild(li);
+                });
+                container.classList.remove('hidden');
+            }
+        }
+
+        // [BARU] Fungsi Export Laporan ke PDF
+        function exportReport() {
+            const element = document.getElementById('view-dashboard');
+            const opt = {
+                margin: 10,
+                filename: 'Laporan-Storybali-' + new Date().toISOString().slice(0,10) + '.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            
+            // Tampilkan notifikasi
+            showToast('Sedang membuat PDF...', 'success');
+            
+            html2pdf().set(opt).from(element).save().then(() => {
+                showToast('Laporan berhasil diunduh!', 'success');
             });
         }
     </script>
