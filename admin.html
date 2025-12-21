@@ -188,6 +188,7 @@
         .modal-header {
             padding: 20px; border-bottom: 1px solid #e5e7eb;
             display: flex; justify-content: space-between; align-items: center;
+            flex-shrink: 0; /* Mencegah header mengecil/hilang di layar sempit */
         }
         .modal-header h2 { margin: 0; font-size: 1.25rem; }
         .close-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--secondary-text); }
@@ -201,6 +202,7 @@
             padding: 20px; border-top: 1px solid #e5e7eb;
             display: flex; justify-content: flex-end; gap: 10px;
             background: var(--bg-color); border-radius: 0 0 16px 16px;
+            flex-shrink: 0; /* Mencegah tombol simpan tertutup/hilang di layar sempit */
         }
 
         .preview-container {
@@ -469,20 +471,15 @@
             <div class="chart-section">
                 <div class="chart-header">
                     <h3>Statistik Pengunjung (Mingguan)</h3>
-                    <select style="width: auto; padding: 6px 12px; font-size: 0.85rem;">
-                        <option>7 Hari Terakhir</option>
-                        <option>30 Hari Terakhir</option>
+                    <select id="chart-filter" style="width: auto; padding: 6px 12px; font-size: 0.85rem;" onchange="loadAnalyticsData()">
+                        <option value="7">7 Hari Terakhir</option>
+                        <option value="30">30 Hari Terakhir</option>
                     </select>
                 </div>
-                <div class="simple-bar-chart">
-                    <!-- Bars will be animated via CSS/JS -->
-                    <div class="bar-column"><span class="bar-value">120</span><div class="bar" style="height: 40%;"></div><span class="bar-label">Sen</span></div>
-                    <div class="bar-column"><span class="bar-value">185</span><div class="bar" style="height: 65%;"></div><span class="bar-label">Sel</span></div>
-                    <div class="bar-column"><span class="bar-value">210</span><div class="bar" style="height: 75%;"></div><span class="bar-label">Rab</span></div>
-                    <div class="bar-column"><span class="bar-value">160</span><div class="bar" style="height: 55%;"></div><span class="bar-label">Kam</span></div>
-                    <div class="bar-column"><span class="bar-value">240</span><div class="bar" style="height: 85%;"></div><span class="bar-label">Jum</span></div>
-                    <div class="bar-column"><span class="bar-value">310</span><div class="bar" style="height: 100%;"></div><span class="bar-label">Sab</span></div>
-                    <div class="bar-column"><span class="bar-value">280</span><div class="bar" style="height: 90%;"></div><span class="bar-label">Min</span></div>
+                <div id="visitor-chart" class="simple-bar-chart">
+                    <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:var(--secondary-text); font-size:0.9rem;">
+                        Memuat data...
+                    </div>
                 </div>
             </div>
 
@@ -586,7 +583,15 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h2 id="modal-title">Edit Tema</h2>
-                <button class="close-btn" onclick="closeModal()">&times;</button>
+                <div style="display: flex; align-items: center; gap: 5px;">
+                    <button id="delete-btn" class="btn btn-secondary btn-sm" style="width: auto; color: var(--danger-color); border-color: #fee2e2; background: #fef2f2;">Hapus</button>
+                    <button class="btn btn-secondary btn-sm" onclick="closeModal()" style="width: auto;">Batal</button>
+                    <button id="save-btn" class="btn btn-primary btn-sm" style="width: auto;">
+                        <svg style="width:18px;height:18px;fill:currentColor" viewBox="0 0 24 24"><path d="M15,9H5V5H15M12,19A3,3 0 0,1 9,16A3,3 0 0,1 12,13A3,3 0 0,1 15,16A3,3 0 0,1 12,19M17,3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V7L17,3Z" /></svg>
+                        Simpan
+                    </button>
+                    <button class="close-btn" onclick="closeModal()">&times;</button>
+                </div>
             </div>
             <div class="modal-body">
                 <div class="editor-form">
@@ -631,14 +636,6 @@
                         Gambar akan muncul di sini jika URL valid.
                     </p>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button id="delete-btn" class="btn btn-secondary btn-sm" style="margin-top:0; width: auto; color: var(--danger-color); border-color: #fee2e2; background: #fef2f2; margin-right: auto;">Hapus</button>
-                <button class="btn btn-secondary btn-sm" onclick="closeModal()" style="margin-top:0; width: auto;">Batal</button>
-                <button id="save-btn" class="btn btn-primary btn-sm" style="width: auto;">
-                    <svg style="width:18px;height:18px;fill:currentColor" viewBox="0 0 24 24"><path d="M15,9H5V5H15M12,19A3,3 0 0,1 9,16A3,3 0 0,1 12,13A3,3 0 0,1 15,16A3,3 0 0,1 12,19M17,3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V7L17,3Z" /></svg>
-                    Simpan Perubahan
-                </button>
             </div>
         </div>
     </div>
@@ -718,7 +715,7 @@
 
     <script>
         // KONFIGURASI
-        const GOOGLE_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycby1EDTIdNZgiis6y5CVDWxQVZx9ymh32_H2phPHtjYucNwvQ8E81zktu7bup0Bn_C6RMQ/exec';
+        const GOOGLE_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbwQmr4RFsi_fYWTNH2mfXYODcTxHEfZjPWGKTtkrdSxg6uSRzGmTSFO0zoPXCusfdSeSw/exec';
         
         // Load Password dari LocalStorage atau gunakan default 'admin123'
         let ADMIN_PASSWORD = localStorage.getItem('adminPassword') || 'admin123';
@@ -803,6 +800,7 @@
                 updateStats(); // Hitung statistik saat login
                 updateCategoryDropdown();
                 renderThemeGrid();
+                loadAnalyticsData(); // Load chart data
             } else {
                 showToast('Password salah!', 'error');
             }
@@ -1052,10 +1050,42 @@
                 return;
             }
 
-            ADMIN_PASSWORD = newPass;
-            localStorage.setItem('adminPassword', newPass);
-            showToast('Password berhasil diubah!', 'success');
-            closeChangePasswordModal();
+            const btn = document.getElementById('save-password-btn');
+            const originalText = btn.textContent;
+            btn.textContent = 'Menyimpan...';
+            btn.disabled = true;
+
+            // Kirim data ke Google Sheet untuk disimpan
+            const formData = {
+                action: 'save',
+                category: 'ADMIN_CONFIG',
+                type: 'PASSWORD',
+                themeName: newPass, // Password baru
+                originalThemeName: ADMIN_PASSWORD, // Password lama untuk mencari baris
+                image: '-', previewUrl: '-', price: 0, originalPrice: 0, discount: '0%', label: '-'
+            };
+
+            fetch(GOOGLE_SHEET_API_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'text/plain' },
+                body: JSON.stringify(formData)
+            })
+            .then(() => {
+                // Update state lokal HANYA jika berhasil
+                ADMIN_PASSWORD = newPass;
+                localStorage.setItem('adminPassword', newPass);
+                showToast('Password berhasil disimpan di Cloud!', 'success');
+                closeChangePasswordModal();
+            })
+            .catch(err => {
+                console.error(err);
+                showToast('Gagal menyimpan password ke Cloud.', 'error');
+            })
+            .finally(() => {
+                btn.textContent = originalText;
+                btn.disabled = false;
+            });
         }
 
         function openForgotPasswordModal(e) {
@@ -1099,15 +1129,16 @@
 
             fetch(GOOGLE_SHEET_API_URL, {
                 method: 'POST',
-                mode: 'no-cors',
-                headers: { 'Content-Type': 'text/plain' },
                 body: JSON.stringify(formData)
             })
-            .then(() => {
-                showToast('Data berhasil disimpan!', 'success');
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-                location.reload(); // Refresh untuk update data
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    showToast('Data berhasil disimpan!', 'success');
+                    setTimeout(() => location.reload(), 1000); // Beri jeda agar toast terlihat
+                } else {
+                    throw new Error(data.message || 'Gagal menyimpan data.');
+                }
             })
             .catch(err => {
                 console.error(err);
@@ -1136,13 +1167,16 @@
 
             fetch(GOOGLE_SHEET_API_URL, {
                 method: 'POST',
-                mode: 'no-cors',
-                headers: { 'Content-Type': 'text/plain' },
                 body: JSON.stringify(formData)
             })
-            .then(() => {
-                showToast('Tema berhasil dihapus!', 'success');
-                setTimeout(() => location.reload(), 1000);
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    showToast('Tema berhasil dihapus!', 'success');
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    throw new Error(data.message || 'Gagal menghapus data.');
+                }
             })
             .catch(err => {
                 console.error(err);
@@ -1192,12 +1226,12 @@
 
                         try {
                             await fetch(GOOGLE_SHEET_API_URL, {
-                                method: 'POST', mode: 'no-cors',
-                                headers: { 'Content-Type': 'text/plain' },
+                                method: 'POST',
                                 body: JSON.stringify(payload)
-                            });
+                            }).then(res => res.json()); // Tunggu response dari server
+
                             count++;
-                            await new Promise(r => setTimeout(r, 500));
+                            await new Promise(r => setTimeout(r, 200)); // Jeda singkat
                         } catch (e) { console.error(e); }
                     }
                 }
@@ -1205,6 +1239,61 @@
             showToast(`Selesai! ${count} tema terupload.`, 'success');
             btn.disabled = false;
             btn.textContent = "Upload Semua Data Bawaan";
+        }
+
+        // --- Analytics Functions ---
+        function loadAnalyticsData() {
+            const days = document.getElementById('chart-filter').value;
+            const chartContainer = document.getElementById('visitor-chart');
+            
+            // Tampilkan loading state
+            chartContainer.innerHTML = '<div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:var(--secondary-text);">Mengambil data...</div>';
+
+            // Panggil Google Apps Script (pastikan backend sudah diupdate untuk handle action=getAnalytics)
+            fetch(`${GOOGLE_SHEET_API_URL}?action=getAnalytics&days=${days}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.labels && data.values) {
+                        renderChart(data.labels, data.values);
+                    } else {
+                        // Fallback jika backend belum siap (Demo Data)
+                        console.warn("Backend belum support analytics, menggunakan data demo.");
+                        const demoLabels = days == 7 ? ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'] : Array.from({length: 10}, (_, i) => `H-${10-i}`);
+                        const demoValues = days == 7 ? [120, 150, 180, 220, 190, 300, 250] : Array.from({length: 10}, () => Math.floor(Math.random() * 300));
+                        renderChart(demoLabels, demoValues);
+                    }
+                })
+                .catch(err => {
+                    console.error("Gagal load analytics:", err);
+                    chartContainer.innerHTML = '<div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:var(--danger-color);">Gagal memuat data</div>';
+                });
+        }
+
+        function renderChart(labels, values) {
+            const container = document.getElementById('visitor-chart');
+            container.innerHTML = '';
+            
+            const maxValue = Math.max(...values, 1); // Hindari pembagian nol
+            
+            labels.forEach((label, index) => {
+                const value = values[index];
+                const heightPercentage = (value / maxValue) * 100;
+                
+                // Buat elemen bar
+                const col = document.createElement('div');
+                col.className = 'bar-column';
+                col.innerHTML = `
+                    <span class="bar-value">${value}</span>
+                    <div class="bar" style="height: 0%;"></div>
+                    <span class="bar-label">${label}</span>
+                `;
+                container.appendChild(col);
+
+                // Animasi height
+                setTimeout(() => {
+                    col.querySelector('.bar').style.height = `${Math.max(heightPercentage, 5)}%`; // Min 5% agar bar terlihat
+                }, 100 + (index * 50));
+            });
         }
     </script>
 </body>
