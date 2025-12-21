@@ -4274,6 +4274,7 @@
             cursor: grab; /* Kursor tangan terbuka */
             transition: transform 0.2s, box-shadow 0.2s;
             position: relative;
+            transition: background 0.3s ease, transform 0.2s; /* [PERBAIKAN] Transisi warna background */
         }
 
         .float-info-btn:active {
@@ -4406,6 +4407,16 @@
             97% { transform: rotate(10deg); }
             99% { transform: rotate(0deg); }
         }
+        
+        /* [BARU] Animasi saat menabrak dinding (Bounce Hit) */
+        @keyframes bounceHit {
+            0% { transform: scale(1); }
+            40% { transform: scale(1.25); box-shadow: 0 0 0 10px rgba(255, 255, 255, 0.3); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+        }
+        .float-info-btn.bounce-active {
+            animation: bounceHit 0.4s ease-out;
+        }
 
         /* [BARU] Tooltip Petunjuk "Klik Disini" */
         .click-hint {
@@ -4427,19 +4438,51 @@
         }
         .click-hint.show {
             opacity: 1;
-            animation: hintBounce 1s infinite alternate;
+            /* [DIUBAH] Default (Text di Kiri): Pantul ke Kanan (mendekati tombol) */
+            animation: hintBounceRight 1s infinite alternate;
         }
         .draggable-float.left-side .click-hint {
             right: auto;
             left: 65px; /* Muncul di sebelah kanan tombol jika di sisi kiri */
+            /* [DIUBAH] Text di Kanan: Pantul ke Kiri (mendekati tombol) */
+            animation: hintBounceLeft 1s infinite alternate;
         }
-        @keyframes hintBounce { from { transform: translateY(-50%) translateX(0); } to { transform: translateY(-50%) translateX(-5px); } }
+        @keyframes hintBounceRight { from { transform: translateY(-50%) translateX(0); } to { transform: translateY(-50%) translateX(5px); } }
+        @keyframes hintBounceLeft { from { transform: translateY(-50%) translateX(0); } to { transform: translateY(-50%) translateX(-5px); } }
+
+        /* [PERBAIKAN] CSS Emoji States dipindahkan ke sini agar lebih stabil */
+        .emoji-icon {
+            width: 28px !important; /* Override style svg umum */
+            height: 28px !important;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            transition: opacity 0.2s ease-in-out;
+            color: white;
+            pointer-events: none;
+        }
+        
+        /* State Normal: Senyum */
+        .float-info-btn .emoji-smile { opacity: 1; }
+        
+        /* State Takut: Abu-abu & Emoji Takut */
+        .float-info-btn.state-fear { background: linear-gradient(135deg, #7f8c8d, #566573); }
+        .float-info-btn.state-fear .emoji-smile { opacity: 0; }
+        .float-info-btn.state-fear .emoji-fear { opacity: 1; }
+        
+        /* State Sakit: Merah & Emoji Sakit */
+        .float-info-btn.state-hurt { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+        .float-info-btn.state-hurt .emoji-smile { opacity: 0; }
+        .float-info-btn.state-hurt .emoji-fear { opacity: 0; }
+        .float-info-btn.state-hurt .emoji-hurt { opacity: 1; }
     </style>
 
     <!-- [BARU] HTML Struktur Tombol Melayang -->
     <div id="draggable-info-container" class="draggable-float left-side hidden">
         <!-- [BARU] Petunjuk Klik -->
-        <div id="click-hint" class="click-hint">Ada Info Promo! ☝️</div>
+        <div id="click-hint" class="click-hint">Klik Ada Promo!</div>
         
         <!-- Gelembung Chat -->
         <div id="info-bubble" class="info-bubble">
@@ -4454,8 +4497,24 @@
         
         <!-- Tombol Ikon Info -->
         <div id="info-float-btn" class="float-info-btn">
-            <svg viewBox="0 0 24 24"><path d="M11,9H13V7H11M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M11,17H13V11H11V17Z" /></svg>
-            <!-- [BARU] Badge Angka -->
+            <!-- [DIUBAH] Mengganti ikon info dengan emoji yang bisa berekspresi -->
+            <svg class="emoji-icon emoji-smile" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M6 14q6 3 12 0" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+                <circle cx="7" cy="10" r="1.2"/>
+                <circle cx="17" cy="10" r="1.2"/>
+            </svg>
+            <svg class="emoji-icon emoji-fear" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M6 15q6-2 12 0" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+                <circle cx="7" cy="9.5" r="1.5"/>
+                <circle cx="17" cy="9.5" r="1.5"/>
+            </svg>
+            <svg class="emoji-icon emoji-hurt" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M6 16q6-3 12 0" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+                <path d="M5.5 8.5l3 3m0-3l-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M15.5 8.5l3 3m0-3l-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+
+            <!-- Badge Angka -->
             <div id="info-badge" class="float-badge">1</div>
         </div>
     </div>
@@ -4463,6 +4522,7 @@
     <!-- [BARU] Script untuk Logika Drag & Toggle -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+
             const container = document.getElementById('draggable-info-container');
             const btn = document.getElementById('info-float-btn');
             const bubble = document.getElementById('info-bubble');
@@ -4547,6 +4607,11 @@
                 // Update posisi elemen
                 container.style.left = newLeft + 'px';
                 container.style.top = newTop + 'px';
+
+                // [BARU] Update orientasi (kiri/kanan/atas/bawah) secara real-time saat digeser
+                updateOrientation(newLeft, newTop);
+                // [BARU] Update ekspresi emoji saat digeser
+                updateEmojiState(newLeft, newTop);
             }
 
             // Fungsi Selesai Geser
@@ -4564,22 +4629,9 @@
                     }
                 }
 
-                // [BARU] Cek posisi akhir untuk menentukan arah bubble (Kiri/Kanan & Atas/Bawah)
+                // Update orientasi terakhir (menggunakan posisi saat ini)
                 const rect = container.getBoundingClientRect();
-                
-                // Cek Horizontal (Kiri/Kanan)
-                if (rect.left < window.innerWidth / 2) {
-                    container.classList.add('left-side'); // Tombol di kiri, bubble muncul ke kanan
-                } else {
-                    container.classList.remove('left-side'); // Tombol di kanan, bubble muncul ke kiri
-                }
-
-                // Cek Vertikal (Atas/Bawah)
-                if (rect.top < window.innerHeight / 2) {
-                    container.classList.add('top-side'); // Tombol di atas, bubble muncul ke bawah
-                } else {
-                    container.classList.remove('top-side'); // Tombol di bawah, bubble muncul ke atas
-                }
+                updateOrientation(rect.left, rect.top);
             }
 
             // Event Listeners untuk Mouse (Desktop)
@@ -4617,6 +4669,64 @@
 
             // Mulai timer saat halaman dimuat
             startAttentionSeeker();
+
+            // [BARU] Fungsi Helper untuk Update Orientasi (Kiri/Kanan/Atas/Bawah)
+            function updateOrientation(left, top) {
+                const centerX = left + container.offsetWidth / 2;
+                const centerY = top + container.offsetHeight / 2;
+
+                // Horizontal
+                if (centerX < window.innerWidth / 2) {
+                    container.classList.add('left-side');
+                } else {
+                    container.classList.remove('left-side');
+                }
+
+                // Vertical
+                if (centerY < window.innerHeight / 2) {
+                    container.classList.add('top-side');
+                } else {
+                    container.classList.remove('top-side');
+                }
+            }
+
+            // [BARU] Fungsi untuk mengubah ekspresi Emoji
+            function updateEmojiState(left, top) {
+                const proximityThreshold = 80; // [DIUBAH] Jarak diperbesar agar ekspresi takut lebih terlihat
+                const maxX = window.innerWidth - container.offsetWidth;
+                const maxY = window.innerHeight - container.offsetHeight;
+
+                // Jika sedang dalam keadaan 'sakit', jangan ubah jadi 'takut' dulu
+                if (btn.classList.contains('state-hurt')) {
+                    return;
+                }
+
+                if (left <= proximityThreshold || left >= maxX - proximityThreshold ||
+                    top <= proximityThreshold || top >= maxY - proximityThreshold) {
+                    btn.classList.add('state-fear');
+                } else {
+                    btn.classList.remove('state-fear');
+                }
+            }
+
+            // [BARU] Fungsi Efek Pantulan
+            function triggerBounceEffect() {
+                // [DIUBAH] Atur status menjadi 'sakit'
+                btn.classList.remove('state-fear');
+                btn.classList.add('state-hurt');
+
+                btn.classList.remove('bounce-active');
+                void btn.offsetWidth; // Trigger reflow untuk restart animasi
+                btn.classList.add('bounce-active');
+
+                // Kembali dari status 'sakit' setelah beberapa saat
+                setTimeout(() => {
+                    btn.classList.remove('state-hurt');
+                    // Cek ulang status 'takut' setelah tidak 'sakit' lagi
+                    const rect = container.getBoundingClientRect();
+                    // updateEmojiState(rect.left, rect.top); // Biarkan loop animasi yang mengurus ini
+                }, 500); // Ekspresi sakit berlangsung selama 0.5 detik
+            }
 
             // [BARU] Fungsi Animasi Terbang (Melayang Kesana-kemari)
             function animateFlying() {
@@ -4658,19 +4768,33 @@
                 const maxX = window.innerWidth - container.offsetWidth;
                 const maxY = window.innerHeight - container.offsetHeight;
 
+                let bounced = false;
+
                 // Logika Pantulan (Bounce) di tepi layar
                 if (currentLeft <= 0 || currentLeft >= maxX) {
                     flyVx *= -1; // Balik arah horizontal
                     currentLeft = Math.max(0, Math.min(currentLeft, maxX));
+                    bounced = true;
                 }
                 if (currentTop <= 0 || currentTop >= maxY) {
                     flyVy *= -1; // Balik arah vertikal
                     currentTop = Math.max(0, Math.min(currentTop, maxY));
+                    bounced = true;
+                }
+
+                if (bounced) {
+                    triggerBounceEffect();
                 }
 
                 // Terapkan posisi baru
                 container.style.left = currentLeft + 'px';
                 container.style.top = currentTop + 'px';
+
+                // [BARU] Update orientasi secara real-time saat terbang
+                updateOrientation(currentLeft, currentTop);
+                
+                // [BARU] Update ekspresi emoji saat terbang
+                updateEmojiState(currentLeft, currentTop);
 
                 flyFrameId = requestAnimationFrame(animateFlying);
             }
