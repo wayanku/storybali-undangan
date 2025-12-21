@@ -631,6 +631,19 @@
                 </div>
 
                 <div class="container" style="max-width: 600px; margin: 0;">
+                    <!-- [BARU] Form Pesan Pengunjung -->
+                    <div class="form-group" style="padding: 15px 0; border-bottom: 1px solid #e5e7eb;">
+                        <label style="margin-bottom: 10px;">Pesan untuk Pengunjung (Halaman Depan)</label>
+                        <textarea id="visitor-msg-input" rows="3" placeholder="Tulis pesan sambutan, promo, atau pengumuman..." style="width: 100%; margin-bottom: 10px; padding: 10px; border-radius: 8px; border: 1px solid #e5e7eb;"></textarea>
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" id="visitor-msg-toggle" style="width: auto; margin: 0;">
+                                <label for="visitor-msg-toggle" style="margin: 0; font-weight: normal; cursor: pointer;">Tampilkan Pesan</label>
+                            </div>
+                            <button id="save-visitor-msg-btn" class="btn btn-primary btn-sm" style="width: auto; margin: 0;">Simpan Pesan</button>
+                        </div>
+                    </div>
+
                     <div class="form-group" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #e5e7eb;">
                         <div>
                             <label style="margin: 0;">Mode Gelap (Dark Mode)</label>
@@ -797,6 +810,9 @@
         
         // Load Password dari LocalStorage atau gunakan default 'admin123'
         let ADMIN_PASSWORD = localStorage.getItem('adminPassword') || 'admin123';
+        
+        // [BARU] Variabel untuk Pesan Pengunjung
+        let VISITOR_CONFIG = { text: '', active: false };
 
         // [DIUBAH] Variabel global untuk instance Chart.js (Multiple Charts)
         let trendChart = null;
@@ -883,6 +899,8 @@
             document.getElementById('change-password-btn').addEventListener('click', openChangePasswordModal);
             document.getElementById('save-password-btn').addEventListener('click', saveNewPassword);
             document.getElementById('forgot-password-link').addEventListener('click', openForgotPasswordModal);
+            // [BARU] Event listener untuk simpan pesan pengunjung
+            document.getElementById('save-visitor-msg-btn').addEventListener('click', saveVisitorMessage);
             
             // Inisialisasi dropdown awal
             // renderThemeGrid(); // Called after login
@@ -936,8 +954,17 @@
         function processCatalogData(data) {
             const newCatalogData = {};
             data.forEach(row => {
-                // [BARU] Lewati baris konfigurasi admin agar tidak muncul di daftar tema
-                if (row.category === 'ADMIN_CONFIG') return;
+                // [DIUBAH] Cek konfigurasi admin (Password & Pesan Pengunjung)
+                if (row.category === 'ADMIN_CONFIG') {
+                    if (row.type === 'VISITOR_MESSAGE') {
+                        VISITOR_CONFIG.text = row.themeName;
+                        VISITOR_CONFIG.active = String(row.label).toLowerCase() === 'true';
+                        // Update UI input
+                        document.getElementById('visitor-msg-input').value = VISITOR_CONFIG.text;
+                        document.getElementById('visitor-msg-toggle').checked = VISITOR_CONFIG.active;
+                    }
+                    return;
+                }
 
                 if (!newCatalogData[row.category]) {
                     newCatalogData[row.category] = [
@@ -1120,6 +1147,44 @@
             renderThemeGrid();
             closeCategoryModal();
             showToast('Kategori berhasil ditambahkan!', 'success');
+        }
+
+        // [BARU] Fungsi Simpan Pesan Pengunjung
+        function saveVisitorMessage() {
+            const text = document.getElementById('visitor-msg-input').value;
+            const active = document.getElementById('visitor-msg-toggle').checked;
+            const btn = document.getElementById('save-visitor-msg-btn');
+            const originalText = btn.textContent;
+
+            btn.textContent = 'Menyimpan...';
+            btn.disabled = true;
+
+            const formData = {
+                action: 'save',
+                category: 'ADMIN_CONFIG',
+                type: 'VISITOR_MESSAGE',
+                themeName: text, // Kita simpan teks pesan di kolom themeName
+                label: active ? 'true' : 'false', // Kita simpan status aktif di kolom label
+                image: '-', previewUrl: '-', price: 0, originalPrice: 0, discount: '0%'
+            };
+
+            fetch(GOOGLE_SHEET_API_URL, {
+                method: 'POST',
+                body: JSON.stringify(formData)
+            })
+            .then(res => res.json())
+            .then(data => {
+                showToast('Pesan pengunjung berhasil disimpan!', 'success');
+                VISITOR_CONFIG = { text, active }; // Update lokal
+            })
+            .catch(err => {
+                console.error(err);
+                showToast('Gagal menyimpan pesan.', 'error');
+            })
+            .finally(() => {
+                btn.textContent = originalText;
+                btn.disabled = false;
+            });
         }
 
         // Password Management Functions
