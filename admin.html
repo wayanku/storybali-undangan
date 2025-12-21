@@ -62,10 +62,6 @@
             box-shadow: var(--shadow-lg);
             transition: background-color 0.3s ease, box-shadow 0.3s ease;
         }
-        .dashboard-container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
 
         .header {
             text-align: center;
@@ -295,6 +291,107 @@
             .stat-card { flex-direction: row; justify-content: space-between; padding: 15px 20px; }
             .stat-value { font-size: 1.4rem; }
         }
+
+        /* --- NEW: App Layout (Sidebar & Main Content) --- */
+        .app-layout { display: flex; min-height: 100vh; background-color: var(--bg-color); }
+        
+        /* Sidebar Styling */
+        .sidebar {
+            width: 260px; background: var(--card-bg); border-right: 1px solid #e5e7eb;
+            padding: 25px; display: flex; flex-direction: column;
+            position: sticky; top: 0; height: 100vh; z-index: 100;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+        .sidebar-header { display: flex; align-items: center; gap: 12px; margin-bottom: 40px; padding-left: 5px; }
+        .sidebar-logo { width: 32px; height: 32px; background: var(--accent-color); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; }
+        .sidebar-title { font-weight: 800; font-size: 1.1rem; color: var(--primary-text); }
+        
+        .nav-menu { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
+        .nav-item {
+            padding: 12px 15px; border-radius: 12px; color: var(--secondary-text);
+            text-decoration: none; display: flex; align-items: center; gap: 12px;
+            cursor: pointer; transition: all 0.2s; font-weight: 600; font-size: 0.95rem;
+        }
+        .nav-item svg { width: 20px; height: 20px; stroke-width: 2px; }
+        .nav-item:hover { background: rgba(0,0,0,0.03); color: var(--primary-text); }
+        .nav-item.active { background: var(--accent-color); color: white; box-shadow: 0 4px 12px rgba(90, 107, 89, 0.3); }
+        
+        /* Main Content Area */
+        .main-content { flex: 1; padding: 30px; overflow-y: auto; max-width: 100%; }
+        .view-section { display: none; animation: fadeIn 0.3s ease-out; }
+        .view-section.active { display: block; }
+        
+        /* Mobile Responsive Layout */
+        @media (max-width: 768px) {
+            .app-layout { display: block; } /* Ubah ke block agar layout lebih stabil di HP */
+            .sidebar { 
+                position: fixed !important; bottom: 0 !important; top: auto !important;
+                left: 0; width: 100%; height: auto !important; 
+                flex-direction: row; justify-content: space-around; padding: 12px; 
+                border-right: none; border-top: 1px solid #e5e7eb; 
+                box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+                z-index: 9999; /* Pastikan menu bawah selalu di atas konten */
+                background-color: var(--card-bg);
+                padding-bottom: calc(12px + env(safe-area-inset-bottom)); /* Support iPhone X+ */
+            }
+            .sidebar-header { display: none; }
+            .nav-menu { flex-direction: row; width: 100%; justify-content: space-around; gap: 0; }
+            .nav-item { flex-direction: column; font-size: 0.75rem; gap: 5px; padding: 8px 12px; border-radius: 8px; text-align: center; flex: 1; }
+            .nav-item svg { width: 24px; height: 24px; }
+            .nav-text { display: block; }
+            .main-content { padding: 20px 15px 100px 15px !important; width: 100%; } /* Extra padding bottom for nav bar */
+            
+            /* Perbaikan Layout Mobile agar Rapi */
+            .chart-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .chart-header select { width: 100% !important; }
+            
+            /* Paksa header flex menjadi kolom di HP agar tidak berantakan */
+            #view-themes .header { flex-direction: column !important; align-items: flex-start !important; }
+            #view-themes .header > div { width: 100%; }
+            #view-themes .header button { width: 100% !important; margin: 10px 0 0 0 !important; }
+        }
+
+        /* --- NEW: Chart & Activity Styles --- */
+        .chart-section {
+            background: var(--card-bg); border-radius: 12px; border: 1px solid #e5e7eb;
+            padding: 20px; margin-bottom: 25px; box-shadow: var(--shadow-sm);
+        }
+        .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .chart-header h3 { margin: 0; font-size: 1.1rem; color: var(--primary-text); }
+        
+        .simple-bar-chart {
+            display: flex; align-items: flex-end; gap: 10px; height: 180px;
+            padding-bottom: 20px; border-bottom: 1px solid #e5e7eb;
+        }
+        .bar-column {
+            flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; height: 100%; justify-content: flex-end;
+        }
+        .bar {
+            width: 100%; background-color: var(--accent-color); opacity: 0.8;
+            border-radius: 4px 4px 0 0; transition: height 1s ease, opacity 0.2s;
+            min-height: 4px; position: relative;
+        }
+        .bar:hover { opacity: 1; transform: scaleX(1.05); }
+        .bar-label { font-size: 0.75rem; color: var(--secondary-text); font-weight: 600; }
+        .bar-value { font-size: 0.7rem; color: var(--primary-text); font-weight: 700; margin-bottom: 4px; }
+
+        .activity-list {
+            background: var(--card-bg); border-radius: 12px; border: 1px solid #e5e7eb;
+            overflow: hidden; box-shadow: var(--shadow-sm);
+        }
+        .activity-item {
+            padding: 15px 20px; border-bottom: 1px solid #e5e7eb; display: flex; gap: 15px; align-items: center;
+            transition: background-color 0.2s;
+        }
+        .activity-item:last-child { border-bottom: none; }
+        .activity-item:hover { background-color: rgba(0,0,0,0.01); }
+        .activity-icon {
+            width: 40px; height: 40px; border-radius: 50%; background: rgba(90, 107, 89, 0.1);
+            display: flex; align-items: center; justify-content: center; color: var(--accent-color); flex-shrink: 0;
+        }
+        .activity-details h4 { margin: 0 0 4px 0; font-size: 0.95rem; color: var(--primary-text); }
+        .activity-details p { margin: 0; font-size: 0.85rem; color: var(--secondary-text); }
+        .activity-time { margin-left: auto; font-size: 0.8rem; color: var(--secondary-text); white-space: nowrap; }
     </style>
 </head>
 <body>
@@ -319,29 +416,40 @@
             <a href="index.html" class="back-link">← Kembali ke Website Utama</a>
     </div>
 
-    <!-- Dashboard Section -->
-    <div id="dashboard-section" class="container dashboard-container hidden">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-            <div class="header">
-                <h1 style="text-align: left; margin-bottom: 5px;">Dashboard Admin</h1>
-                <p>Kelola data tema yang tampil di website.</p>
+    <!-- App Layout (New Dashboard Structure) -->
+    <div id="app-layout" class="app-layout hidden">
+        <!-- Sidebar / Bottom Nav -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo"><svg style="width:20px;height:20px;fill:currentColor" viewBox="0 0 24 24"><path d="M3,13H11V3H3V13M3,21H11V15H3V21M13,21H21V11H13V21M13,3V9H21V3H13Z" /></svg></div>
+                <div class="sidebar-title">Storybali Admin</div>
             </div>
-            <div style="display: flex; gap: 10px;">
-                <button id="dark-mode-btn" class="btn btn-secondary btn-sm" title="Toggle Dark Mode">
-                    <svg style="width:18px;height:18px;fill:currentColor" viewBox="0 0 24 24"><path d="M17.75,4.09L15.22,6.03L16.13,9.09L13.5,7.28L10.87,9.09L11.78,6.03L9.25,4.09L12.44,4L13.5,1L14.56,4L17.75,4.09M21.25,11L19.61,12.25L20.2,14.23L18.5,13.06L16.8,14.23L17.39,12.25L15.75,11L17.81,10.95L18.5,9L19.19,10.95L21.25,11M18.97,15.95C19.8,15.87 20.69,17.05 20.16,17.8C19.84,18.25 19.5,18.67 19.08,19.07C15.17,23 8.84,23 4.94,19.07C1.03,15.17 1.03,8.83 4.94,4.93C5.34,4.53 5.76,4.17 6.21,3.85C6.96,3.32 8.14,4.21 8.06,5.04C6.93,10.39 11.61,15.06 16.97,14.04C17.65,13.91 18.34,14.58 18.47,15.27C18.59,15.5 18.76,15.71 18.97,15.95Z" /></svg>
-                </button>
-                <button id="change-password-btn" class="btn btn-secondary btn-sm" title="Ganti Password">
-                    <svg style="width:18px;height:18px;fill:currentColor" viewBox="0 0 24 24"><path d="M12,17A2,2 0 0,0 14,15C14,13.89 13.1,13 12,13A2,2 0 0,0 10,15A2,2 0 0,0 12,17M18,8H17V6A5,5 0 0,0 12,1A5,5 0 0,0 7,6V8H6A2,2 0 0,0 4,10V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V10A2,2 0 0,0 18,8M12,3A3,3 0 0,1 15,6V8H9V6A3,3 0 0,1 12,3Z" /></svg>
-                </button>
-                <button id="sync-btn" class="btn btn-secondary btn-sm">
-                    <svg style="width:18px;height:18px;fill:currentColor" viewBox="0 0 24 24"><path d="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z" /></svg>
-                    Sync Data
-                </button>
-                <button onclick="location.reload()" class="btn btn-secondary btn-sm" style="color: var(--danger-color); border-color: #fee2e2; background: #fef2f2;">Keluar</button>
-            </div>
-        </div>
+            <ul class="nav-menu">
+                <li class="nav-item active" onclick="switchTab('dashboard', this)">
+                    <svg viewBox="0 0 24 24"><path fill="currentColor" d="M13,3V9H21V3M13,21H21V11H13M3,21H11V15H3M3,13H11V3H3V13Z" /></svg>
+                    <span class="nav-text">Dashboard</span>
+                </li>
+                <li class="nav-item" onclick="switchTab('themes', this)">
+                    <svg viewBox="0 0 24 24"><path fill="currentColor" d="M20,6H4V4H20M20,9H4V7H20M20,12H4V10H20M4,15H15V13H4M4,18H15V16H4V18Z" /></svg>
+                    <span class="nav-text">Kelola Tema</span>
+                </li>
+                <li class="nav-item" onclick="switchTab('settings', this)">
+                    <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.21,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.67 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z" /></svg>
+                    <span class="nav-text">Pengaturan</span>
+                </li>
+            </ul>
+        </aside>
 
-            <!-- Stats Section (New) -->
+        <!-- Main Content -->
+        <main class="main-content">
+            
+            <!-- VIEW: DASHBOARD -->
+            <div id="view-dashboard" class="view-section active">
+                <div class="header" style="text-align: left; margin-bottom: 25px;">
+                    <h1 style="font-size: 1.8rem;">Selamat Datang, Admin!</h1>
+                    <p>Berikut adalah ringkasan data undangan Anda hari ini.</p>
+                </div>
+
             <div class="stats-container">
                 <div class="stat-card">
                     <span class="stat-label">Total Tema</span>
@@ -357,15 +465,68 @@
                 </div>
             </div>
 
+            <!-- Simple Chart Section -->
+            <div class="chart-section">
+                <div class="chart-header">
+                    <h3>Statistik Pengunjung (Mingguan)</h3>
+                    <select style="width: auto; padding: 6px 12px; font-size: 0.85rem;">
+                        <option>7 Hari Terakhir</option>
+                        <option>30 Hari Terakhir</option>
+                    </select>
+                </div>
+                <div class="simple-bar-chart">
+                    <!-- Bars will be animated via CSS/JS -->
+                    <div class="bar-column"><span class="bar-value">120</span><div class="bar" style="height: 40%;"></div><span class="bar-label">Sen</span></div>
+                    <div class="bar-column"><span class="bar-value">185</span><div class="bar" style="height: 65%;"></div><span class="bar-label">Sel</span></div>
+                    <div class="bar-column"><span class="bar-value">210</span><div class="bar" style="height: 75%;"></div><span class="bar-label">Rab</span></div>
+                    <div class="bar-column"><span class="bar-value">160</span><div class="bar" style="height: 55%;"></div><span class="bar-label">Kam</span></div>
+                    <div class="bar-column"><span class="bar-value">240</span><div class="bar" style="height: 85%;"></div><span class="bar-label">Jum</span></div>
+                    <div class="bar-column"><span class="bar-value">310</span><div class="bar" style="height: 100%;"></div><span class="bar-label">Sab</span></div>
+                    <div class="bar-column"><span class="bar-value">280</span><div class="bar" style="height: 90%;"></div><span class="bar-label">Min</span></div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="header" style="text-align: left; margin-bottom: 15px; margin-top: 30px;">
+                <h3 style="font-size: 1.2rem; margin: 0;">Aktivitas Terbaru</h3>
+            </div>
+            <div class="activity-list">
+                <div class="activity-item">
+                    <div class="activity-icon"><svg style="width:20px;height:20px;fill:currentColor" viewBox="0 0 24 24"><path d="M11,9H13V7H11M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M11,17H13V11H11V17Z" /></svg></div>
+                    <div class="activity-details"><h4>Pesanan Baru Masuk</h4><p>Tema Pernikahan Bali 1 dipesan via WhatsApp.</p></div>
+                    <span class="activity-time">5m lalu</span>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-icon"><svg style="width:20px;height:20px;fill:currentColor" viewBox="0 0 24 24"><path d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z" /></svg></div>
+                    <div class="activity-details"><h4>Update Tema Berhasil</h4><p>Harga tema "Metatah Elegan" diperbarui.</p></div>
+                    <span class="activity-time">2j lalu</span>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-icon"><svg style="width:20px;height:20px;fill:currentColor" viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z" /></svg></div>
+                    <div class="activity-details"><h4>Review Baru</h4><p>Bintang 5 diterima untuk kategori Ulang Tahun.</p></div>
+                    <span class="activity-time">1h lalu</span>
+                </div>
+            </div>
+            </div>
+
+            <!-- VIEW: THEMES (KELOLA TEMA) -->
+            <div id="view-themes" class="view-section">
+                <div class="header" style="text-align: left; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h2 style="margin: 0; font-size: 1.5rem;">Katalog Tema</h2>
+                        <p style="margin: 5px 0 0;">Tambah, edit, atau hapus tema undangan.</p>
+                    </div>
+                    <!-- Tombol Tambah Kategori Baru -->
+                    <button onclick="openCategoryModal()" class="btn btn-secondary btn-sm" style="width: auto; margin: 0;">
+                        + Kategori Baru
+                    </button>
+                </div>
+
             <div class="filter-box">
                 <div class="form-group" style="margin-bottom: 0; flex: 1;">
                         <label>Kategori</label>
                         <select id="admin-category">
-                            <option value="Pernikahan Bali">Pernikahan Bali</option>
-                            <option value="Pernikahan Muslim">Pernikahan Muslim</option>
-                            <option value="Metatah / Potong Gigi">Metatah</option>
-                            <option value="Ulang Tahun">Ulang Tahun</option>
-                            <option value="3 Bulanan">3 Bulanan</option>
+                            <!-- Options will be populated dynamically -->
                         </select>
                 </div>
                 <div class="form-group" style="margin-bottom: 0; flex: 1;">
@@ -385,6 +546,39 @@
             <div id="theme-grid" class="theme-grid">
                 <!-- Content populated by JS -->
             </div>
+            </div>
+
+            <!-- VIEW: SETTINGS -->
+            <div id="view-settings" class="view-section">
+                <div class="header" style="text-align: left; margin-bottom: 25px;">
+                    <h2 style="margin: 0; font-size: 1.5rem;">Pengaturan Akun</h2>
+                    <p style="margin: 5px 0 0;">Kelola keamanan dan preferensi aplikasi.</p>
+                </div>
+
+                <div class="container" style="max-width: 600px; margin: 0;">
+                    <div class="form-group" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #e5e7eb;">
+                        <div>
+                            <label style="margin: 0;">Mode Gelap (Dark Mode)</label>
+                            <p style="margin: 5px 0 0; font-size: 0.85rem; color: var(--secondary-text);">Ubah tampilan menjadi gelap agar nyaman di mata.</p>
+                        </div>
+                        <button id="dark-mode-btn" class="btn btn-secondary btn-sm" style="width: auto; margin: 0;">Toggle</button>
+                    </div>
+
+                    <div class="form-group" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #e5e7eb;">
+                        <div>
+                            <label style="margin: 0;">Keamanan Akun</label>
+                            <p style="margin: 5px 0 0; font-size: 0.85rem; color: var(--secondary-text);">Ganti password login admin Anda secara berkala.</p>
+                        </div>
+                        <button id="change-password-btn" class="btn btn-secondary btn-sm" style="width: auto; margin: 0;">Ganti Password</button>
+                    </div>
+
+                    <div style="margin-top: 30px;">
+                        <button id="sync-btn" class="btn btn-primary" style="margin-bottom: 15px;">Sync Data ke Google Sheet</button>
+                        <button onclick="location.reload()" class="btn btn-secondary" style="color: var(--danger-color); border-color: #fee2e2; background: #fef2f2;">Keluar Aplikasi</button>
+                    </div>
+                </div>
+            </div>
+        </main>
     </div>
 
     <!-- Editor Modal -->
@@ -445,6 +639,26 @@
                     <svg style="width:18px;height:18px;fill:currentColor" viewBox="0 0 24 24"><path d="M15,9H5V5H15M12,19A3,3 0 0,1 9,16A3,3 0 0,1 12,13A3,3 0 0,1 15,16A3,3 0 0,1 12,19M17,3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V7L17,3Z" /></svg>
                     Simpan Perubahan
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Category Modal -->
+    <div id="category-modal" class="modal-overlay">
+        <div class="modal-content" style="height: auto; max-width: 400px;">
+            <div class="modal-header">
+                <h2>Tambah Kategori</h2>
+                <button class="close-btn" onclick="closeCategoryModal()">&times;</button>
+            </div>
+            <div class="modal-body" style="display: block; grid-template-columns: 1fr;">
+                <div class="form-group">
+                    <label>Nama Kategori Baru</label>
+                    <input type="text" id="new-category-name" placeholder="Contoh: Undangan Wisuda">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary btn-sm" onclick="closeCategoryModal()">Batal</button>
+                <button onclick="addNewCategory()" class="btn btn-primary btn-sm">Tambah</button>
             </div>
         </div>
     </div>
@@ -585,11 +799,27 @@
             const password = document.getElementById('admin-password').value;
             if (password === ADMIN_PASSWORD) { 
                 document.getElementById('login-section').classList.add('hidden');
-                document.getElementById('dashboard-section').classList.remove('hidden');
+                document.getElementById('app-layout').classList.remove('hidden');
                 updateStats(); // Hitung statistik saat login
+                updateCategoryDropdown();
                 renderThemeGrid();
             } else {
                 showToast('Password salah!', 'error');
+            }
+        }
+
+        // Tab Switching Logic
+        function switchTab(tabName, navElement) {
+            // Update Nav Active State
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            navElement.classList.add('active');
+
+            // Show Selected View
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            const targetView = document.getElementById(`view-${tabName}`);
+            if (targetView) {
+                targetView.classList.add('active');
+                window.scrollTo({top: 0, behavior: 'smooth'}); // Scroll ke atas saat pindah tab di HP
             }
         }
 
@@ -619,10 +849,9 @@
                 newCatalogData[row.category][typeIndex].themes.push(row);
             });
             catalogData = newCatalogData;
-            if (!document.getElementById('dashboard-section').classList.contains('hidden')) {
-                updateStats();
-                renderThemeGrid();
-            }
+            updateStats();
+            updateCategoryDropdown(); // Update dropdown saat data berubah
+            renderThemeGrid();
         }
 
         function updateStats() {
@@ -640,6 +869,19 @@
             document.getElementById('stat-total-themes').textContent = totalThemes;
             document.getElementById('stat-total-categories').textContent = activeCategories;
             document.getElementById('stat-total-reviews').textContent = totalReviews;
+        }
+
+        function updateCategoryDropdown() {
+            const select = document.getElementById('admin-category');
+            const currentVal = select.value;
+            select.innerHTML = '';
+            Object.keys(catalogData).forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat;
+                option.textContent = cat;
+                select.appendChild(option);
+            });
+            if (currentVal && catalogData[currentVal]) select.value = currentVal;
         }
 
         function renderThemeGrid() {
@@ -753,6 +995,31 @@
             if (this.value) {
                 img.src = this.value;
             }
+        }
+
+        // Category Management Functions
+        function openCategoryModal() {
+            document.getElementById('category-modal').classList.add('active');
+        }
+        function closeCategoryModal() {
+            document.getElementById('category-modal').classList.remove('active');
+        }
+        function addNewCategory() {
+            const name = document.getElementById('new-category-name').value.trim();
+            if (!name) return showToast('Nama kategori tidak boleh kosong!', 'error');
+            if (catalogData[name]) return showToast('Kategori sudah ada!', 'error');
+
+            // Initialize new category structure
+            catalogData[name] = [
+                { type: 'withPhoto', themes: [] },
+                { type: 'withoutPhoto', themes: [] }
+            ];
+            
+            updateCategoryDropdown();
+            document.getElementById('admin-category').value = name; // Switch to new category
+            renderThemeGrid();
+            closeCategoryModal();
+            showToast('Kategori berhasil ditambahkan!', 'success');
         }
 
         // Password Management Functions
