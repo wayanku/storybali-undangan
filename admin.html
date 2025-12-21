@@ -19,6 +19,24 @@
             --border-radius: 16px;
             --danger-color: #ef4444;
             --success-color: #10b981;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        * {
+            box-sizing: border-box; /* Mencegah elemen melebar melebihi layar (horizontal scroll) */
+        }
+        /* Dark Mode Variables */
+        body.dark-mode {
+            --bg-color: #111827;
+            --card-bg: #1f2937;
+            --primary-text: #f9fafb;
+            --secondary-text: #9ca3af;
+            --accent-color: #8ab088;
+            --accent-hover: #769c74;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
         }
         body {
             font-family: 'Manrope', sans-serif;
@@ -27,6 +45,7 @@
             margin: 0;
             padding: 20px;
             min-height: 100vh;
+            transition: background-color 0.3s ease, color 0.3s ease;
             /* display: flex; justify-content: center; align-items: center; */ /* Removed to allow top alignment for dashboard */
         }
         /* Login Container Centering */
@@ -40,7 +59,8 @@
             /* max-width: 500px; */ /* Removed for dashboard flexibility */
             padding: 40px;
             border-radius: var(--border-radius);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            box-shadow: var(--shadow-lg);
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
         }
         .dashboard-container {
             max-width: 1200px;
@@ -66,12 +86,12 @@
         label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.9rem; color: var(--primary-text); }
         input, select {
             width: 100%; padding: 12px 15px; border: 1px solid #e5e7eb; border-radius: 10px;
-            font-size: 16px; transition: all 0.2s; box-sizing: border-box; font-family: inherit; /* 16px mencegah zoom otomatis di iPhone */
-            background-color: #f9fafb;
+            font-size: 16px; transition: all 0.2s; font-family: inherit; /* 16px mencegah zoom otomatis di iPhone */
+            background-color: var(--bg-color); color: var(--primary-text);
         }
         input:focus, select:focus { 
             outline: none; border-color: var(--accent-color); 
-            background-color: #fff;
+            background-color: var(--card-bg);
             box-shadow: 0 0 0 3px rgba(90, 107, 89, 0.1);
         }
         
@@ -81,12 +101,12 @@
             display: flex; justify-content: center; align-items: center; gap: 8px;
         }
         .btn-sm { padding: 8px 16px; font-size: 0.9rem; width: auto; }
-        .btn-primary { background-color: var(--accent-color); color: white; }
+        .btn-primary { background-color: var(--accent-color); color: #fff; }
         .btn-primary:hover { background-color: var(--accent-hover); transform: translateY(-1px); }
         .btn-secondary { background-color: white; border: 1px solid #e5e7eb; color: var(--secondary-text); margin-top: 15px; }
         .btn-secondary:hover { background-color: #f9fafb; color: var(--primary-text); }
 
-        .hidden { display: none; }
+        .hidden { display: none !important; }
         .row { display: flex; gap: 15px; }
         .row .form-group { flex: 1; }
         
@@ -104,9 +124,10 @@
 
         /* Filter Section Style */
         .filter-box {
-            background: #f8fafc; border: 1px solid #e2e8f0; 
+            background: var(--bg-color); border: 1px solid #e2e8f0; 
             padding: 15px; border-radius: 12px; margin-bottom: 25px;
             display: flex; gap: 20px; align-items: flex-end;
+            transition: background-color 0.3s ease;
         }
         
         /* --- New Styles for Grid & Modal --- */
@@ -118,12 +139,18 @@
         }
         
         .theme-card {
-            background: white; border-radius: 12px; overflow: hidden;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            background: var(--card-bg); border-radius: 12px; overflow: hidden;
+            box-shadow: var(--shadow-md);
             transition: all 0.2s; cursor: pointer; border: 1px solid #e5e7eb;
             position: relative; display: flex; flex-direction: column;
+            animation: fadeInUp 0.5s ease-out forwards;
+            opacity: 0;
         }
-        .theme-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); border-color: var(--accent-color); }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .theme-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); border-color: var(--accent-color); }
         
         .theme-card-img { width: 100%; height: 200px; object-fit: cover; background: #f3f4f6; }
         .theme-card-body { padding: 15px; flex-grow: 1; display: flex; flex-direction: column; }
@@ -137,7 +164,7 @@
         }
 
         .add-new-card {
-            border: 2px dashed #d1d5db; background: #f9fafb;
+            border: 2px dashed #d1d5db; background: var(--bg-color);
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             color: #9ca3af; min-height: 280px; transition: all 0.2s;
         }
@@ -155,7 +182,7 @@
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
         
         .modal-content {
-            background: white; width: 95%; max-width: 900px; height: 90vh;
+            background: var(--card-bg); width: 95%; max-width: 900px; height: 90vh;
             border-radius: 16px; display: flex; flex-direction: column;
             box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
             animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
@@ -177,7 +204,7 @@
         .modal-footer {
             padding: 20px; border-top: 1px solid #e5e7eb;
             display: flex; justify-content: flex-end; gap: 10px;
-            background: #f9fafb; border-radius: 0 0 16px 16px;
+            background: var(--bg-color); border-radius: 0 0 16px 16px;
         }
 
         .preview-container {
@@ -188,14 +215,22 @@
         .preview-img { width: 100%; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         
         @media (max-width: 768px) {
-            body { padding: 10px; background-color: #f8fafc; }
-            .dashboard-container { padding: 20px 15px; }
+            body { padding: 0; overflow-x: hidden; } /* Hilangkan padding body & scroll samping */
+            .dashboard-container { 
+                padding: 20px 15px; 
+                width: 100%; 
+                border-radius: 0; /* Tampilan penuh tanpa sudut di HP */
+                box-shadow: none; 
+                margin: 0; 
+            }
             
             /* Perbaikan Tampilan Login di HP */
             #login-section {
-                margin-top: 15vh; /* Posisi vertikal lebih pas di tengah layar HP */
-                padding: 30px 20px; /* Padding disesuaikan agar tidak terlalu sempit */
-                width: 100%;
+                margin: 0;
+                min-height: 100vh; /* Login layar penuh */
+                display: flex; flex-direction: column; justify-content: center;
+                border-radius: 0; box-shadow: none;
+                padding: 30px 20px;
             }
             
             /* Header Mobile yang Lebih Rapi */
@@ -246,9 +281,9 @@
             display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px;
         }
         .stat-card {
-            background: white; padding: 15px; border-radius: 12px; border: 1px solid #e5e7eb;
+            background: var(--card-bg); padding: 15px; border-radius: 12px; border: 1px solid #e5e7eb;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: transform 0.2s;
+            box-shadow: var(--shadow-sm); transition: transform 0.2s;
         }
         .stat-card:hover { transform: translateY(-2px); border-color: var(--accent-color); }
         .stat-value { font-size: 1.8rem; font-weight: 800; color: var(--accent-color); line-height: 1.2; }
@@ -288,6 +323,12 @@
                 <p>Kelola data tema yang tampil di website.</p>
             </div>
             <div style="display: flex; gap: 10px;">
+                <button id="dark-mode-btn" class="btn btn-secondary btn-sm" title="Toggle Dark Mode">
+                    <svg style="width:18px;height:18px;fill:currentColor" viewBox="0 0 24 24"><path d="M17.75,4.09L15.22,6.03L16.13,9.09L13.5,7.28L10.87,9.09L11.78,6.03L9.25,4.09L12.44,4L13.5,1L14.56,4L17.75,4.09M21.25,11L19.61,12.25L20.2,14.23L18.5,13.06L16.8,14.23L17.39,12.25L15.75,11L17.81,10.95L18.5,9L19.19,10.95L21.25,11M18.97,15.95C19.8,15.87 20.69,17.05 20.16,17.8C19.84,18.25 19.5,18.67 19.08,19.07C15.17,23 8.84,23 4.94,19.07C1.03,15.17 1.03,8.83 4.94,4.93C5.34,4.53 5.76,4.17 6.21,3.85C6.96,3.32 8.14,4.21 8.06,5.04C6.93,10.39 11.61,15.06 16.97,14.04C17.65,13.91 18.34,14.58 18.47,15.27C18.59,15.5 18.76,15.71 18.97,15.95Z" /></svg>
+                </button>
+                <button id="change-password-btn" class="btn btn-secondary btn-sm" title="Ganti Password">
+                    <svg style="width:18px;height:18px;fill:currentColor" viewBox="0 0 24 24"><path d="M12,17A2,2 0 0,0 14,15C14,13.89 13.1,13 12,13A2,2 0 0,0 10,15A2,2 0 0,0 12,17M18,8H17V6A5,5 0 0,0 12,1A5,5 0 0,0 7,6V8H6A2,2 0 0,0 4,10V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V10A2,2 0 0,0 18,8M12,3A3,3 0 0,1 15,6V8H9V6A3,3 0 0,1 12,3Z" /></svg>
+                </button>
                 <button id="sync-btn" class="btn btn-secondary btn-sm">
                     <svg style="width:18px;height:18px;fill:currentColor" viewBox="0 0 24 24"><path d="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z" /></svg>
                     Sync Data
@@ -332,7 +373,7 @@
                 </div>
                 <div class="form-group" style="margin-bottom: 0; flex: 1;">
                     <label>Cari Tema</label>
-                    <input type="text" id="admin-search" placeholder="Ketik nama tema..." style="background: white;">
+                    <input type="text" id="admin-search" placeholder="Ketik nama tema..." style="background: var(--card-bg);">
                 </div>
             </div>
 
@@ -404,12 +445,43 @@
         </div>
     </div>
 
+    <!-- Change Password Modal -->
+    <div id="change-password-modal" class="modal-overlay">
+        <div class="modal-content" style="height: auto; max-height: 90vh;">
+            <div class="modal-header">
+                <h2>Ganti Password</h2>
+                <button class="close-btn" onclick="closeChangePasswordModal()">&times;</button>
+            </div>
+            <div class="modal-body" style="grid-template-columns: 1fr;">
+                <div class="form-group">
+                    <label>Password Lama</label>
+                    <input type="password" id="old-password" placeholder="Masukkan password saat ini">
+                </div>
+                <div class="form-group">
+                    <label>Password Baru</label>
+                    <input type="password" id="new-password" placeholder="Masukkan password baru">
+                </div>
+                <div class="form-group">
+                    <label>Konfirmasi Password Baru</label>
+                    <input type="password" id="confirm-password" placeholder="Ulangi password baru">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary btn-sm" onclick="closeChangePasswordModal()">Batal</button>
+                <button id="save-password-btn" class="btn btn-primary btn-sm">Simpan Password</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast Notification -->
     <div id="toast-notification" class="toast">Notifikasi</div>
 
     <script>
         // KONFIGURASI
         const GOOGLE_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycby1EDTIdNZgiis6y5CVDWxQVZx9ymh32_H2phPHtjYucNwvQ8E81zktu7bup0Bn_C6RMQ/exec';
+        
+        // Load Password dari LocalStorage atau gunakan default 'admin123'
+        let ADMIN_PASSWORD = localStorage.getItem('adminPassword') || 'admin123';
 
         // Data Katalog Bawaan (Disalin dari index.html untuk keperluan admin)
         let catalogData = {
@@ -448,12 +520,28 @@
             }
             
             // Fetch data terbaru
+            // Cek preferensi dark mode
+            if (localStorage.getItem('darkMode') === 'true') {
+                document.body.classList.add('dark-mode');
+            }
+            updateDarkModeIcon();
+
             fetch(GOOGLE_SHEET_API_URL)
                 .then(response => response.json())
                 .then(data => {
                     if (data && data.length > 0) {
-                        localStorage.setItem('catalogCache', JSON.stringify(data));
-                        processCatalogData(data);
+                        // 1. Cek apakah ada password tersimpan di Sheet
+                        const configRow = data.find(row => row.category === 'ADMIN_CONFIG' && row.type === 'PASSWORD');
+                        if (configRow && configRow.themeName) {
+                            ADMIN_PASSWORD = configRow.themeName;
+                            localStorage.setItem('adminPassword', ADMIN_PASSWORD); // Update local storage
+                        }
+
+                        // 2. Filter data agar baris password tidak muncul di katalog/grid
+                        const catalogRows = data.filter(row => row.category !== 'ADMIN_CONFIG');
+                        
+                        localStorage.setItem('catalogCache', JSON.stringify(catalogRows));
+                        processCatalogData(catalogRows);
                     }
                 })
                 .catch(err => console.log("Menggunakan data bawaan/cache."));
@@ -468,6 +556,9 @@
             document.getElementById('save-btn').addEventListener('click', saveData);
             document.getElementById('delete-btn').addEventListener('click', deleteData); // Delete button
             document.getElementById('sync-btn').addEventListener('click', syncData);
+            document.getElementById('dark-mode-btn').addEventListener('click', toggleDarkMode);
+            document.getElementById('change-password-btn').addEventListener('click', openChangePasswordModal);
+            document.getElementById('save-password-btn').addEventListener('click', saveNewPassword);
             
             // Inisialisasi dropdown awal
             // renderThemeGrid(); // Called after login
@@ -475,7 +566,7 @@
 
         function handleLogin() {
             const password = document.getElementById('admin-password').value;
-            if (password === 'admin123') { // Ganti password sesuai kebutuhan
+            if (password === ADMIN_PASSWORD) { 
                 document.getElementById('login-section').classList.add('hidden');
                 document.getElementById('dashboard-section').classList.remove('hidden');
                 updateStats(); // Hitung statistik saat login
@@ -483,6 +574,19 @@
             } else {
                 showToast('Password salah!', 'error');
             }
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('darkMode', isDark);
+            updateDarkModeIcon();
+        }
+
+        function updateDarkModeIcon() {
+            const btn = document.getElementById('dark-mode-btn');
+            const isDark = document.body.classList.contains('dark-mode');
+            btn.innerHTML = isDark ? '<svg style="width:18px;height:18px;fill:currentColor" viewBox="0 0 24 24"><path d="M12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M12,2L14.39,5.42C13.65,5.15 12.84,5 12,5C11.16,5 10.35,5.15 9.61,5.42L12,2M3.34,7L7.5,5.29C7.24,5.84 7.09,6.44 7.09,7.09C7.09,8.07 7.44,8.96 8,9.66L3.34,7M3.36,17L8,14.34C7.44,15.04 7.09,15.93 7.09,16.91C7.09,17.56 7.24,18.16 7.5,18.71L3.36,17M12,22L9.61,18.58C10.35,18.85 11.16,19 12,19C12.84,19 13.65,18.85 14.39,18.58L12,22M20.64,17L16.5,18.71C16.76,18.16 16.91,17.56 16.91,16.91C16.91,15.93 16.56,15.04 16,14.34L20.64,17M20.66,7L16,9.66C16.56,8.96 16.91,8.07 16.91,7.09C16.91,6.44 16.76,5.84 16.5,5.29L20.66,7Z" /></svg>' : '<svg style="width:18px;height:18px;fill:currentColor" viewBox="0 0 24 24"><path d="M17.75,4.09L15.22,6.03L16.13,9.09L13.5,7.28L10.87,9.09L11.78,6.03L9.25,4.09L12.44,4L13.5,1L14.56,4L17.75,4.09M21.25,11L19.61,12.25L20.2,14.23L18.5,13.06L16.8,14.23L17.39,12.25L15.75,11L17.81,10.95L18.5,9L19.19,10.95L21.25,11M18.97,15.95C19.8,15.87 20.69,17.05 20.16,17.8C19.84,18.25 19.5,18.67 19.08,19.07C15.17,23 8.84,23 4.94,19.07C1.03,15.17 1.03,8.83 4.94,4.93C5.34,4.53 5.76,4.17 6.21,3.85C6.96,3.32 8.14,4.21 8.06,5.04C6.93,10.39 11.61,15.06 16.97,14.04C17.65,13.91 18.34,14.58 18.47,15.27C18.59,15.5 18.76,15.71 18.97,15.95Z" /></svg>';
         }
 
         function processCatalogData(data) {
@@ -553,6 +657,7 @@
                         
                         const card = document.createElement('div');
                         card.className = 'theme-card';
+                        card.style.animationDelay = `${index * 0.05}s`; // Staggered animation
                         card.onclick = () => openModal(index);
                         card.innerHTML = `
                             ${theme.label ? `<div class="theme-card-badge">${theme.label}</div>` : ''}
@@ -631,6 +736,77 @@
             if (this.value) {
                 img.src = this.value;
             }
+        }
+
+        // Password Management Functions
+        function openChangePasswordModal() {
+            document.getElementById('change-password-modal').classList.add('active');
+            document.getElementById('old-password').value = '';
+            document.getElementById('new-password').value = '';
+            document.getElementById('confirm-password').value = '';
+        }
+
+        function closeChangePasswordModal() {
+            document.getElementById('change-password-modal').classList.remove('active');
+        }
+
+        function saveNewPassword() {
+            const oldPass = document.getElementById('old-password').value;
+            const newPass = document.getElementById('new-password').value;
+            const confirmPass = document.getElementById('confirm-password').value;
+
+            if (oldPass !== ADMIN_PASSWORD) {
+                showToast('Password lama salah!', 'error');
+                return;
+            }
+            if (newPass !== confirmPass) {
+                showToast('Konfirmasi password tidak cocok!', 'error');
+                return;
+            }
+            if (!newPass) {
+                showToast('Password baru tidak boleh kosong!', 'error');
+                return;
+            }
+
+            const btn = document.getElementById('save-password-btn');
+            const originalText = btn.textContent;
+            btn.textContent = 'Menyimpan ke Cloud...';
+            btn.disabled = true;
+
+            // Simpan ke Google Sheet sebagai baris khusus
+            const formData = {
+                action: 'save',
+                category: 'ADMIN_CONFIG', // Kategori khusus untuk config
+                type: 'PASSWORD',         // Tipe khusus
+                themeName: newPass,       // Password baru disimpan di kolom themeName
+                originalThemeName: ADMIN_PASSWORD, // Password lama untuk referensi update
+                // Isi field lain dengan dummy agar tidak error di script
+                image: '-', previewUrl: '-', price: 0, originalPrice: 0, discount: '0%', label: '-', rating: 0, reviews: 0
+            };
+
+            fetch(GOOGLE_SHEET_API_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'text/plain' },
+                body: JSON.stringify(formData)
+            })
+            .then(() => {
+                ADMIN_PASSWORD = newPass;
+                localStorage.setItem('adminPassword', newPass);
+                showToast('Password berhasil disimpan di Cloud!', 'success');
+                closeChangePasswordModal();
+                btn.textContent = originalText;
+                btn.disabled = false;
+            })
+            .catch(err => {
+                console.error(err);
+                showToast('Gagal koneksi ke Cloud. Password tersimpan di browser saja.', 'error');
+                // Fallback: Simpan lokal jika internet mati
+                ADMIN_PASSWORD = newPass;
+                localStorage.setItem('adminPassword', newPass);
+                btn.textContent = originalText;
+                btn.disabled = false;
+            });
         }
 
         function autoFillPrice() {
