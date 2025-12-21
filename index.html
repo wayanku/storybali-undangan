@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -2401,8 +2402,9 @@
     <!-- Footer Hak Cipta (dipindahkan ke sini) -->
     <!-- [FIX] Menambahkan background-color agar kontras footer benar -->
     <div class="container" style="padding-bottom: 30px; padding-top: 20px; background-color: var(--bg-color); width: 100%; margin-bottom: 80px;">
-        <footer class="footer">
-            &copy; 2024 Storybali Undangan. All Rights Reserved.
+        <footer class="footer" style="display: flex; justify-content: center; align-items: center; gap: 10px; flex-direction: column;">
+            <span>&copy; 2024 Storybali Undangan. All Rights Reserved.</span>
+            <a href="#" id="admin-login-btn" style="font-size: 1em; color: var(--accent-color); font-weight: bold; cursor: pointer; text-decoration: underline;">Buka Menu Admin</a>
         </footer>
     </div>
 
@@ -2689,6 +2691,128 @@
         }
     </script>
     <script>
+        // --- KONFIGURASI GLOBAL & DATA ---
+        // Variabel ini dibuat global agar bisa diakses oleh Menu Admin dan fungsi lainnya
+        const GOOGLE_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycby1EDTIdNZgiis6y5CVDWxQVZx9ymh32_H2phPHtjYucNwvQ8E81zktu7bup0Bn_C6RMQ/exec';
+
+        // Data katalog (Default/Fallback jika Google Sheet belum disetting)
+        let catalogData = {
+            "Pernikahan Bali": [
+                {
+                    type: 'withPhoto', 
+                    themes: [
+                        { image: 'https://wayanku.github.io/storybali-undangan/foto%20nikah%202,foto%20nikah1,foto%20nikah%203/foto%20pernikahann%20tema%201.webp', previewUrl: 'https://wayanku.github.io/pernikahan-tema-1/', label: 'Populer', rating: 4.9, reviews: 152 },
+                        { image: 'https://wayanku.github.io/storybali-undangan/foto%20nikah%202,foto%20nikah1,foto%20nikah%203/pernikahan%20tama%202%20.webp', previewUrl: 'https://wayanku.github.io/pernikahan-tema-2/', rating: 4.2, reviews: 98 },
+                        { image: 'https://github.com/wayanku/storybali-undangan/blob/main/foto%20nikah%202,foto%20nikah1,foto%20nikah%203/pernikahan%20tema%203.webp?raw=true', previewUrl: 'https://wayanku.github.io/pernikahan-tema-3/' },
+                        { image: 'https://picsum.photos/id/1045/400/400' },
+                    ]
+                },
+                {
+                    type: 'withoutPhoto',
+                    themes: [ 
+                        { image: 'https://picsum.photos/id/1048/400/400', label: 'Populer', rating: 4.9, reviews: 76 }, // Tanpa Foto 1
+                        { image: 'https://picsum.photos/id/1050/400/400' }, // Tanpa Foto 2
+                        { image: 'https://picsum.photos/id/1051/400/400' }, // Tanpa Foto 3
+                        { image: 'https://picsum.photos/id/1052/400/400' }, // Tanpa Foto 4
+                    ]
+                }
+            ],
+            "Pernikahan Muslim": [
+                { type: 'withPhoto', themes: [
+                    { image: 'https://wayanku.github.io/storybali-undangan/foto%20nikah%202,foto%20nikah1,foto%20nikah%203/pernikahan%20muslim%20tema%201.webp', previewUrl: 'https://wayanku.github.io/muslim-tema-1/', label: 'Populer', rating: 5.0, reviews: 88 }, { image: 'https://picsum.photos/id/1062/400/400' },
+                    { image: 'https://picsum.photos/id/1063/400/400' }, { image: 'https://picsum.photos/id/1064/400/400' }
+                ] },
+                { type: 'withoutPhoto', themes: [
+                    { image: 'https://picsum.photos/id/1065/400/400', label: 'Populer', rating: 4.8, reviews: 45 }, { image: 'https://picsum.photos/id/1066/400/400' },
+                    { image: 'https://picsum.photos/id/1067/400/400' }, { image: 'https://picsum.photos/id/1068/400/400' }
+                ] }
+            ],
+            "Metatah / Potong Gigi": [
+                {
+                    type: 'withPhoto',
+                    themes: [
+                        { image: 'https://wayanku.github.io/storybali-undangan/foto%20nikah%202,foto%20nikah1,foto%20nikah%203/metatah%20tema%201.webp', previewUrl: 'https://wayanku.github.io/metatah-tema-1/', label: 'Populer', rating: 4.9, reviews: 112 }, { image: 'https://picsum.photos/id/212/400/400' },
+                        { image: 'https://picsum.photos/id/214/400/400' }, { image: 'https://picsum.photos/id/215/400/400' }
+                    ]
+                },
+                { type: 'withoutPhoto', themes: [
+                    { image: 'https://picsum.photos/id/216/400/400', label: 'Populer', rating: 4.7, reviews: 65 }, { image: 'https://picsum.photos/id/218/400/400' },
+                    { image: 'https://picsum.photos/id/219/400/400' }, { image: 'https://picsum.photos/id/220/400/400' }
+                ] }
+            ],
+            "3 Bulanan": [
+                { type: 'withPhoto', themes: [
+                    { image: 'https://picsum.photos/id/315/400/400', label: 'Populer', rating: 5.0, reviews: 43 }, { image: 'https://picsum.photos/id/316/400/400' },
+                    { image: 'https://picsum.photos/id/317/400/400' }, { image: 'https://picsum.photos/id/318/400/400' }
+                ] },
+                { type: 'withoutPhoto', themes: [
+                    { image: 'https://picsum.photos/id/319/400/400', label: 'Populer', rating: 4.8, reviews: 21 }, { image: 'https://picsum.photos/id/320/400/400' },
+                    { image: 'https://picsum.photos/id/321/400/400' }, { image: 'https://picsum.photos/id/322/400/400' }
+                ] }
+            ],
+            "Ulang Tahun": [
+                {
+                    type: 'withPhoto',
+                    themes: [
+                        { image: 'https://picsum.photos/id/431/400/400', label: 'Populer', rating: 4.9, reviews: 99 }, { image: 'https://picsum.photos/id/433/400/400' },
+                        { image: 'https://picsum.photos/id/434/400/400' }, { image: 'https://picsum.photos/id/435/400/400' }
+                    ]
+                },
+                {
+                    type: 'withoutPhoto',
+                    themes: [ 
+                        { image: 'https://wayanku.github.io/storybali-undangan/foto%20nikah%202,foto%20nikah1,foto%20nikah%203/ulang%20tahun%20tema%201%20tanpa%20foto.webp', previewUrl: 'https://wayanku.github.io/ulang-tahun-tema-1-tanpa-foto/', label: 'Baru', rating: 4.8, reviews: 35 },
+                        { image: 'https://picsum.photos/id/438/400/400' }, { image: 'https://picsum.photos/id/439/400/400' }, { image: 'https://picsum.photos/id/440/400/400' }
+                    ]
+                }
+            ],
+            // Anda bisa menambahkan kategori lain di sini
+        };
+
+        // --- Fungsi untuk Mengambil Data dari Google Sheets ---
+        function fetchCatalogFromGoogleSheet() {
+            if (!GOOGLE_SHEET_API_URL) return; // Jangan fetch jika URL kosong
+
+            fetch(GOOGLE_SHEET_API_URL)
+                .then(response => response.json())
+                .then(data => {
+                    if (!data || data.length === 0) return;
+
+                    // Reset catalogData agar bersih dan siap diisi data baru
+                    const newCatalogData = {};
+
+                    data.forEach(row => {
+                        // Pastikan struktur kategori ada
+                        if (!newCatalogData[row.category]) {
+                            newCatalogData[row.category] = [
+                                { type: 'withPhoto', themes: [] },
+                                { type: 'withoutPhoto', themes: [] }
+                            ];
+                        }
+
+                        // Tentukan index berdasarkan tipe (withPhoto=0, withoutPhoto=1)
+                        const typeIndex = row.type === 'withoutPhoto' ? 1 : 0;
+
+                        // Masukkan data tema dari Sheet ke struktur aplikasi
+                        newCatalogData[row.category][typeIndex].themes.push(row);
+                    });
+
+                    // Update variabel global
+                    catalogData = newCatalogData;
+                    console.log("Data katalog berhasil dimuat dari Google Sheets");
+
+                    // [PERBAIKAN] Refresh tampilan katalog jika sedang dibuka agar data baru langsung terlihat
+                    const themePage = document.getElementById('theme-page');
+                    if (themePage && !themePage.classList.contains('hidden')) {
+                        // Panggil generateCatalog jika tersedia di window (karena didefinisikan di dalam DOMContentLoaded)
+                        if (typeof window.generateCatalog === 'function') {
+                            window.generateCatalog();
+                        }
+                    }
+                })
+                .catch(error => console.error("Gagal memuat data dari Google Sheets:", error));
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             
             // Mencegah klik kanan untuk inspect element
@@ -2755,81 +2879,6 @@
             }
 
             const animationDuration = 400; // Durasi animasi dalam milidetik
-
-            // --- PERBAIKAN: Data katalog dipisahkan per kategori ---
-            // Setiap kategori sekarang memiliki sub-objek 'withPhoto' dan 'withoutPhoto'
-            const catalogData = {
-                "Pernikahan Bali": [
-                    {
-                        type: 'withPhoto', 
-                        themes: [
-                            { image: 'https://wayanku.github.io/storybali-undangan/foto%20nikah%202,foto%20nikah1,foto%20nikah%203/foto%20pernikahann%20tema%201.webp', previewUrl: 'https://wayanku.github.io/pernikahan-tema-1/', label: 'Populer', rating: 4.9, reviews: 152 },
-                            { image: 'https://wayanku.github.io/storybali-undangan/foto%20nikah%202,foto%20nikah1,foto%20nikah%203/pernikahan%20tama%202%20.webp', previewUrl: 'https://wayanku.github.io/pernikahan-tema-2/', rating: 4.2, reviews: 98 },
-                            { image: 'https://github.com/wayanku/storybali-undangan/blob/main/foto%20nikah%202,foto%20nikah1,foto%20nikah%203/pernikahan%20tema%203.webp?raw=true', previewUrl: 'https://wayanku.github.io/pernikahan-tema-3/' },
-                            { image: 'https://picsum.photos/id/1045/400/400' },
-                        ]
-                    },
-                    {
-                        type: 'withoutPhoto',
-                        themes: [ 
-                            { image: 'https://picsum.photos/id/1048/400/400', label: 'Populer', rating: 4.9, reviews: 76 }, // Tanpa Foto 1
-                            { image: 'https://picsum.photos/id/1050/400/400' }, // Tanpa Foto 2
-                            { image: 'https://picsum.photos/id/1051/400/400' }, // Tanpa Foto 3
-                            { image: 'https://picsum.photos/id/1052/400/400' }, // Tanpa Foto 4
-                        ]
-                    }
-                ],
-                "Pernikahan Muslim": [
-                    { type: 'withPhoto', themes: [
-                        { image: 'https://wayanku.github.io/storybali-undangan/foto%20nikah%202,foto%20nikah1,foto%20nikah%203/pernikahan%20muslim%20tema%201.webp', previewUrl: 'https://wayanku.github.io/muslim-tema-1/', label: 'Populer', rating: 5.0, reviews: 88 }, { image: 'https://picsum.photos/id/1062/400/400' },
-                        { image: 'https://picsum.photos/id/1063/400/400' }, { image: 'https://picsum.photos/id/1064/400/400' }
-                    ] },
-                    { type: 'withoutPhoto', themes: [
-                        { image: 'https://picsum.photos/id/1065/400/400', label: 'Populer', rating: 4.8, reviews: 45 }, { image: 'https://picsum.photos/id/1066/400/400' },
-                        { image: 'https://picsum.photos/id/1067/400/400' }, { image: 'https://picsum.photos/id/1068/400/400' }
-                    ] }
-                ],
-                "Metatah / Potong Gigi": [
-                    {
-                        type: 'withPhoto',
-                        themes: [
-                            { image: 'https://wayanku.github.io/storybali-undangan/foto%20nikah%202,foto%20nikah1,foto%20nikah%203/metatah%20tema%201.webp', previewUrl: 'https://wayanku.github.io/metatah-tema-1/', label: 'Populer', rating: 4.9, reviews: 112 }, { image: 'https://picsum.photos/id/212/400/400' },
-                            { image: 'https://picsum.photos/id/214/400/400' }, { image: 'https://picsum.photos/id/215/400/400' }
-                        ]
-                    },
-                    { type: 'withoutPhoto', themes: [
-                        { image: 'https://picsum.photos/id/216/400/400', label: 'Populer', rating: 4.7, reviews: 65 }, { image: 'https://picsum.photos/id/218/400/400' },
-                        { image: 'https://picsum.photos/id/219/400/400' }, { image: 'https://picsum.photos/id/220/400/400' }
-                    ] }
-                ],
-                "3 Bulanan": [
-                    { type: 'withPhoto', themes: [
-                        { image: 'https://picsum.photos/id/315/400/400', label: 'Populer', rating: 5.0, reviews: 43 }, { image: 'https://picsum.photos/id/316/400/400' },
-                        { image: 'https://picsum.photos/id/317/400/400' }, { image: 'https://picsum.photos/id/318/400/400' }
-                    ] },
-                    { type: 'withoutPhoto', themes: [
-                        { image: 'https://picsum.photos/id/319/400/400', label: 'Populer', rating: 4.8, reviews: 21 }, { image: 'https://picsum.photos/id/320/400/400' },
-                        { image: 'https://picsum.photos/id/321/400/400' }, { image: 'https://picsum.photos/id/322/400/400' }
-                    ] }
-                ],
-                "Ulang Tahun": [
-                    {
-                        type: 'withPhoto',
-                        themes: [
-                            { image: 'https://picsum.photos/id/431/400/400', label: 'Populer', rating: 4.9, reviews: 99 }, { image: 'https://picsum.photos/id/433/400/400' },
-                            { image: 'https://picsum.photos/id/434/400/400' }, { image: 'https://picsum.photos/id/435/400/400' }
-                        ]
-                    },
-                    {
-                        type: 'withoutPhoto',
-                        themes: [ 
-                            { image: 'https://wayanku.github.io/storybali-undangan/foto%20nikah%202,foto%20nikah1,foto%20nikah%203/ulang%20tahun%20tema%201%20tanpa%20foto.webp', previewUrl: 'https://wayanku.github.io/ulang-tahun-tema-1-tanpa-foto/', label: 'Baru', rating: 4.8, reviews: 35 },
-                            { image: 'https://picsum.photos/id/438/400/400' }, { image: 'https://picsum.photos/id/439/400/400' }, { image: 'https://picsum.photos/id/440/400/400' }
-                        ]
-                    }
-                ],
-                // Anda bisa menambahkan kategori lain di sini
-            };
 
             // --- Data untuk Kategori di Halaman Utama ---
             const categoryData = [
@@ -3075,18 +3124,21 @@
             function generateCatalog() {
                 const isWithoutPhoto = btnWithoutPhoto.classList.contains('active');
 
-                const finalPrice = isWithoutPhoto ? 'Rp 30.000' : 'Rp 50.000';
-                const originalPrice = isWithoutPhoto ? 'Rp 60.000' : 'Rp 100.000';
-                const discount = '50%';
+                const defaultFinalPrice = isWithoutPhoto ? 'Rp 30.000' : 'Rp 50.000';
+                const defaultOriginalPrice = isWithoutPhoto ? 'Rp 60.000' : 'Rp 100.000';
+                const defaultDiscount = '50%';
                 
                 // Tampilkan kerangka (skeleton) loading
                 generateSkeletonCatalog(4); // Tampilkan 4 kartu kerangka
 
                 // Beri jeda singkat agar spinner sempat terlihat
                 setTimeout(() => {
-                    generateItems(isWithoutPhoto, finalPrice, originalPrice, discount);
+                    generateItems(isWithoutPhoto, defaultFinalPrice, defaultOriginalPrice, defaultDiscount);
                 }, 500); // 500ms delay
             }
+            
+            // [PENTING] Expose fungsi generateCatalog ke window agar bisa dipanggil dari fungsi global fetchCatalogFromGoogleSheet
+            window.generateCatalog = generateCatalog;
             
             // Fungsi baru untuk membuat kerangka loading katalog
             function generateSkeletonCatalog(count) {
@@ -3112,7 +3164,7 @@
                 }
             }
 
-            function generateItems(isWithoutPhoto, finalPrice, originalPrice, discount) {
+            function generateItems(isWithoutPhoto, defaultFinalPrice, defaultOriginalPrice, defaultDiscount) {
                 // --- PERBAIKAN: Ambil data tema berdasarkan kategori yang aktif ---
                 const categoryName = themeTitle.textContent.replace('Pilihan Tema ', '');
                 const categoryThemeData = catalogData[categoryName] || [];
@@ -3123,13 +3175,25 @@
                 const themes = themeSet ? themeSet.themes : []; // Ambil daftar tema atau array kosong
                 
                 // Buat ID unik dan filter berdasarkan pencarian
-                const itemsWithId = themes.map((theme, index) => ({
-                    ...theme,
-                    id: `${categoryName.replace(/\s/g, '-')}-${themeType}-${index}`,
-                    themeName: `${isWithoutPhoto ? 'Tanpa Foto' : 'Tema'} ${index + 1}`,
-                    categoryName: categoryName, // Simpan nama kategori
-                    price: finalPrice
-                }));
+                const itemsWithId = themes.map((theme, index) => {
+                    // Logika Harga: Gunakan harga dari Google Sheet jika ada, jika tidak gunakan default
+                    const itemPrice = theme.price 
+                        ? (typeof theme.price === 'number' ? `Rp ${theme.price.toLocaleString('id-ID')}` : theme.price) 
+                        : defaultFinalPrice;
+                    
+                    const itemOriginalPrice = theme.originalPrice 
+                        ? (typeof theme.originalPrice === 'number' ? `Rp ${theme.originalPrice.toLocaleString('id-ID')}` : theme.originalPrice) 
+                        : defaultOriginalPrice;
+
+                    return {
+                        ...theme,
+                        id: `${categoryName.replace(/\s/g, '-')}-${themeType}-${index}`,
+                        themeName: theme.themeName || `${isWithoutPhoto ? 'Tanpa Foto' : 'Tema'} ${index + 1}`,
+                        categoryName: categoryName, // Simpan nama kategori
+                        price: itemPrice,
+                        originalPriceDisplay: itemOriginalPrice
+                    };
+                });
 
                 const searchTerm = searchInput.value.toLowerCase();
                 const filteredItems = itemsWithId.filter(item => 
@@ -3144,7 +3208,7 @@
                 });
 
                 filteredItems.forEach((theme, index) => {
-                    const { id, themeName, price } = theme;
+                    const { id, themeName, price, originalPriceDisplay, discount } = theme;
 
                     
                     // Buat HTML untuk label jika ada
@@ -3200,10 +3264,10 @@
                             </div>
                             ${ratingHtml}
                             <div class="catalog-item-price-wrapper">
-                                <p class="catalog-item-price">${finalPrice}</p>
+                                <p class="catalog-item-price">${price}</p>
                                 <div class="discount-info">
                                     <span class="discount-badge">${discount}</span>
-                                    <span class="original-price">${originalPrice}</span>
+                                    <span class="original-price">${originalPriceDisplay}</span>
                                 </div>
                             </div>
                             <div class="catalog-item-actions">
@@ -3225,10 +3289,10 @@
 
                     // --- [BARU] Jalankan animasi harga ---
                     const priceElement = item.querySelector('.catalog-item-price');
-                    const originalPriceNum = parseInt(originalPrice.replace(/[^0-9]/g, ''));
-                    const finalPriceNum = parseInt(finalPrice.replace(/[^0-9]/g, ''));
+                    const originalPriceNum = parseInt(originalPriceDisplay.replace(/[^0-9]/g, ''));
+                    const finalPriceNum = parseInt(price.replace(/[^0-9]/g, ''));
                     // Atur harga awal ke harga asli, lalu animasikan
-                    priceElement.textContent = originalPrice;
+                    priceElement.textContent = originalPriceDisplay;
                     animatePrice(priceElement, originalPriceNum, finalPriceNum, 800); // Animasi selama 800ms
                 });
 
@@ -3949,6 +4013,7 @@
             loadStaticTestimonials();
             loadPaymentMethods(); // Memuat gambar pembayaran dengan efek skeleton
             updateCartUI(); // PERBAIKAN: Panggil updateCartUI saat halaman dimuat
+            fetchCatalogFromGoogleSheet(); // [BARU] Ambil data dari Google Sheets
             // loadTestimonials(); // Aktifkan ini jika ingin memuat dari Google Sheets
         });
 
@@ -4133,6 +4198,281 @@
                 popupContainer.style.transform = 'scale(1) rotateX(0deg) rotateY(0deg)';
             });
         });
+
+        // Variabel global untuk menyimpan nama tema asli saat mode edit
+        // Ini penting agar jika nama tema diubah, sistem tahu baris mana yang harus diupdate di Google Sheet
+        let currentEditingOriginalName = null;
+
+        // --- LOGIKA MENU ADMIN ---
+        document.addEventListener('DOMContentLoaded', function() {
+            const adminBtn = document.getElementById('admin-login-btn');
+            const adminModal = document.getElementById('admin-modal');
+            const adminCloseBtn = document.getElementById('admin-close-btn');
+            const adminForm = document.getElementById('admin-data-form');
+            const adminPasswordGroup = document.getElementById('admin-password-group');
+            const adminContentGroup = document.getElementById('admin-content-group');
+            const checkPasswordBtn = document.getElementById('check-password-btn');
+            const adminPasswordInput = document.getElementById('admin-password');
+            
+            // Elemen Dropdown Admin Baru
+            const adminCategorySelect = document.getElementById('admin-category');
+            const adminTypeSelect = document.getElementById('admin-type');
+            const adminThemeSelect = document.getElementById('admin-theme-select'); // Dropdown baru untuk pilih tema
+
+            // Buka Modal Admin
+            adminBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                adminModal.classList.add('active');
+                adminPasswordGroup.classList.remove('hidden');
+                adminContentGroup.classList.add('hidden');
+                adminPasswordInput.value = '';
+                adminPasswordInput.focus();
+            });
+
+            // Tutup Modal Admin
+            adminCloseBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                adminModal.classList.remove('active');
+            });
+
+            // Cek Password Sederhana
+            checkPasswordBtn.addEventListener('click', () => {
+                if (adminPasswordInput.value === 'admin123') { // Ganti password ini nanti!
+                    adminPasswordGroup.classList.add('hidden');
+                    adminContentGroup.classList.remove('hidden');
+                } else {
+                    alert('Password salah!');
+                }
+            });
+
+            // --- FUNGSI BARU: Populate Dropdown Tema ---
+            // Fungsi ini akan dijalankan saat Kategori atau Tipe berubah
+            function updateThemeDropdown() {
+                const selectedCategory = adminCategorySelect.value;
+                const selectedType = adminTypeSelect.value;
+                
+                // Kosongkan dropdown tema dulu
+                adminThemeSelect.innerHTML = '<option value="">-- Buat Tema Baru --</option>';
+                
+                // Ambil data dari variabel global catalogData
+                if (catalogData[selectedCategory]) {
+                    // Cari array themes yang sesuai tipe (withPhoto/withoutPhoto)
+                    const typeData = catalogData[selectedCategory].find(t => t.type === selectedType);
+                    
+                    if (typeData && typeData.themes.length > 0) {
+                        typeData.themes.forEach((theme, index) => {
+                            const option = document.createElement('option');
+                            option.value = index; // Kita simpan index array sebagai value
+                            // [PERBAIKAN] Gunakan nama default yang konsisten (Tema X atau Tanpa Foto X)
+                            const isWithoutPhoto = selectedType === 'withoutPhoto';
+                            option.textContent = theme.themeName || `${isWithoutPhoto ? 'Tanpa Foto' : 'Tema'} ${index + 1}`;
+                            adminThemeSelect.appendChild(option);
+                        });
+                    }
+                }
+            }
+
+            // Event Listener untuk Dropdown Kategori & Tipe
+            adminCategorySelect.addEventListener('change', updateThemeDropdown);
+            adminTypeSelect.addEventListener('change', updateThemeDropdown);
+
+            // Event Listener saat memilih Tema untuk diedit
+            adminThemeSelect.addEventListener('change', function() {
+                const selectedIndex = this.value;
+                
+                if (selectedIndex === "") {
+                    // Mode Buat Baru: Kosongkan semua form
+                    document.getElementById('admin-theme-name').value = "";
+                    document.getElementById('admin-image').value = "";
+                    document.getElementById('admin-preview').value = "";
+                    document.getElementById('admin-price').value = "";
+                    document.getElementById('admin-original-price').value = "";
+                    document.getElementById('admin-discount').value = "";
+                    document.getElementById('admin-label').value = "";
+                    currentEditingOriginalName = null; // Reset nama asli
+                    
+                    // Reset preview gambar
+                    document.getElementById('admin-image-preview').style.display = 'none';
+                } else {
+                    // Mode Edit: Isi form dengan data yang ada
+                    const selectedCategory = adminCategorySelect.value;
+                    const selectedType = adminTypeSelect.value;
+                    const typeData = catalogData[selectedCategory].find(t => t.type === selectedType);
+                    const themeData = typeData.themes[selectedIndex];
+
+                    if (themeData) {
+                        // [PERBAIKAN] Isi form dengan data default jika data database kosong (untuk tema bawaan)
+                        const isWithoutPhoto = selectedType === 'withoutPhoto';
+                        const defaultName = `${isWithoutPhoto ? 'Tanpa Foto' : 'Tema'} ${parseInt(selectedIndex) + 1}`;
+                        const defaultPrice = isWithoutPhoto ? 30000 : 50000;
+                        const defaultOriginalPrice = isWithoutPhoto ? 60000 : 100000;
+
+                        document.getElementById('admin-theme-name').value = themeData.themeName || defaultName;
+                        document.getElementById('admin-image').value = themeData.image || "";
+                        document.getElementById('admin-preview').value = themeData.previewUrl || "";
+                        document.getElementById('admin-price').value = (themeData.price !== undefined) ? themeData.price : defaultPrice;
+                        document.getElementById('admin-original-price').value = (themeData.originalPrice !== undefined) ? themeData.originalPrice : defaultOriginalPrice;
+                        document.getElementById('admin-discount').value = themeData.discount || "50%";
+                        document.getElementById('admin-label').value = themeData.label || "";
+                        
+                        // Simpan nama asli untuk referensi update
+                        currentEditingOriginalName = themeData.themeName;
+
+                        // Tampilkan preview gambar kecil
+                        const imgPreview = document.getElementById('admin-image-preview');
+                        if (themeData.image) {
+                            imgPreview.src = themeData.image;
+                            imgPreview.style.display = 'block';
+                        } else {
+                            imgPreview.style.display = 'none';
+                        }
+                    }
+                }
+            });
+
+            // Fitur tambahan: Preview gambar saat mengetik URL
+            document.getElementById('admin-image').addEventListener('input', function() {
+                const imgPreview = document.getElementById('admin-image-preview');
+                if (this.value) {
+                    imgPreview.src = this.value;
+                    imgPreview.style.display = 'block';
+                } else {
+                    imgPreview.style.display = 'none';
+                }
+            });
+
+            // [BARU] Logika Otomatisasi Harga (Diskon 50%)
+            // Saat harga diisi, harga coret dan diskon otomatis terisi
+            document.getElementById('admin-price').addEventListener('input', function() {
+                const priceVal = parseInt(this.value);
+                if (!isNaN(priceVal)) {
+                    // Otomatis set harga coret menjadi 2x lipat (karena diskon 50%)
+                    const originalPriceInput = document.getElementById('admin-original-price');
+                    originalPriceInput.value = priceVal * 2;
+                    originalPriceInput.style.backgroundColor = '#f0f0f0'; // Memberi tanda visual bahwa ini otomatis
+                    
+                    // Otomatis set teks diskon
+                    const discountInput = document.getElementById('admin-discount');
+                    discountInput.value = '50%';
+                    discountInput.style.backgroundColor = '#f0f0f0'; // Memberi tanda visual bahwa ini otomatis
+                }
+            });
+
+            // Submit Data ke Google Sheet
+            document.getElementById('save-admin-data-btn').addEventListener('click', () => {
+                if (!GOOGLE_SHEET_API_URL) {
+                    alert('URL Google Sheet belum diisi! Silakan isi variabel GOOGLE_SHEET_API_URL di baris ~1472 kode Anda.');
+                    return;
+                }
+
+                const btn = document.getElementById('save-admin-data-btn');
+                const originalText = btn.textContent;
+                btn.textContent = 'Menyimpan...';
+                btn.disabled = true;
+
+                const formData = {
+                    action: 'save',
+                    originalThemeName: currentEditingOriginalName, // Kirim nama asli untuk kunci update
+                    category: document.getElementById('admin-category').value,
+                    type: document.getElementById('admin-type').value,
+                    themeName: document.getElementById('admin-theme-name').value,
+                    image: document.getElementById('admin-image').value,
+                    previewUrl: document.getElementById('admin-preview').value,
+                    price: document.getElementById('admin-price').value,
+                    originalPrice: document.getElementById('admin-original-price').value,
+                    discount: document.getElementById('admin-discount').value,
+                    label: document.getElementById('admin-label').value,
+                    rating: 4.9, // Default rating
+                    reviews: 0
+                };
+
+                fetch(GOOGLE_SHEET_API_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', // Penting untuk Google Apps Script
+                    headers: { 'Content-Type': 'text/plain' },
+                    body: JSON.stringify(formData)
+                })
+                .then(() => {
+                    alert('Data berhasil dikirim ke Google Sheet! Silakan refresh halaman setelah beberapa saat.');
+                    btn.textContent = originalText;
+                    btn.disabled = false;
+                    adminModal.classList.remove('active');
+                    fetchCatalogFromGoogleSheet(); // Refresh data lokal
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert('Gagal menyimpan data.');
+                    btn.textContent = originalText;
+                    btn.disabled = false;
+                });
+            });
+
+            // [BARU] Fitur Upload Data Bawaan ke Google Sheet
+            const syncBtn = document.getElementById('sync-data-btn');
+            if (syncBtn) {
+                syncBtn.addEventListener('click', async () => {
+                    if (!confirm("Apakah Anda yakin ingin mengupload semua data bawaan (hardcoded) ke Google Sheet? Pastikan Sheet Anda masih kosong agar tidak duplikat.")) return;
+                    
+                    syncBtn.disabled = true;
+                    syncBtn.textContent = "Sedang Mengupload... (Mohon Tunggu)";
+                    
+                    let successCount = 0;
+                    let failCount = 0;
+
+                    // Loop semua kategori dan tema dalam catalogData
+                    for (const [categoryName, types] of Object.entries(catalogData)) {
+                        for (const typeObj of types) {
+                            const type = typeObj.type; // 'withPhoto' or 'withoutPhoto'
+                            const isWithoutPhoto = type === 'withoutPhoto';
+                            
+                            for (let i = 0; i < typeObj.themes.length; i++) {
+                                const theme = typeObj.themes[i];
+                                
+                                // Siapkan data default jika properti tidak ada
+                                const defaultName = `${isWithoutPhoto ? 'Tanpa Foto' : 'Tema'} ${i + 1}`;
+                                const defaultPrice = isWithoutPhoto ? 30000 : 50000;
+                                const defaultOriginalPrice = isWithoutPhoto ? 60000 : 100000;
+                                
+                                const payload = {
+                                    action: 'save',
+                                    category: categoryName,
+                                    type: type,
+                                    themeName: theme.themeName || defaultName,
+                                    image: theme.image || '',
+                                    previewUrl: theme.previewUrl || '',
+                                    price: (theme.price !== undefined) ? theme.price : defaultPrice,
+                                    originalPrice: (theme.originalPrice !== undefined) ? theme.originalPrice : defaultOriginalPrice,
+                                    discount: theme.discount || '50%',
+                                    label: theme.label || '',
+                                    rating: theme.rating || 4.9,
+                                    reviews: theme.reviews || 0
+                                };
+
+                                try {
+                                    await fetch(GOOGLE_SHEET_API_URL, {
+                                        method: 'POST',
+                                        mode: 'no-cors',
+                                        headers: { 'Content-Type': 'text/plain' },
+                                        body: JSON.stringify(payload)
+                                    });
+                                    successCount++;
+                                    // Beri jeda 500ms agar server tidak overload
+                                    await new Promise(r => setTimeout(r, 500)); 
+                                } catch (e) {
+                                    console.error(e);
+                                    failCount++;
+                                }
+                            }
+                        }
+                    }
+                    
+                    alert(`Selesai! Berhasil kirim: ${successCount} tema. Silakan refresh halaman.`);
+                    syncBtn.disabled = false;
+                    syncBtn.textContent = "Upload Semua Data Bawaan ke Sheet";
+                    fetchCatalogFromGoogleSheet(); // Refresh data lokal
+                });
+            }
+        });
     </script>
     <script>
         // Skrip terpisah untuk memuat keranjang dari localStorage sebelum DOMContentLoaded
@@ -4142,6 +4482,107 @@
             window.shoppingCart = JSON.parse(savedCart);
         }
     </script>
+
+    <!-- CSS untuk Admin Modal -->
+    <style>
+        .admin-form-group { margin-bottom: 15px; text-align: left; }
+        .admin-form-group label { display: block; font-size: 0.85em; margin-bottom: 5px; color: var(--secondary-text); }
+        .admin-form-group input, .admin-form-group select {
+            width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--card-border);
+            background: var(--bg-color); color: var(--primary-text); box-sizing: border-box;
+        }
+        /* Style tambahan untuk layout admin yang lebih rapi */
+        .admin-row { display: flex; gap: 10px; }
+        .admin-row .admin-form-group { flex: 1; }
+        #admin-image-preview {
+            width: 100%; height: 150px; object-fit: cover; border-radius: 8px;
+            margin-bottom: 15px; border: 1px solid var(--card-border); display: none;
+            background-color: #f0f0f0;
+        }
+        .admin-header {
+            background: var(--accent-color); color: white; padding: 15px; margin: -30px -30px 20px -30px;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+        }
+    </style>
+
+    <!-- HTML untuk Admin Modal -->
+    <div id="admin-modal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 400px; text-align: left;">
+            <div class="admin-header">
+                <h4 style="text-align: center; margin: 0; color: white;">Dashboard Admin</h4>
+            </div>
+            
+            <!-- Login Section -->
+            <div id="admin-password-group">
+                <div class="admin-form-group">
+                    <label>Masukkan Password Admin</label>
+                    <input type="password" id="admin-password" placeholder="Password...">
+                </div>
+                <button id="check-password-btn" class="btn-primary" style="width:100%">Masuk</button>
+            </div>
+
+            <!-- Form Section (Hidden by default) -->
+            <div id="admin-content-group" class="hidden">
+                <div style="max-height: 400px; overflow-y: auto; padding-right: 5px;">
+                    
+                    <!-- Bagian Filter / Pemilihan -->
+                    <div style="background: rgba(0,0,0,0.03); padding: 10px; border-radius: 10px; margin-bottom: 15px;">
+                        <div class="admin-row">
+                            <div class="admin-form-group" style="margin-bottom: 10px;">
+                                <label>1. Pilih Kategori</label>
+                                <select id="admin-category">
+                                    <option value="Pernikahan Bali">Pernikahan Bali</option>
+                                    <option value="Pernikahan Muslim">Pernikahan Muslim</option>
+                                    <option value="Metatah / Potong Gigi">Metatah</option>
+                                    <option value="Ulang Tahun">Ulang Tahun</option>
+                                    <option value="3 Bulanan">3 Bulanan</option>
+                                </select>
+                            </div>
+                            <div class="admin-form-group" style="margin-bottom: 10px;">
+                                <label>2. Tipe</label>
+                                <select id="admin-type">
+                                    <option value="withPhoto">Dengan Foto</option>
+                                    <option value="withoutPhoto">Tanpa Foto</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="admin-form-group" style="margin-bottom: 0;">
+                            <label>3. Pilih Tema untuk Diedit</label>
+                            <select id="admin-theme-select" style="border-color: var(--accent-color); font-weight: bold;">
+                                <option value="">-- Buat Tema Baru --</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Bagian Input Data -->
+                    <img id="admin-image-preview" src="" alt="Preview">
+                    <div class="admin-form-group"><label>Nama Tema</label><input type="text" id="admin-theme-name" placeholder="Contoh: Tema Elegan 1"></div>
+                    <div class="admin-form-group"><label>Link Gambar (URL)</label><input type="text" id="admin-image" placeholder="https://..."></div>
+                    <div class="admin-form-group"><label>Link Preview (URL)</label><input type="text" id="admin-preview" placeholder="https://..."></div>
+                    
+                    <div class="admin-row">
+                        <div class="admin-form-group"><label>Harga</label><input type="number" id="admin-price" placeholder="50000"></div>
+                        <div class="admin-form-group"><label>Harga Coret</label><input type="number" id="admin-original-price" placeholder="100000"></div>
+                    </div>
+                    <div class="admin-row">
+                        <div class="admin-form-group"><label>Diskon</label><input type="text" id="admin-discount" placeholder="50%"></div>
+                        <div class="admin-form-group"><label>Label</label><input type="text" id="admin-label" placeholder="Populer"></div>
+                    </div>
+                </div>
+                <div class="catalog-item-actions" style="margin-top: 20px;">
+                    <button id="save-admin-data-btn" class="btn-primary">Simpan Data</button>
+                </div>
+                <!-- Tombol Upload Data Bawaan -->
+                <div class="catalog-item-actions" style="margin-top: 10px; border-top: 1px solid var(--card-border); padding-top: 10px;">
+                    <button id="sync-data-btn" class="btn-secondary" style="width:100%; font-size: 0.8em;">Upload Semua Data Bawaan ke Sheet</button>
+                </div>
+            </div>
+            
+            <div class="catalog-item-actions" style="margin-top: 10px;">
+                <button id="admin-close-btn" class="btn-secondary">Tutup</button>
+            </div>
+        </div>
+    </div>
 
 </body>
 </html>
