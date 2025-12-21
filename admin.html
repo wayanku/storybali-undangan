@@ -18,6 +18,7 @@
             --accent-hover: #4E5C4D;
             --border-radius: 16px;
             --danger-color: #ef4444;
+            --success-color: #10b981;
         }
         body {
             font-family: 'Manrope', sans-serif;
@@ -226,6 +227,38 @@
             .preview-img { height: 180px; object-fit: cover; }
             .filter-box { flex-direction: column; align-items: stretch; }
         }
+
+        /* --- Advanced Features Styles --- */
+        /* Toast Notification */
+        .toast {
+            visibility: hidden; min-width: 250px; background-color: #333; color: #fff;
+            text-align: center; border-radius: 50px; padding: 12px 24px; position: fixed;
+            z-index: 3000; left: 50%; bottom: 30px; transform: translateX(-50%) translateY(20px);
+            font-size: 0.95rem; opacity: 0; transition: all 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); font-weight: 600;
+        }
+        .toast.show { visibility: visible; opacity: 1; transform: translateX(-50%) translateY(0); bottom: 50px; }
+        .toast.success { background-color: var(--success-color); }
+        .toast.error { background-color: var(--danger-color); }
+
+        /* Stats Cards */
+        .stats-container {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px;
+        }
+        .stat-card {
+            background: white; padding: 15px; border-radius: 12px; border: 1px solid #e5e7eb;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: transform 0.2s;
+        }
+        .stat-card:hover { transform: translateY(-2px); border-color: var(--accent-color); }
+        .stat-value { font-size: 1.8rem; font-weight: 800; color: var(--accent-color); line-height: 1.2; }
+        .stat-label { font-size: 0.85rem; color: var(--secondary-text); font-weight: 600; }
+        
+        @media (max-width: 768px) {
+            .stats-container { grid-template-columns: 1fr; gap: 10px; }
+            .stat-card { flex-direction: row; justify-content: space-between; padding: 15px 20px; }
+            .stat-value { font-size: 1.4rem; }
+        }
     </style>
 </head>
 <body>
@@ -263,6 +296,22 @@
             </div>
         </div>
 
+            <!-- Stats Section (New) -->
+            <div class="stats-container">
+                <div class="stat-card">
+                    <span class="stat-label">Total Tema</span>
+                    <span id="stat-total-themes" class="stat-value">0</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Kategori Aktif</span>
+                    <span id="stat-total-categories" class="stat-value">0</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Total Review</span>
+                    <span id="stat-total-reviews" class="stat-value">0</span>
+                </div>
+            </div>
+
             <div class="filter-box">
                 <div class="form-group" style="margin-bottom: 0; flex: 1;">
                         <label>Kategori</label>
@@ -280,6 +329,10 @@
                             <option value="withPhoto">Dengan Foto</option>
                             <option value="withoutPhoto">Tanpa Foto</option>
                         </select>
+                </div>
+                <div class="form-group" style="margin-bottom: 0; flex: 1;">
+                    <label>Cari Tema</label>
+                    <input type="text" id="admin-search" placeholder="Ketik nama tema..." style="background: white;">
                 </div>
             </div>
 
@@ -341,6 +394,7 @@
                 </div>
             </div>
             <div class="modal-footer">
+                <button id="delete-btn" class="btn btn-secondary btn-sm" style="margin-top:0; width: auto; color: var(--danger-color); border-color: #fee2e2; background: #fef2f2; margin-right: auto;">Hapus</button>
                 <button class="btn btn-secondary btn-sm" onclick="closeModal()" style="margin-top:0; width: auto;">Batal</button>
                 <button id="save-btn" class="btn btn-primary btn-sm" style="width: auto;">
                     <svg style="width:18px;height:18px;fill:currentColor" viewBox="0 0 24 24"><path d="M15,9H5V5H15M12,19A3,3 0 0,1 9,16A3,3 0 0,1 12,13A3,3 0 0,1 15,16A3,3 0 0,1 12,19M17,3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V7L17,3Z" /></svg>
@@ -349,6 +403,9 @@
             </div>
         </div>
     </div>
+
+    <!-- Toast Notification -->
+    <div id="toast-notification" class="toast">Notifikasi</div>
 
     <script>
         // KONFIGURASI
@@ -405,9 +462,11 @@
             document.getElementById('login-btn').addEventListener('click', handleLogin);
             document.getElementById('admin-category').addEventListener('change', renderThemeGrid);
             document.getElementById('admin-type').addEventListener('change', renderThemeGrid);
+            document.getElementById('admin-search').addEventListener('input', renderThemeGrid); // Live search
             document.getElementById('admin-image').addEventListener('input', updateImagePreview);
             document.getElementById('admin-price').addEventListener('input', autoFillPrice);
             document.getElementById('save-btn').addEventListener('click', saveData);
+            document.getElementById('delete-btn').addEventListener('click', deleteData); // Delete button
             document.getElementById('sync-btn').addEventListener('click', syncData);
             
             // Inisialisasi dropdown awal
@@ -419,9 +478,10 @@
             if (password === 'admin123') { // Ganti password sesuai kebutuhan
                 document.getElementById('login-section').classList.add('hidden');
                 document.getElementById('dashboard-section').classList.remove('hidden');
+                updateStats(); // Hitung statistik saat login
                 renderThemeGrid();
             } else {
-                alert('Password salah!');
+                showToast('Password salah!', 'error');
             }
         }
 
@@ -439,13 +499,32 @@
             });
             catalogData = newCatalogData;
             if (!document.getElementById('dashboard-section').classList.contains('hidden')) {
+                updateStats();
                 renderThemeGrid();
             }
+        }
+
+        function updateStats() {
+            let totalThemes = 0;
+            let totalReviews = 0;
+            let activeCategories = Object.keys(catalogData).length;
+
+            for (const cat in catalogData) {
+                catalogData[cat].forEach(type => {
+                    totalThemes += type.themes.length;
+                    type.themes.forEach(t => totalReviews += (t.reviews || 0));
+                });
+            }
+
+            document.getElementById('stat-total-themes').textContent = totalThemes;
+            document.getElementById('stat-total-categories').textContent = activeCategories;
+            document.getElementById('stat-total-reviews').textContent = totalReviews;
         }
 
         function renderThemeGrid() {
             const category = document.getElementById('admin-category').value;
             const type = document.getElementById('admin-type').value;
+            const searchTerm = document.getElementById('admin-search').value.toLowerCase();
             const grid = document.getElementById('theme-grid');
             
             grid.innerHTML = '';
@@ -466,6 +545,10 @@
                     typeData.themes.forEach((theme, index) => {
                         const isWithoutPhoto = type === 'withoutPhoto';
                         const name = theme.themeName || `${isWithoutPhoto ? 'Tanpa Foto' : 'Tema'} ${index + 1}`;
+                        
+                        // Filter Search
+                        if (searchTerm && !name.toLowerCase().includes(searchTerm)) return;
+
                         const price = theme.price ? `Rp ${parseInt(theme.price).toLocaleString('id-ID')}` : 'Rp -';
                         
                         const card = document.createElement('div');
@@ -494,6 +577,7 @@
             const type = document.getElementById('admin-type').value;
             const modal = document.getElementById('editor-modal');
             const title = document.getElementById('modal-title');
+            const deleteBtn = document.getElementById('delete-btn');
             
             if (index === null) {
                 // Reset Form
@@ -508,6 +592,7 @@
                 document.getElementById('admin-label').value = "";
                 document.getElementById('modal-image-preview').src = "";
                 currentEditingOriginalName = null;
+                deleteBtn.style.display = 'none'; // Sembunyikan tombol hapus saat tambah baru
             } else {
                 // Isi Form
                 title.textContent = "Edit Tema";
@@ -520,11 +605,18 @@
                 document.getElementById('admin-preview').value = theme.previewUrl || "";
                 document.getElementById('admin-price').value = theme.price || (isWithoutPhoto ? 30000 : 50000);
                 document.getElementById('admin-original-price').value = theme.originalPrice || (isWithoutPhoto ? 60000 : 100000);
-                document.getElementById('admin-discount').value = theme.discount || "50%";
+                
+                let discountVal = theme.discount || "50%";
+                // Konversi desimal (0.5) menjadi persen (50%)
+                if (!isNaN(discountVal) && Number(discountVal) <= 1 && Number(discountVal) > 0) {
+                    discountVal = Math.round(Number(discountVal) * 100) + "%";
+                }
+                document.getElementById('admin-discount').value = discountVal;
                 document.getElementById('admin-label').value = theme.label || "";
                 
                 currentEditingOriginalName = theme.themeName;
                 updateImagePreview.call(document.getElementById('admin-image'));
+                deleteBtn.style.display = 'block'; // Tampilkan tombol hapus saat edit
             }
             
             modal.classList.add('active');
@@ -578,17 +670,61 @@
                 body: JSON.stringify(formData)
             })
             .then(() => {
-                alert('Data berhasil disimpan!');
+                showToast('Data berhasil disimpan!', 'success');
                 btn.innerHTML = originalText;
                 btn.disabled = false;
                 location.reload(); // Refresh untuk update data
             })
             .catch(err => {
                 console.error(err);
-                alert('Gagal menyimpan data.');
+                showToast('Gagal menyimpan data.', 'error');
                 btn.innerHTML = originalText;
                 btn.disabled = false;
             });
+        }
+
+        function deleteData() {
+            if (!confirm("Yakin ingin menghapus tema ini?")) return;
+            
+            const btn = document.getElementById('delete-btn');
+            const originalText = btn.textContent;
+            btn.textContent = '...';
+            btn.disabled = true;
+
+            // Simulasi penghapusan (karena backend Google Sheet perlu penyesuaian untuk 'delete')
+            // Kita kirim action 'delete' jika backend mendukung, atau 'save' dengan data kosong/flag
+            const formData = {
+                action: 'delete', // Pastikan backend Apps Script menangani ini
+                originalThemeName: currentEditingOriginalName,
+                category: document.getElementById('admin-category').value,
+                type: document.getElementById('admin-type').value
+            };
+
+            fetch(GOOGLE_SHEET_API_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'text/plain' },
+                body: JSON.stringify(formData)
+            })
+            .then(() => {
+                showToast('Tema berhasil dihapus!', 'success');
+                setTimeout(() => location.reload(), 1000);
+            })
+            .catch(err => {
+                console.error(err);
+                showToast('Gagal menghapus data.', 'error');
+                btn.textContent = originalText;
+                btn.disabled = false;
+            });
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast-notification');
+            toast.textContent = message;
+            toast.className = `toast show ${type}`;
+            setTimeout(() => {
+                toast.className = 'toast';
+            }, 3000);
         }
 
         async function syncData() {
@@ -632,7 +768,7 @@
                     }
                 }
             }
-            alert(`Selesai! ${count} tema terupload.`);
+            showToast(`Selesai! ${count} tema terupload.`, 'success');
             btn.disabled = false;
             btn.textContent = "Upload Semua Data Bawaan";
         }
