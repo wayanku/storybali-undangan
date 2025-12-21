@@ -767,6 +767,13 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data && data.length > 0) {
+                        // [BARU] Sinkronisasi Password dari Server (Google Sheet)
+                        const configRow = data.find(row => row.category === 'ADMIN_CONFIG' && row.type === 'PASSWORD');
+                        if (configRow && configRow.themeName) {
+                            ADMIN_PASSWORD = configRow.themeName;
+                            localStorage.setItem('adminPassword', ADMIN_PASSWORD); // Update penyimpanan lokal
+                        }
+
                         localStorage.setItem('catalogCache', JSON.stringify(data));
                         processCatalogData(data);
                     }
@@ -837,6 +844,9 @@
         function processCatalogData(data) {
             const newCatalogData = {};
             data.forEach(row => {
+                // [BARU] Lewati baris konfigurasi admin agar tidak muncul di daftar tema
+                if (row.category === 'ADMIN_CONFIG') return;
+
                 if (!newCatalogData[row.category]) {
                     newCatalogData[row.category] = [
                         { type: 'withPhoto', themes: [] },
