@@ -1,0 +1,462 @@
+<!-- /Users/user/Downloads/undangan-metatah/admin.html -->
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Storybali Undangan</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #f3f4f6;
+            --card-bg: #ffffff;
+            --primary-text: #1f2937;
+            --secondary-text: #6b7280;
+            --accent-color: #5A6B59;
+            --accent-hover: #4E5C4D;
+            --border-radius: 16px;
+        }
+        body {
+            font-family: 'Manrope', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--primary-text);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            background-color: var(--card-bg);
+            width: 100%;
+            max-width: 500px;
+            padding: 40px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header-icon {
+            width: 60px; height: 60px; 
+            background: rgba(90, 107, 89, 0.1); 
+            border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; 
+            margin: 0 auto 15px auto;
+        }
+        .header-icon svg { width: 30px; height: 30px; fill: var(--accent-color); }
+        .header h1 { margin: 0; font-size: 1.5rem; color: var(--primary-text); font-weight: 800; }
+        .header p { margin: 5px 0 0; color: var(--secondary-text); font-size: 0.9rem; }
+        
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.9rem; color: var(--primary-text); }
+        input, select {
+            width: 100%; padding: 12px 15px; border: 1px solid #e5e7eb; border-radius: 10px;
+            font-size: 1rem; transition: all 0.2s; box-sizing: border-box; font-family: inherit;
+            background-color: #f9fafb;
+        }
+        input:focus, select:focus { 
+            outline: none; border-color: var(--accent-color); 
+            background-color: #fff;
+            box-shadow: 0 0 0 3px rgba(90, 107, 89, 0.1);
+        }
+        
+        .btn {
+            width: 100%; padding: 14px; border: none; border-radius: 10px;
+            font-weight: 700; font-size: 1rem; cursor: pointer; transition: all 0.2s;
+            display: flex; justify-content: center; align-items: center; gap: 8px;
+        }
+        .btn-primary { background-color: var(--accent-color); color: white; }
+        .btn-primary:hover { background-color: var(--accent-hover); transform: translateY(-1px); }
+        .btn-secondary { background-color: white; border: 1px solid #e5e7eb; color: var(--secondary-text); margin-top: 15px; }
+        .btn-secondary:hover { background-color: #f9fafb; color: var(--primary-text); }
+
+        .hidden { display: none; }
+        .row { display: flex; gap: 15px; }
+        .row .form-group { flex: 1; }
+        
+        #image-preview {
+            width: 100%; height: 200px; object-fit: cover; border-radius: 10px;
+            margin-bottom: 20px; background-color: #f3f4f6; display: none;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .back-link {
+            display: block; text-align: center; margin-top: 25px;
+            color: var(--secondary-text); text-decoration: none; font-size: 0.9rem; font-weight: 500;
+        }
+        .back-link:hover { color: var(--accent-color); }
+
+        /* Filter Section Style */
+        .filter-box {
+            background: #f8fafc; border: 1px solid #e2e8f0; 
+            padding: 15px; border-radius: 12px; margin-bottom: 25px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Login Section -->
+        <div id="login-section">
+            <div class="header">
+                <div class="header-icon">
+                    <svg viewBox="0 0 24 24"><path d="M12,17A2,2 0 0,0 14,15C14,13.89 13.1,13 12,13A2,2 0 0,0 10,15A2,2 0 0,0 12,17M18,8H17V6A5,5 0 0,0 12,1A5,5 0 0,0 7,6V8H6A2,2 0 0,0 4,10V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V10A2,2 0 0,0 18,8M12,3A3,3 0 0,1 15,6V8H9V6A3,3 0 0,1 12,3Z" /></svg>
+                </div>
+                <h1>Admin Login</h1>
+                <p>Masukkan kode keamanan untuk mengakses dashboard.</p>
+            </div>
+            
+            <div class="form-group">
+                <input type="password" id="admin-password" placeholder="Masukkan Password Admin">
+            </div>
+            <button id="login-btn" class="btn btn-primary">Masuk Dashboard</button>
+            <a href="index.html" class="back-link">← Kembali ke Website Utama</a>
+        </div>
+
+        <!-- Dashboard Section -->
+        <div id="dashboard-section" class="hidden">
+            <div class="header">
+                <h1>Edit Tema Undangan</h1>
+                <p>Kelola data tema yang tampil di website.</p>
+            </div>
+
+            <div class="filter-box">
+                <div class="row">
+                    <div class="form-group" style="margin-bottom: 10px;">
+                        <label>Kategori</label>
+                        <select id="admin-category">
+                            <option value="Pernikahan Bali">Pernikahan Bali</option>
+                            <option value="Pernikahan Muslim">Pernikahan Muslim</option>
+                            <option value="Metatah / Potong Gigi">Metatah</option>
+                            <option value="Ulang Tahun">Ulang Tahun</option>
+                            <option value="3 Bulanan">3 Bulanan</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 10px;">
+                        <label>Tipe</label>
+                        <select id="admin-type">
+                            <option value="withPhoto">Dengan Foto</option>
+                            <option value="withoutPhoto">Tanpa Foto</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label>Pilih Tema</label>
+                    <select id="admin-theme-select" style="border-color: var(--accent-color); font-weight: 600;">
+                        <option value="">-- Buat Tema Baru --</option>
+                    </select>
+                </div>
+            </div>
+
+            <img id="image-preview" src="" alt="Preview">
+            
+            <div class="form-group">
+                <label>Nama Tema</label>
+                <input type="text" id="admin-theme-name" placeholder="Contoh: Tema Elegan 1">
+            </div>
+            
+            <div class="form-group">
+                <label>Link Gambar (URL)</label>
+                <input type="text" id="admin-image" placeholder="https://...">
+            </div>
+            
+            <div class="form-group">
+                <label>Link Preview (URL)</label>
+                <input type="text" id="admin-preview" placeholder="https://...">
+            </div>
+            
+            <div class="row">
+                <div class="form-group">
+                    <label>Harga</label>
+                    <input type="number" id="admin-price" placeholder="50000">
+                </div>
+                <div class="form-group">
+                    <label>Harga Coret</label>
+                    <input type="number" id="admin-original-price" placeholder="100000">
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="form-group">
+                    <label>Diskon</label>
+                    <input type="text" id="admin-discount" placeholder="50%">
+                </div>
+                <div class="form-group">
+                    <label>Label</label>
+                    <input type="text" id="admin-label" placeholder="Populer">
+                </div>
+            </div>
+
+            <button id="save-btn" class="btn btn-primary">
+                <svg style="width:20px;height:20px;fill:currentColor" viewBox="0 0 24 24"><path d="M15,9H5V5H15M12,19A3,3 0 0,1 9,16A3,3 0 0,1 12,13A3,3 0 0,1 15,16A3,3 0 0,1 12,19M17,3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V7L17,3Z" /></svg>
+                Simpan Perubahan
+            </button>
+            
+            <button id="sync-btn" class="btn btn-secondary" style="font-size: 0.9em;">
+                <svg style="width:18px;height:18px;fill:currentColor" viewBox="0 0 24 24"><path d="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z" /></svg>
+                Upload Semua Data Bawaan
+            </button>
+
+            <a href="index.html" class="back-link">Keluar & Kembali ke Website</a>
+        </div>
+    </div>
+
+    <script>
+        // KONFIGURASI
+        const GOOGLE_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycby1EDTIdNZgiis6y5CVDWxQVZx9ymh32_H2phPHtjYucNwvQ8E81zktu7bup0Bn_C6RMQ/exec';
+
+        // Data Katalog Bawaan (Disalin dari index.html untuk keperluan admin)
+        let catalogData = {
+            "Pernikahan Bali": [
+                { type: 'withPhoto', themes: [{ image: 'https://wayanku.github.io/storybali-undangan/foto%20nikah%202,foto%20nikah1,foto%20nikah%203/foto%20pernikahann%20tema%201.webp', previewUrl: 'https://wayanku.github.io/pernikahan-tema-1/', label: 'Populer', rating: 4.9, reviews: 152 }, { image: 'https://wayanku.github.io/storybali-undangan/foto%20nikah%202,foto%20nikah1,foto%20nikah%203/pernikahan%20tama%202%20.webp', previewUrl: 'https://wayanku.github.io/pernikahan-tema-2/', rating: 4.2, reviews: 98 }, { image: 'https://github.com/wayanku/storybali-undangan/blob/main/foto%20nikah%202,foto%20nikah1,foto%20nikah%203/pernikahan%20tema%203.webp?raw=true', previewUrl: 'https://wayanku.github.io/pernikahan-tema-3/' }, { image: 'https://picsum.photos/id/1045/400/400' }] },
+                { type: 'withoutPhoto', themes: [{ image: 'https://picsum.photos/id/1048/400/400', label: 'Populer', rating: 4.9, reviews: 76 }, { image: 'https://picsum.photos/id/1050/400/400' }, { image: 'https://picsum.photos/id/1051/400/400' }, { image: 'https://picsum.photos/id/1052/400/400' }] }
+            ],
+            "Pernikahan Muslim": [
+                { type: 'withPhoto', themes: [{ image: 'https://wayanku.github.io/storybali-undangan/foto%20nikah%202,foto%20nikah1,foto%20nikah%203/pernikahan%20muslim%20tema%201.webp', previewUrl: 'https://wayanku.github.io/muslim-tema-1/', label: 'Populer', rating: 5.0, reviews: 88 }, { image: 'https://picsum.photos/id/1062/400/400' }, { image: 'https://picsum.photos/id/1063/400/400' }, { image: 'https://picsum.photos/id/1064/400/400' }] },
+                { type: 'withoutPhoto', themes: [{ image: 'https://picsum.photos/id/1065/400/400', label: 'Populer', rating: 4.8, reviews: 45 }, { image: 'https://picsum.photos/id/1066/400/400' }, { image: 'https://picsum.photos/id/1067/400/400' }, { image: 'https://picsum.photos/id/1068/400/400' }] }
+            ],
+            "Metatah / Potong Gigi": [
+                { type: 'withPhoto', themes: [{ image: 'https://wayanku.github.io/storybali-undangan/foto%20nikah%202,foto%20nikah1,foto%20nikah%203/metatah%20tema%201.webp', previewUrl: 'https://wayanku.github.io/metatah-tema-1/', label: 'Populer', rating: 4.9, reviews: 112 }, { image: 'https://picsum.photos/id/212/400/400' }, { image: 'https://picsum.photos/id/214/400/400' }, { image: 'https://picsum.photos/id/215/400/400' }] },
+                { type: 'withoutPhoto', themes: [{ image: 'https://picsum.photos/id/216/400/400', label: 'Populer', rating: 4.7, reviews: 65 }, { image: 'https://picsum.photos/id/218/400/400' }, { image: 'https://picsum.photos/id/219/400/400' }, { image: 'https://picsum.photos/id/220/400/400' }] }
+            ],
+            "3 Bulanan": [
+                { type: 'withPhoto', themes: [{ image: 'https://picsum.photos/id/315/400/400', label: 'Populer', rating: 5.0, reviews: 43 }, { image: 'https://picsum.photos/id/316/400/400' }, { image: 'https://picsum.photos/id/317/400/400' }, { image: 'https://picsum.photos/id/318/400/400' }] },
+                { type: 'withoutPhoto', themes: [{ image: 'https://picsum.photos/id/319/400/400', label: 'Populer', rating: 4.8, reviews: 21 }, { image: 'https://picsum.photos/id/320/400/400' }, { image: 'https://picsum.photos/id/321/400/400' }, { image: 'https://picsum.photos/id/322/400/400' }] }
+            ],
+            "Ulang Tahun": [
+                { type: 'withPhoto', themes: [{ image: 'https://picsum.photos/id/431/400/400', label: 'Populer', rating: 4.9, reviews: 99 }, { image: 'https://picsum.photos/id/433/400/400' }, { image: 'https://picsum.photos/id/434/400/400' }, { image: 'https://picsum.photos/id/435/400/400' }] },
+                { type: 'withoutPhoto', themes: [{ image: 'https://wayanku.github.io/storybali-undangan/foto%20nikah%202,foto%20nikah1,foto%20nikah%203/ulang%20tahun%20tema%201%20tanpa%20foto.webp', previewUrl: 'https://wayanku.github.io/ulang-tahun-tema-1-tanpa-foto/', label: 'Baru', rating: 4.8, reviews: 35 }, { image: 'https://picsum.photos/id/438/400/400' }, { image: 'https://picsum.photos/id/439/400/400' }, { image: 'https://picsum.photos/id/440/400/400' }] }
+            ]
+        };
+
+        // Variabel Global
+        let currentEditingOriginalName = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Cek cache lokal
+            const cachedData = localStorage.getItem('catalogCache');
+            if (cachedData) {
+                try {
+                    processCatalogData(JSON.parse(cachedData));
+                } catch (e) { console.error(e); }
+            }
+            
+            // Fetch data terbaru
+            fetch(GOOGLE_SHEET_API_URL)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.length > 0) {
+                        localStorage.setItem('catalogCache', JSON.stringify(data));
+                        processCatalogData(data);
+                    }
+                })
+                .catch(err => console.log("Menggunakan data bawaan/cache."));
+
+            // Event Listeners
+            document.getElementById('login-btn').addEventListener('click', handleLogin);
+            document.getElementById('admin-category').addEventListener('change', updateThemeDropdown);
+            document.getElementById('admin-type').addEventListener('change', updateThemeDropdown);
+            document.getElementById('admin-theme-select').addEventListener('change', handleThemeSelection);
+            document.getElementById('admin-image').addEventListener('input', updateImagePreview);
+            document.getElementById('admin-price').addEventListener('input', autoFillPrice);
+            document.getElementById('save-btn').addEventListener('click', saveData);
+            document.getElementById('sync-btn').addEventListener('click', syncData);
+            
+            // Inisialisasi dropdown awal
+            updateThemeDropdown();
+        });
+
+        function handleLogin() {
+            const password = document.getElementById('admin-password').value;
+            if (password === 'admin123') { // Ganti password sesuai kebutuhan
+                document.getElementById('login-section').classList.add('hidden');
+                document.getElementById('dashboard-section').classList.remove('hidden');
+            } else {
+                alert('Password salah!');
+            }
+        }
+
+        function processCatalogData(data) {
+            const newCatalogData = {};
+            data.forEach(row => {
+                if (!newCatalogData[row.category]) {
+                    newCatalogData[row.category] = [
+                        { type: 'withPhoto', themes: [] },
+                        { type: 'withoutPhoto', themes: [] }
+                    ];
+                }
+                const typeIndex = row.type === 'withoutPhoto' ? 1 : 0;
+                newCatalogData[row.category][typeIndex].themes.push(row);
+            });
+            catalogData = newCatalogData;
+            updateThemeDropdown(); // Refresh dropdown jika data berubah
+        }
+
+        function updateThemeDropdown() {
+            const category = document.getElementById('admin-category').value;
+            const type = document.getElementById('admin-type').value;
+            const select = document.getElementById('admin-theme-select');
+            
+            select.innerHTML = '<option value="">-- Buat Tema Baru --</option>';
+            
+            if (catalogData[category]) {
+                const typeData = catalogData[category].find(t => t.type === type);
+                if (typeData && typeData.themes.length > 0) {
+                    typeData.themes.forEach((theme, index) => {
+                        const option = document.createElement('option');
+                        option.value = index;
+                        const isWithoutPhoto = type === 'withoutPhoto';
+                        option.textContent = theme.themeName || `${isWithoutPhoto ? 'Tanpa Foto' : 'Tema'} ${index + 1}`;
+                        select.appendChild(option);
+                    });
+                }
+            }
+        }
+
+        function handleThemeSelection() {
+            const index = this.value;
+            const category = document.getElementById('admin-category').value;
+            const type = document.getElementById('admin-type').value;
+            
+            if (index === "") {
+                // Reset Form
+                document.getElementById('admin-theme-name').value = "";
+                document.getElementById('admin-image').value = "";
+                document.getElementById('admin-preview').value = "";
+                document.getElementById('admin-price').value = "";
+                document.getElementById('admin-original-price').value = "";
+                document.getElementById('admin-discount').value = "";
+                document.getElementById('admin-label').value = "";
+                document.getElementById('image-preview').style.display = 'none';
+                currentEditingOriginalName = null;
+            } else {
+                // Isi Form
+                const theme = catalogData[category].find(t => t.type === type).themes[index];
+                const isWithoutPhoto = type === 'withoutPhoto';
+                
+                document.getElementById('admin-theme-name').value = theme.themeName || `${isWithoutPhoto ? 'Tanpa Foto' : 'Tema'} ${parseInt(index) + 1}`;
+                document.getElementById('admin-image').value = theme.image || "";
+                document.getElementById('admin-preview').value = theme.previewUrl || "";
+                document.getElementById('admin-price').value = theme.price || (isWithoutPhoto ? 30000 : 50000);
+                document.getElementById('admin-original-price').value = theme.originalPrice || (isWithoutPhoto ? 60000 : 100000);
+                document.getElementById('admin-discount').value = theme.discount || "50%";
+                document.getElementById('admin-label').value = theme.label || "";
+                
+                currentEditingOriginalName = theme.themeName;
+                updateImagePreview.call(document.getElementById('admin-image'));
+            }
+        }
+
+        function updateImagePreview() {
+            const img = document.getElementById('image-preview');
+            if (this.value) {
+                img.src = this.value;
+                img.style.display = 'block';
+            } else {
+                img.style.display = 'none';
+            }
+        }
+
+        function autoFillPrice() {
+            const price = parseInt(this.value);
+            if (!isNaN(price)) {
+                document.getElementById('admin-original-price').value = price * 2;
+                document.getElementById('admin-discount').value = '50%';
+            }
+        }
+
+        function saveData() {
+            const btn = document.getElementById('save-btn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = 'Menyimpan...';
+            btn.disabled = true;
+
+            const formData = {
+                action: 'save',
+                originalThemeName: currentEditingOriginalName,
+                category: document.getElementById('admin-category').value,
+                type: document.getElementById('admin-type').value,
+                themeName: document.getElementById('admin-theme-name').value,
+                image: document.getElementById('admin-image').value,
+                previewUrl: document.getElementById('admin-preview').value,
+                price: document.getElementById('admin-price').value,
+                originalPrice: document.getElementById('admin-original-price').value,
+                discount: document.getElementById('admin-discount').value,
+                label: document.getElementById('admin-label').value,
+                rating: 4.9,
+                reviews: 0
+            };
+
+            fetch(GOOGLE_SHEET_API_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'text/plain' },
+                body: JSON.stringify(formData)
+            })
+            .then(() => {
+                alert('Data berhasil disimpan!');
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                location.reload(); // Refresh untuk update data
+            })
+            .catch(err => {
+                console.error(err);
+                alert('Gagal menyimpan data.');
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            });
+        }
+
+        async function syncData() {
+            if (!confirm("Upload semua data bawaan ke Google Sheet?")) return;
+            
+            const btn = document.getElementById('sync-btn');
+            btn.disabled = true;
+            btn.textContent = "Sedang Mengupload...";
+            
+            let count = 0;
+            for (const [cat, types] of Object.entries(catalogData)) {
+                for (const typeObj of types) {
+                    for (let i = 0; i < typeObj.themes.length; i++) {
+                        const theme = typeObj.themes[i];
+                        const isWithoutPhoto = typeObj.type === 'withoutPhoto';
+                        
+                        const payload = {
+                            action: 'save',
+                            category: cat,
+                            type: typeObj.type,
+                            themeName: theme.themeName || `${isWithoutPhoto ? 'Tanpa Foto' : 'Tema'} ${i + 1}`,
+                            image: theme.image || '',
+                            previewUrl: theme.previewUrl || '',
+                            price: theme.price || (isWithoutPhoto ? 30000 : 50000),
+                            originalPrice: theme.originalPrice || (isWithoutPhoto ? 60000 : 100000),
+                            discount: theme.discount || '50%',
+                            label: theme.label || '',
+                            rating: theme.rating || 4.9,
+                            reviews: theme.reviews || 0
+                        };
+
+                        try {
+                            await fetch(GOOGLE_SHEET_API_URL, {
+                                method: 'POST', mode: 'no-cors',
+                                headers: { 'Content-Type': 'text/plain' },
+                                body: JSON.stringify(payload)
+                            });
+                            count++;
+                            await new Promise(r => setTimeout(r, 500));
+                        } catch (e) { console.error(e); }
+                    }
+                }
+            }
+            alert(`Selesai! ${count} tema terupload.`);
+            btn.disabled = false;
+            btn.textContent = "Upload Semua Data Bawaan";
+        }
+    </script>
+</body>
+</html>
