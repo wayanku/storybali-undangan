@@ -50,7 +50,7 @@
         }
         /* Login Container Centering */
         #login-section {
-            max-width: 400px; margin: 10vh auto;
+            width: 90%; max-width: 400px; margin: 10vh auto;
         }
 
         .container {
@@ -226,10 +226,11 @@
             
             /* Perbaikan Tampilan Login di HP */
             #login-section {
-                margin: 0;
-                min-height: 100vh; /* Login layar penuh */
-                display: flex; flex-direction: column; justify-content: center;
-                border-radius: 0; box-shadow: none;
+                margin: 10vh auto; /* Posisi vertikal di tengah dengan jarak atas */
+                min-height: auto; /* Tinggi menyesuaikan isi konten */
+                display: block;
+                border-radius: var(--border-radius); /* Sudut membulat tetap ada */
+                box-shadow: var(--shadow-lg); /* Bayangan tetap ada */
                 padding: 30px 20px;
             }
             
@@ -312,6 +313,9 @@
                 <input type="password" id="admin-password" placeholder="Masukkan Password Admin">
             </div>
             <button id="login-btn" class="btn btn-primary">Masuk Dashboard</button>
+            <div style="text-align: center; margin-top: 15px;">
+                <a href="#" id="forgot-password-link" style="color: var(--accent-color); font-size: 0.9rem; text-decoration: none; font-weight: 600;">Lupa Password?</a>
+            </div>
             <a href="index.html" class="back-link">← Kembali ke Website Utama</a>
     </div>
 
@@ -473,6 +477,28 @@
         </div>
     </div>
 
+    <!-- Forgot Password Modal -->
+    <div id="forgot-password-modal" class="modal-overlay">
+        <div class="modal-content" style="height: auto; max-width: 500px; max-height: 90vh;">
+            <div class="modal-header">
+                <h2>Lupa Password?</h2>
+                <button class="close-btn" onclick="closeForgotPasswordModal()">&times;</button>
+            </div>
+            <div class="modal-body" style="display: block; grid-template-columns: 1fr;">
+                <p style="margin-top: 0; color: var(--primary-text);">Jangan khawatir! Karena sistem ini terhubung dengan Google Sheet, Anda bisa memulihkan password dengan cara berikut:</p>
+                <ol style="line-height: 1.6; padding-left: 20px; color: var(--secondary-text); margin-bottom: 0;">
+                    <li style="margin-bottom: 10px;">Buka <b>Google Sheet</b> database Anda.</li>
+                    <li style="margin-bottom: 10px;">Cari baris dengan Kategori <b>ADMIN_CONFIG</b>.</li>
+                    <li style="margin-bottom: 10px;">Password Anda tersimpan di kolom <b>Nama Tema</b> pada baris tersebut.</li>
+                    <li>Jika ingin mereset, <b>hapus baris tersebut</b> dari Google Sheet, lalu refresh halaman ini. Password akan kembali ke default: <b>admin123</b>.</li>
+                </ol>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary btn-sm" onclick="closeForgotPasswordModal()">Saya Mengerti</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast Notification -->
     <div id="toast-notification" class="toast">Notifikasi</div>
 
@@ -530,18 +556,8 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data && data.length > 0) {
-                        // 1. Cek apakah ada password tersimpan di Sheet
-                        const configRow = data.find(row => row.category === 'ADMIN_CONFIG' && row.type === 'PASSWORD');
-                        if (configRow && configRow.themeName) {
-                            ADMIN_PASSWORD = configRow.themeName;
-                            localStorage.setItem('adminPassword', ADMIN_PASSWORD); // Update local storage
-                        }
-
-                        // 2. Filter data agar baris password tidak muncul di katalog/grid
-                        const catalogRows = data.filter(row => row.category !== 'ADMIN_CONFIG');
-                        
-                        localStorage.setItem('catalogCache', JSON.stringify(catalogRows));
-                        processCatalogData(catalogRows);
+                        localStorage.setItem('catalogCache', JSON.stringify(data));
+                        processCatalogData(data);
                     }
                 })
                 .catch(err => console.log("Menggunakan data bawaan/cache."));
@@ -559,6 +575,7 @@
             document.getElementById('dark-mode-btn').addEventListener('click', toggleDarkMode);
             document.getElementById('change-password-btn').addEventListener('click', openChangePasswordModal);
             document.getElementById('save-password-btn').addEventListener('click', saveNewPassword);
+            document.getElementById('forgot-password-link').addEventListener('click', openForgotPasswordModal);
             
             // Inisialisasi dropdown awal
             // renderThemeGrid(); // Called after login
@@ -768,45 +785,19 @@
                 return;
             }
 
-            const btn = document.getElementById('save-password-btn');
-            const originalText = btn.textContent;
-            btn.textContent = 'Menyimpan ke Cloud...';
-            btn.disabled = true;
+            ADMIN_PASSWORD = newPass;
+            localStorage.setItem('adminPassword', newPass);
+            showToast('Password berhasil diubah!', 'success');
+            closeChangePasswordModal();
+        }
 
-            // Simpan ke Google Sheet sebagai baris khusus
-            const formData = {
-                action: 'save',
-                category: 'ADMIN_CONFIG', // Kategori khusus untuk config
-                type: 'PASSWORD',         // Tipe khusus
-                themeName: newPass,       // Password baru disimpan di kolom themeName
-                originalThemeName: ADMIN_PASSWORD, // Password lama untuk referensi update
-                // Isi field lain dengan dummy agar tidak error di script
-                image: '-', previewUrl: '-', price: 0, originalPrice: 0, discount: '0%', label: '-', rating: 0, reviews: 0
-            };
+        function openForgotPasswordModal(e) {
+            if(e) e.preventDefault();
+            document.getElementById('forgot-password-modal').classList.add('active');
+        }
 
-            fetch(GOOGLE_SHEET_API_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: { 'Content-Type': 'text/plain' },
-                body: JSON.stringify(formData)
-            })
-            .then(() => {
-                ADMIN_PASSWORD = newPass;
-                localStorage.setItem('adminPassword', newPass);
-                showToast('Password berhasil disimpan di Cloud!', 'success');
-                closeChangePasswordModal();
-                btn.textContent = originalText;
-                btn.disabled = false;
-            })
-            .catch(err => {
-                console.error(err);
-                showToast('Gagal koneksi ke Cloud. Password tersimpan di browser saja.', 'error');
-                // Fallback: Simpan lokal jika internet mati
-                ADMIN_PASSWORD = newPass;
-                localStorage.setItem('adminPassword', newPass);
-                btn.textContent = originalText;
-                btn.disabled = false;
-            });
+        function closeForgotPasswordModal() {
+            document.getElementById('forgot-password-modal').classList.remove('active');
         }
 
         function autoFillPrice() {
