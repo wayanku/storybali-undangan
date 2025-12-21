@@ -8,6 +8,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- [BARU] Menambahkan Library Chart.js untuk grafik yang lebih bagus -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
             --bg-color: #f3f4f6;
@@ -362,20 +364,10 @@
         .chart-header h3 { margin: 0; font-size: 1.1rem; color: var(--primary-text); }
         
         .simple-bar-chart {
-            display: flex; align-items: flex-end; gap: 10px; height: 180px;
-            padding-bottom: 20px; border-bottom: 1px solid #e5e7eb;
+            /* [DIUBAH] Styling untuk container Chart.js */
+            display: block; height: 300px; position: relative;
+            padding-bottom: 10px; border-bottom: 1px solid #e5e7eb;
         }
-        .bar-column {
-            flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; height: 100%; justify-content: flex-end;
-        }
-        .bar {
-            width: 100%; background-color: var(--accent-color); opacity: 0.8;
-            border-radius: 4px 4px 0 0; transition: height 1s ease, opacity 0.2s;
-            min-height: 4px; position: relative;
-        }
-        .bar:hover { opacity: 1; transform: scaleX(1.05); }
-        .bar-label { font-size: 0.75rem; color: var(--secondary-text); font-weight: 600; }
-        .bar-value { font-size: 0.7rem; color: var(--primary-text); font-weight: 700; margin-bottom: 4px; }
 
         .activity-list {
             background: var(--card-bg); border-radius: 12px; border: 1px solid #e5e7eb;
@@ -477,9 +469,8 @@
                     </select>
                 </div>
                 <div id="visitor-chart" class="simple-bar-chart">
-                    <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:var(--secondary-text); font-size:0.9rem;">
-                        Memuat data...
-                    </div>
+                    <!-- Canvas untuk Chart.js -->
+                    <canvas id="analyticsCanvas"></canvas>
                 </div>
             </div>
 
@@ -715,10 +706,13 @@
 
     <script>
         // KONFIGURASI
-        const GOOGLE_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbwQmr4RFsi_fYWTNH2mfXYODcTxHEfZjPWGKTtkrdSxg6uSRzGmTSFO0zoPXCusfdSeSw/exec';
+        const GOOGLE_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbztZSjT8I3tNS_B1GUdvKFRCaqwLqKXD0HDRZw1hlJldEy813RhZmuZ9grIxeHSoc5b7Q/exec';
         
         // Load Password dari LocalStorage atau gunakan default 'admin123'
         let ADMIN_PASSWORD = localStorage.getItem('adminPassword') || 'admin123';
+
+        // Variabel global untuk instance Chart.js
+        let analyticsChart = null;
 
         // Data Katalog Bawaan (Disalin dari index.html untuk keperluan admin)
         let catalogData = {
@@ -1255,19 +1249,31 @@
         function loadAnalyticsData() {
             const days = document.getElementById('chart-filter').value;
             const chartContainer = document.getElementById('visitor-chart');
-            
-            // Tampilkan loading state
-            chartContainer.innerHTML = '<div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:var(--secondary-text);">Mengambil data...</div>';
 
             // Panggil Google Apps Script (pastikan backend sudah diupdate untuk handle action=getAnalytics)
             fetch(`${GOOGLE_SHEET_API_URL}?action=getAnalytics&days=${days}`)
                 .then(response => response.json())
                 .then(data => {
+                    // [BARU] Cek error dari backend (misal Service belum aktif)
+                    if (data && data.error) {
+                        console.error("Analytics Error:", data.error);
+                        chartContainer.innerHTML = `<div style="height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; color:var(--danger-color); text-align:center; padding:20px;">
+                            <div style="font-weight:bold; margin-bottom:5px;">Gagal Memuat Grafik</div>
+                            <div style="font-size:0.85em;">${data.error}</div>
+                        </div>`;
+                        return;
+                    }
+
+                    // Pastikan canvas ada (jika sebelumnya tertimpa error)
+                    if (!document.getElementById('analyticsCanvas')) {
+                        chartContainer.innerHTML = '<canvas id="analyticsCanvas"></canvas>';
+                    }
+
                     if (data && data.labels && data.values) {
                         renderChart(data.labels, data.values);
                     } else {
                         // Fallback jika backend belum siap (Demo Data)
-                        console.warn("Backend belum support analytics, menggunakan data demo.");
+                        console.warn("Backend belum support analytics atau data kosong, menggunakan data demo.", data);
                         const demoLabels = days == 7 ? ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'] : Array.from({length: 10}, (_, i) => `H-${10-i}`);
                         const demoValues = days == 7 ? [120, 150, 180, 220, 190, 300, 250] : Array.from({length: 10}, () => Math.floor(Math.random() * 300));
                         renderChart(demoLabels, demoValues);
@@ -1280,29 +1286,67 @@
         }
 
         function renderChart(labels, values) {
-            const container = document.getElementById('visitor-chart');
-            container.innerHTML = '';
+            const ctx = document.getElementById('analyticsCanvas').getContext('2d');
             
-            const maxValue = Math.max(...values, 1); // Hindari pembagian nol
-            
-            labels.forEach((label, index) => {
-                const value = values[index];
-                const heightPercentage = (value / maxValue) * 100;
-                
-                // Buat elemen bar
-                const col = document.createElement('div');
-                col.className = 'bar-column';
-                col.innerHTML = `
-                    <span class="bar-value">${value}</span>
-                    <div class="bar" style="height: 0%;"></div>
-                    <span class="bar-label">${label}</span>
-                `;
-                container.appendChild(col);
+            // Hapus chart lama jika ada agar tidak menumpuk
+            if (analyticsChart) {
+                analyticsChart.destroy();
+            }
 
-                // Animasi height
-                setTimeout(() => {
-                    col.querySelector('.bar').style.height = `${Math.max(heightPercentage, 5)}%`; // Min 5% agar bar terlihat
-                }, 100 + (index * 50));
+            // Buat gradient warna hijau yang elegan
+            const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+            gradient.addColorStop(0, 'rgba(90, 107, 89, 0.5)'); // Warna aksen transparan
+            gradient.addColorStop(1, 'rgba(90, 107, 89, 0.0)');
+            
+            analyticsChart = new Chart(ctx, {
+                type: 'line', // Menggunakan diagram garis (lebih bagus untuk tren)
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Pengunjung Aktif',
+                        data: values,
+                        borderColor: '#5A6B59', // Warna garis (var(--accent-color))
+                        backgroundColor: gradient, // Warna area bawah garis
+                        borderWidth: 2,
+                        pointBackgroundColor: '#ffffff',
+                        pointBorderColor: '#5A6B59',
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        fill: true, // Mengisi area di bawah garis
+                        tension: 0.4 // Membuat garis melengkung halus (curved)
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }, // Sembunyikan legenda default
+                        tooltip: {
+                            backgroundColor: '#1f2937',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            padding: 10,
+                            cornerRadius: 8,
+                            displayColors: false,
+                            callbacks: {
+                                label: function(context) {
+                                    return context.parsed.y + ' Pengunjung';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#e5e7eb', borderDash: [5, 5] },
+                            ticks: { color: '#6b7280', font: { family: "'Manrope', sans-serif" } }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#6b7280', font: { family: "'Manrope', sans-serif" } }
+                        }
+                    }
+                }
             });
         }
     </script>
