@@ -355,6 +355,12 @@
             align-items: center;
             gap: 8px; /* Jarak antara judul dan ikon verified */
         }
+        
+        /* Pastikan pesan pengunjung tidak tertutup header saat scroll jika perlu */
+        #visitor-message-container {
+            width: 100%;
+            max-width: 600px; /* Agar tidak terlalu lebar di desktop */
+        }
 
         h1 {
             font-size: 2em;
@@ -2782,8 +2788,15 @@
         function processCatalogData(data) {
             // Reset catalogData agar bersih dan siap diisi data baru
             const newCatalogData = {};
+            let visitorMessageData = null;
 
             data.forEach(row => {
+                // [BARU] Cek apakah ini data konfigurasi pesan pengunjung
+                if (row.category === 'ADMIN_CONFIG' && row.type === 'VISITOR_MESSAGE') {
+                    visitorMessageData = row;
+                    return; // Jangan masukkan ke katalog tema
+                }
+
                 // Pastikan struktur kategori ada
                 if (!newCatalogData[row.category]) {
                     newCatalogData[row.category] = [
@@ -2802,6 +2815,20 @@
             // Update variabel global
             catalogData = newCatalogData;
             console.log("Data katalog berhasil diperbarui.");
+
+            // [DIUBAH] Tampilkan Pesan Pengunjung di Floating Bubble
+            const floatContainer = document.getElementById('draggable-info-container');
+            const bubbleContent = document.getElementById('bubble-content-text');
+            
+            // [PERBAIKAN] Konversi ke string dan lowercase agar mendeteksi 'TRUE', 'True', atau 'true'
+            const isActive = visitorMessageData && String(visitorMessageData.label).toLowerCase() === 'true';
+
+            if (isActive && floatContainer && bubbleContent) {
+                bubbleContent.innerHTML = visitorMessageData.themeName; // Isi pesan ke dalam bubble
+                floatContainer.classList.remove('hidden'); // Tampilkan tombol melayang
+            } else if (floatContainer) {
+                floatContainer.classList.add('hidden'); // Sembunyikan jika tidak aktif
+            }
 
             // Refresh tampilan katalog jika sedang dibuka agar data baru langsung terlihat
             const themePage = document.getElementById('theme-page');
@@ -4218,6 +4245,438 @@
             });
         });
     </script>
+
+    <!-- [BARU] CSS untuk Tombol Info Melayang & Draggable -->
+    <style>
+        .draggable-float {
+            position: fixed;
+            bottom: 160px; /* Posisi awal (di atas tombol WA) */
+            left: 20px; /* [DIUBAH] Posisi awal di kiri */
+            z-index: 9999; /* Di atas elemen lain */
+            width: 50px; /* Lebar tetap agar posisi stabil */
+            height: 50px;
+            display: block; /* Ubah dari flex ke block untuk positioning absolut */
+            touch-action: none; /* Mencegah scroll layar saat menggeser tombol ini */
+        }
+
+        /* Tombol Bulat (Icon Info) */
+        .float-info-btn {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--accent-color), #4E5C4D);
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            border: 2px solid #fff;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: grab; /* Kursor tangan terbuka */
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+        }
+
+        .float-info-btn:active {
+            cursor: grabbing; /* Kursor menggenggam saat digeser */
+            transform: scale(0.95);
+        }
+
+        .float-info-btn svg {
+            width: 26px;
+            height: 26px;
+            fill: currentColor;
+            pointer-events: none; /* Agar event drag tidak terganggu ikon */
+        }
+        
+        /* [BARU] Badge Notifikasi Merah (Pemicu Klik) */
+        .float-badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            background-color: #e53e3e; /* Merah menyala */
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 11px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            animation: badgePop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 10;
+        }
+        @keyframes badgePop { from { transform: scale(0); } to { transform: scale(1); } }
+
+        /* Gelembung Chat (Bubble) */
+        .info-bubble {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 15px 15px 5px 15px; /* Sudut lancip di kanan bawah */
+            padding: 0;
+            width: 260px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            position: absolute;
+            bottom: 65px; /* Muncul di atas tombol (50px + gap 15px) */
+            right: 0;
+            transform-origin: bottom right;
+            transform: scale(0) translateY(20px); /* Awalnya kecil dan tersembunyi */
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Efek membal (bouncy) */
+            pointer-events: none;
+        }
+
+        /* [BARU] Posisi Bubble jika tombol ada di sisi KIRI layar */
+        .draggable-float.left-side .info-bubble {
+            right: auto;
+            left: 0;
+            transform-origin: bottom left;
+            border-radius: 15px 15px 15px 5px; /* Ubah sudut lancip ke kiri bawah */
+        }
+
+        /* [BARU] Posisi Bubble jika tombol ada di bagian ATAS layar */
+        .draggable-float.top-side .info-bubble {
+            bottom: auto;
+            top: 65px; /* Muncul di bawah tombol */
+            transform-origin: top right;
+            border-radius: 15px 5px 15px 15px; /* Sudut lancip di kanan atas */
+        }
+
+        /* [BARU] Kombinasi Kiri + Atas (Pojok Kiri Atas) */
+        .draggable-float.left-side.top-side .info-bubble {
+            transform-origin: top left;
+            border-radius: 5px 15px 15px 15px; /* Sudut lancip di kiri atas */
+        }
+
+        .info-bubble.active {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .bubble-header {
+            background-color: var(--accent-color);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 14px 14px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9em;
+            font-weight: 700;
+        }
+
+        .bubble-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2em;
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
+            opacity: 0.8;
+        }
+        .bubble-close:hover { opacity: 1; }
+
+        .bubble-content {
+            padding: 15px;
+            font-size: 0.9em;
+            color: var(--primary-text);
+            line-height: 1.5;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        /* [BARU] Animasi Denyut untuk Menarik Perhatian */
+        .float-info-btn.pulse-animation {
+            animation: btnPulse 2s infinite, btnWiggle 3s infinite ease-in-out;
+        }
+        @keyframes btnPulse {
+            0% { box-shadow: 0 0 0 0 rgba(90, 107, 89, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(90, 107, 89, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(90, 107, 89, 0); }
+        }
+        @keyframes btnWiggle {
+            0%, 90%, 100% { transform: rotate(0deg); }
+            91% { transform: rotate(-10deg); }
+            93% { transform: rotate(10deg); }
+            95% { transform: rotate(-10deg); }
+            97% { transform: rotate(10deg); }
+            99% { transform: rotate(0deg); }
+        }
+
+        /* [BARU] Tooltip Petunjuk "Klik Disini" */
+        .click-hint {
+            position: absolute;
+            right: 65px; /* Muncul di sebelah kiri tombol */
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.95);
+            color: var(--accent-color);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.85em;
+            font-weight: 700;
+            white-space: nowrap;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+        .click-hint.show {
+            opacity: 1;
+            animation: hintBounce 1s infinite alternate;
+        }
+        .draggable-float.left-side .click-hint {
+            right: auto;
+            left: 65px; /* Muncul di sebelah kanan tombol jika di sisi kiri */
+        }
+        @keyframes hintBounce { from { transform: translateY(-50%) translateX(0); } to { transform: translateY(-50%) translateX(-5px); } }
+    </style>
+
+    <!-- [BARU] HTML Struktur Tombol Melayang -->
+    <div id="draggable-info-container" class="draggable-float left-side hidden">
+        <!-- [BARU] Petunjuk Klik -->
+        <div id="click-hint" class="click-hint">Ada Info Promo! ☝️</div>
+        
+        <!-- Gelembung Chat -->
+        <div id="info-bubble" class="info-bubble">
+            <div class="bubble-header">
+                <span>Info & Promo</span>
+                <button id="close-bubble-btn" class="bubble-close">&times;</button>
+            </div>
+            <div id="bubble-content-text" class="bubble-content">
+                <!-- Isi pesan akan muncul di sini -->
+            </div>
+        </div>
+        
+        <!-- Tombol Ikon Info -->
+        <div id="info-float-btn" class="float-info-btn">
+            <svg viewBox="0 0 24 24"><path d="M11,9H13V7H11M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M11,17H13V11H11V17Z" /></svg>
+            <!-- [BARU] Badge Angka -->
+            <div id="info-badge" class="float-badge">1</div>
+        </div>
+    </div>
+
+    <!-- [BARU] Script untuk Logika Drag & Toggle -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.getElementById('draggable-info-container');
+            const btn = document.getElementById('info-float-btn');
+            const bubble = document.getElementById('info-bubble');
+            const closeBtn = document.getElementById('close-bubble-btn');
+            const hint = document.getElementById('click-hint');
+            const badge = document.getElementById('info-badge');
+
+            let isDragging = false;
+            let hasMoved = false; // Untuk membedakan klik vs geser
+            let startX, startY, initialLeft, initialTop;
+            let hintTimeout;
+            let hasInteracted = false;
+            
+            // [BARU] Variabel untuk Mode Terbang (Floating)
+            let isFlying = true; // Status terbang aktif di awal
+            let flyVx = 0.6, flyVy = -0.6; // Kecepatan terbang (lambat)
+            let isFlyInitialized = false;
+            let flyFrameId;
+
+            // Fungsi Mulai Geser (Mouse & Touch)
+            function dragStart(e) {
+                // Ambil koordinat awal (support touch & mouse)
+                const clientX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
+                const clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
+
+                // [BARU] Hentikan mode terbang saat disentuh/diklik
+                if (isFlying) {
+                    isFlying = false;
+                    cancelAnimationFrame(flyFrameId);
+                }
+
+                // Hitung posisi awal elemen
+                const rect = container.getBoundingClientRect();
+                initialLeft = rect.left;
+                initialTop = rect.top;
+                
+                startX = clientX;
+                startY = clientY;
+                isDragging = true;
+                hasMoved = false;
+
+                // Ubah posisi dari bottom/right ke top/left agar bisa digeser bebas
+                container.style.bottom = 'auto';
+                container.style.right = 'auto';
+                container.style.left = initialLeft + 'px';
+                container.style.top = initialTop + 'px';
+
+                // Hentikan animasi hint saat mulai interaksi
+                stopAttentionSeeker();
+            }
+
+            // Fungsi Sedang Menggeser
+            function drag(e) {
+                if (!isDragging) return;
+                e.preventDefault(); // Mencegah scroll layar saat menggeser tombol
+
+                const clientX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
+                const clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
+
+                const dx = clientX - startX;
+                const dy = clientY - startY;
+
+                // Jika gerakannya kecil (< 5px), anggap belum bergerak (untuk toleransi klik)
+                if (Math.abs(dx) > 5 || Math.abs(dy) > 5) {
+                    hasMoved = true;
+                }
+
+                // Hitung posisi baru
+                let newLeft = initialLeft + dx;
+                let newTop = initialTop + dy;
+
+                // Batas layar (viewport) - dikurangi ukuran tombol agar tidak keluar
+                const maxLeft = window.innerWidth - container.offsetWidth;
+                const maxTop = window.innerHeight - container.offsetHeight;
+
+                // Clamp (Batasi nilai agar tetap di dalam layar)
+                newLeft = Math.max(0, Math.min(newLeft, maxLeft));
+                newTop = Math.max(0, Math.min(newTop, maxTop));
+
+                // Update posisi elemen
+                container.style.left = newLeft + 'px';
+                container.style.top = newTop + 'px';
+            }
+
+            // Fungsi Selesai Geser
+            function dragEnd(e) {
+                if (!isDragging) return;
+                isDragging = false;
+
+                // Jika tidak ada gerakan signifikan, anggap sebagai KLIK (Toggle Bubble)
+                if (!hasMoved) {
+                    bubble.classList.toggle('active');
+                    // [BARU] Sembunyikan badge dan hentikan animasi saat diklik
+                    if (bubble.classList.contains('active')) {
+                        badge.style.display = 'none';
+                        stopAttentionSeeker();
+                    }
+                }
+
+                // [BARU] Cek posisi akhir untuk menentukan arah bubble (Kiri/Kanan & Atas/Bawah)
+                const rect = container.getBoundingClientRect();
+                
+                // Cek Horizontal (Kiri/Kanan)
+                if (rect.left < window.innerWidth / 2) {
+                    container.classList.add('left-side'); // Tombol di kiri, bubble muncul ke kanan
+                } else {
+                    container.classList.remove('left-side'); // Tombol di kanan, bubble muncul ke kiri
+                }
+
+                // Cek Vertikal (Atas/Bawah)
+                if (rect.top < window.innerHeight / 2) {
+                    container.classList.add('top-side'); // Tombol di atas, bubble muncul ke bawah
+                } else {
+                    container.classList.remove('top-side'); // Tombol di bawah, bubble muncul ke atas
+                }
+            }
+
+            // Event Listeners untuk Mouse (Desktop)
+            btn.addEventListener('mousedown', dragStart);
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('mouseup', dragEnd);
+
+            // Event Listeners untuk Touch (HP)
+            btn.addEventListener('touchstart', dragStart, { passive: false });
+            document.addEventListener('touchmove', drag, { passive: false });
+            document.addEventListener('touchend', dragEnd);
+
+            // Tombol Close di dalam Bubble
+            closeBtn.addEventListener('click', (e) => {
+                e.stopPropagation(); // Mencegah event bubbling
+                bubble.classList.remove('active');
+            });
+
+            // [BARU] Fungsi Penarik Perhatian (Attention Seeker)
+            function startAttentionSeeker() {
+                hintTimeout = setTimeout(() => {
+                    if (!hasInteracted && !bubble.classList.contains('active')) {
+                        hint.classList.add('show');
+                        btn.classList.add('pulse-animation');
+                    }
+                }, 4000); // Muncul setelah 4 detik diam
+            }
+
+            function stopAttentionSeeker() {
+                hasInteracted = true;
+                hint.classList.remove('show');
+                btn.classList.remove('pulse-animation');
+                clearTimeout(hintTimeout);
+            }
+
+            // Mulai timer saat halaman dimuat
+            startAttentionSeeker();
+
+            // [BARU] Fungsi Animasi Terbang (Melayang Kesana-kemari)
+            function animateFlying() {
+                if (!isFlying) return;
+
+                // Cek apakah elemen terlihat (jika hidden, jangan update posisi)
+                if (container.classList.contains('hidden') || container.offsetParent === null) {
+                    flyFrameId = requestAnimationFrame(animateFlying);
+                    return;
+                }
+
+                // Inisialisasi posisi awal saat pertama kali muncul dari CSS ke JS
+                if (!isFlyInitialized) {
+                    const rect = container.getBoundingClientRect();
+                    // Jika rect belum valid (misal masih loading), coba lagi frame berikutnya
+                    if (rect.width === 0) {
+                        flyFrameId = requestAnimationFrame(animateFlying);
+                        return;
+                    }
+                    
+                    // Konversi posisi CSS (bottom/left) ke absolut (top/left) agar bisa digerakkan
+                    container.style.left = rect.left + 'px';
+                    container.style.top = rect.top + 'px';
+                    container.style.bottom = 'auto';
+                    container.style.right = 'auto';
+                    isFlyInitialized = true;
+                }
+
+                // Ambil posisi saat ini
+                let currentLeft = parseFloat(container.style.left);
+                let currentTop = parseFloat(container.style.top);
+
+                // Update posisi berdasarkan kecepatan
+                currentLeft += flyVx;
+                currentTop += flyVy;
+
+                // Hitung batas layar
+                const maxX = window.innerWidth - container.offsetWidth;
+                const maxY = window.innerHeight - container.offsetHeight;
+
+                // Logika Pantulan (Bounce) di tepi layar
+                if (currentLeft <= 0 || currentLeft >= maxX) {
+                    flyVx *= -1; // Balik arah horizontal
+                    currentLeft = Math.max(0, Math.min(currentLeft, maxX));
+                }
+                if (currentTop <= 0 || currentTop >= maxY) {
+                    flyVy *= -1; // Balik arah vertikal
+                    currentTop = Math.max(0, Math.min(currentTop, maxY));
+                }
+
+                // Terapkan posisi baru
+                container.style.left = currentLeft + 'px';
+                container.style.top = currentTop + 'px';
+
+                flyFrameId = requestAnimationFrame(animateFlying);
+            }
+
+            // Mulai animasi terbang
+            flyFrameId = requestAnimationFrame(animateFlying);
+        });
+    </script>
+
     <script>
         // Skrip terpisah untuk memuat keranjang dari localStorage sebelum DOMContentLoaded
         // Ini memastikan data keranjang sudah siap saat skrip utama berjalan.
