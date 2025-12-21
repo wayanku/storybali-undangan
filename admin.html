@@ -904,6 +904,9 @@
 
         // Tab Switching Logic
         function switchTab(tabName, navElement) {
+            // [BARU] Tutup semua modal saat pindah tab agar tampilan tidak tertutup
+            document.querySelectorAll('.modal-overlay').forEach(modal => modal.classList.remove('active'));
+
             // Update Nav Active State
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
             navElement.classList.add('active');
@@ -1204,24 +1207,37 @@
             }
         }
 
-        function saveData() {
+        function saveData(e) {
+            if (e) e.preventDefault(); // Mencegah reload halaman otomatis
             const btn = document.getElementById('save-btn');
             const originalText = btn.innerHTML;
             btn.textContent = 'Menyimpan...';
             btn.disabled = true;
 
+            // [BARU] Ambil nilai input untuk update lokal
+            const category = document.getElementById('admin-category').value;
+            const type = document.getElementById('admin-type').value;
+            const themeName = document.getElementById('admin-theme-name').value;
+            const image = document.getElementById('admin-image').value;
+            const previewUrl = document.getElementById('admin-preview').value;
+            const price = document.getElementById('admin-price').value;
+            const originalPrice = document.getElementById('admin-original-price').value;
+            const discount = document.getElementById('admin-discount').value;
+            const label = document.getElementById('admin-label').value;
+            const editIndex = document.getElementById('edit-index').value;
+
             const formData = {
                 action: 'save',
                 originalThemeName: currentEditingOriginalName,
-                category: document.getElementById('admin-category').value,
-                type: document.getElementById('admin-type').value,
-                themeName: document.getElementById('admin-theme-name').value,
-                image: document.getElementById('admin-image').value,
-                previewUrl: document.getElementById('admin-preview').value,
-                price: document.getElementById('admin-price').value,
-                originalPrice: document.getElementById('admin-original-price').value,
-                discount: document.getElementById('admin-discount').value,
-                label: document.getElementById('admin-label').value,
+                category: category,
+                type: type,
+                themeName: themeName,
+                image: image,
+                previewUrl: previewUrl,
+                price: price,
+                originalPrice: originalPrice,
+                discount: discount,
+                label: label,
                 rating: 4.9,
                 reviews: 0
             };
@@ -1234,7 +1250,33 @@
             .then(data => {
                 if (data.status === 'success') {
                     showToast('Data berhasil disimpan!', 'success');
-                    setTimeout(() => location.reload(), 1000); // Beri jeda agar toast terlihat
+                    
+                    // [BARU] Update data lokal agar tidak perlu reload
+                    const typeIndex = type === 'withoutPhoto' ? 1 : 0;
+                    if (catalogData[category] && catalogData[category][typeIndex]) {
+                        const themesList = catalogData[category][typeIndex].themes;
+                        const newThemeData = {
+                            category, type, themeName, image, previewUrl, 
+                            price: parseInt(price) || 0, 
+                            originalPrice: parseInt(originalPrice) || 0, 
+                            discount, label, rating: 4.9, reviews: 0
+                        };
+
+                        if (editIndex !== "") {
+                            themesList[editIndex] = newThemeData; // Update existing
+                        } else {
+                            themesList.push(newThemeData); // Add new
+                        }
+                    }
+
+                    // Refresh UI
+                    renderThemeGrid();
+                    updateStats();
+                    closeModal();
+                    
+                    // Kembalikan tombol ke keadaan semula
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
                 } else {
                     throw new Error(data.message || 'Gagal menyimpan data.');
                 }
@@ -1247,11 +1289,13 @@
             });
         }
 
-        function deleteData() {
+        function deleteData(e) {
+            if (e) e.preventDefault(); // Mencegah reload halaman otomatis
             if (!confirm("Yakin ingin menghapus tema ini?")) return;
             
             const btn = document.getElementById('delete-btn');
             const originalText = btn.textContent;
+            const editIndex = document.getElementById('edit-index').value;
             btn.textContent = '...';
             btn.disabled = true;
 
@@ -1272,7 +1316,19 @@
             .then(data => {
                 if (data.status === 'success') {
                     showToast('Tema berhasil dihapus!', 'success');
-                    setTimeout(() => location.reload(), 1000);
+                    
+                    // [BARU] Hapus dari data lokal tanpa reload
+                    const category = document.getElementById('admin-category').value;
+                    const type = document.getElementById('admin-type').value;
+                    const typeIndex = type === 'withoutPhoto' ? 1 : 0;
+                    
+                    if (catalogData[category] && catalogData[category][typeIndex] && editIndex !== "") {
+                        catalogData[category][typeIndex].themes.splice(editIndex, 1);
+                    }
+                    
+                    renderThemeGrid();
+                    updateStats();
+                    closeModal();
                 } else {
                     throw new Error(data.message || 'Gagal menghapus data.');
                 }
@@ -1280,6 +1336,8 @@
             .catch(err => {
                 console.error(err);
                 showToast('Gagal menghapus data.', 'error');
+            })
+            .finally(() => {
                 btn.textContent = originalText;
                 btn.disabled = false;
             });
