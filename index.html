@@ -4485,8 +4485,9 @@
             // Fungsi Mulai Geser (Mouse & Touch)
             function dragStart(e) {
                 // Ambil koordinat awal (support touch & mouse)
-                const clientX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
-                const clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
+                // [PERBAIKAN] Gunakan pengecekan e.touches agar aman untuk touchstart & mousedown
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
 
                 // [BARU] Hentikan mode terbang saat disentuh/diklik
                 if (isFlying) {
@@ -4519,8 +4520,9 @@
                 if (!isDragging) return;
                 e.preventDefault(); // Mencegah scroll layar saat menggeser tombol
 
-                const clientX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
-                const clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
+                // [PERBAIKAN] Perbaiki deteksi koordinat untuk event touchmove (sebelumnya salah deteksi tipe event)
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
 
                 const dx = clientX - startX;
                 const dy = clientY - startY;
@@ -4621,7 +4623,8 @@
                 if (!isFlying) return;
 
                 // Cek apakah elemen terlihat (jika hidden, jangan update posisi)
-                if (container.classList.contains('hidden') || container.offsetParent === null) {
+                // [PERBAIKAN] Hapus check offsetParent karena elemen fixed position mengembalikan null
+                if (container.classList.contains('hidden')) {
                     flyFrameId = requestAnimationFrame(animateFlying);
                     return;
                 }
