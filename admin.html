@@ -695,7 +695,15 @@
                     </div>
                     <div class="form-group">
                         <label>Link Gambar (URL)</label>
-                        <input type="text" id="admin-image" placeholder="https://...">
+                        <!-- [PERBAIKAN] Menambahkan tombol upload di sini -->
+                        <div style="display: flex; gap: 8px;">
+                            <input type="text" id="admin-image" placeholder="https://..." style="flex: 1;">
+                            <label for="upload-image-btn" class="btn btn-secondary btn-sm" style="margin:0; width:auto; display:flex; align-items:center; cursor:pointer;" title="Upload dari Galeri">
+                                <svg style="width:20px;height:20px;" viewBox="0 0 24 24"><path fill="currentColor" d="M9,16V10H5L12,3L19,10H15V16H9M5,20V18H19V20H5Z" /></svg>
+                            </label>
+                            <input type="file" id="upload-image-btn" accept="image/*" style="display: none;">
+                        </div>
+                        <small style="font-size: 0.75rem; color: var(--secondary-text);">Klik ikon panah untuk upload foto langsung dari galeri.</small>
                     </div>
                     <div class="form-group">
                         <label>Link Preview (URL)</label>
@@ -818,6 +826,8 @@
     <script>
         // KONFIGURASI
         const GOOGLE_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbz_wmHWMRWYQILM7aYtM3CGJybFvbUjP85p-l2aTUOaw24wJhS5SiXBQU3fU3U8oN72cQ/exec';
+        // [BARU] API Key ImgBB telah dimasukkan
+        const IMGBB_API_KEY = '7e6f3ce63649d305ccaceea00c28266d'; 
         
         // Load Password dari LocalStorage atau gunakan default 'admin123'
         let ADMIN_PASSWORD = localStorage.getItem('adminPassword') || 'admin123';
@@ -912,6 +922,8 @@
             document.getElementById('forgot-password-link').addEventListener('click', openForgotPasswordModal);
             // [BARU] Event listener untuk simpan pesan pengunjung
             document.getElementById('save-visitor-msg-btn').addEventListener('click', saveVisitorMessage);
+            // [BARU] Event listener untuk upload gambar
+            document.getElementById('upload-image-btn').addEventListener('change', handleImageUpload);
             
             // Inisialisasi dropdown awal
             // renderThemeGrid(); // Called after login
@@ -929,6 +941,52 @@
             } else {
                 showToast('Password salah!', 'error');
             }
+        }
+
+        // [BARU] Fungsi Upload Gambar ke ImgBB
+        function handleImageUpload() {
+            const fileInput = this;
+            const file = fileInput.files[0];
+            if (!file) return;
+
+            // Cek apakah API Key sudah diisi
+            if (!IMGBB_API_KEY || IMGBB_API_KEY.includes('GANTI')) {
+                alert('Mohon isi IMGBB_API_KEY di dalam kode admin.html terlebih dahulu!');
+                return;
+            }
+
+            // Ubah tampilan tombol jadi loading
+            const btnLabel = document.querySelector('label[for="upload-image-btn"]');
+            const originalContent = btnLabel.innerHTML;
+            btnLabel.innerHTML = '...';
+            btnLabel.style.pointerEvents = 'none';
+
+            const formData = new FormData();
+            formData.append('image', file);
+
+            fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    document.getElementById('admin-image').value = result.data.url;
+                    updateImagePreview.call(document.getElementById('admin-image')); // Tampilkan preview
+                    showToast('Foto berhasil diupload!', 'success');
+                } else {
+                    throw new Error(result.error ? result.error.message : 'Gagal upload');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showToast('Gagal upload: ' + error.message, 'error');
+            })
+            .finally(() => {
+                btnLabel.innerHTML = originalContent;
+                btnLabel.style.pointerEvents = 'auto';
+                fileInput.value = ''; // Reset input file
+            });
         }
 
         // Tab Switching Logic
