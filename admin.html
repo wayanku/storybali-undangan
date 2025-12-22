@@ -728,6 +728,13 @@
                             <label>Label</label>
                             <input type="text" id="admin-label" placeholder="Populer">
                         </div>
+                        <div class="form-group">
+                            <label>Status</label>
+                            <select id="admin-visibility">
+                                <option value="true">Tampilkan</option>
+                                <option value="false">Sembunyikan</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
                 <div class="preview-container">
@@ -1116,12 +1123,15 @@
                         if (searchTerm && !name.toLowerCase().includes(searchTerm)) return;
 
                         const price = theme.price ? `Rp ${parseInt(theme.price).toLocaleString('id-ID')}` : 'Rp -';
+                        const isHidden = theme.visible === false;
                         
                         const card = document.createElement('div');
                         card.className = 'theme-card';
                         card.style.animationDelay = `${index * 0.05}s`; // Staggered animation
+                        if (isHidden) card.style.opacity = '0.6'; // Visual cue for hidden items
                         card.onclick = () => openModal(index);
                         card.innerHTML = `
+                            ${isHidden ? '<div style="position:absolute; top:10px; left:10px; background:rgba(0,0,0,0.6); color:white; padding:2px 6px; border-radius:4px; font-size:0.7em; z-index:2;">Hidden</div>' : ''}
                             ${theme.label ? `<div class="theme-card-badge">${theme.label}</div>` : ''}
                             <img src="${theme.image}" class="theme-card-img" loading="lazy">
                             <div class="theme-card-body">
@@ -1157,6 +1167,7 @@
                 document.getElementById('admin-original-price').value = "";
                 document.getElementById('admin-discount').value = "";
                 document.getElementById('admin-label').value = "";
+                document.getElementById('admin-visibility').value = "true";
                 document.getElementById('modal-image-preview').src = "";
                 currentEditingOriginalName = null;
                 deleteBtn.style.display = 'none'; // Sembunyikan tombol hapus saat tambah baru
@@ -1180,6 +1191,7 @@
                 }
                 document.getElementById('admin-discount').value = discountVal;
                 document.getElementById('admin-label').value = theme.label || "";
+                document.getElementById('admin-visibility').value = (theme.visible !== false).toString();
                 
                 currentEditingOriginalName = theme.themeName;
                 updateImagePreview.call(document.getElementById('admin-image'));
@@ -1365,6 +1377,7 @@
             const originalPrice = document.getElementById('admin-original-price').value;
             const discount = document.getElementById('admin-discount').value;
             const label = document.getElementById('admin-label').value;
+            const visible = document.getElementById('admin-visibility').value === "true";
             const editIndex = document.getElementById('edit-index').value;
 
             const formData = {
@@ -1379,6 +1392,7 @@
                 originalPrice: originalPrice,
                 discount: discount,
                 label: label,
+                visible: visible,
                 rating: 4.9,
                 reviews: 0
             };
@@ -1399,7 +1413,7 @@
                         const newThemeData = {
                             category, type, themeName, image, previewUrl, 
                             price: parseInt(price) || 0, 
-                            originalPrice: parseInt(originalPrice) || 0, 
+                            originalPrice: parseInt(originalPrice) || 0, visible,
                             discount, label, rating: 4.9, reviews: 0
                         };
 
@@ -1518,6 +1532,7 @@
                             originalPrice: theme.originalPrice || (isWithoutPhoto ? 60000 : 100000),
                             discount: theme.discount || '50%',
                             label: theme.label || '',
+                            visible: theme.visible !== false,
                             rating: theme.rating || 4.9,
                             reviews: theme.reviews || 0
                         };
