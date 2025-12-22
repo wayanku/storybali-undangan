@@ -105,6 +105,9 @@
         .btn-primary:hover { background-color: var(--accent-hover); transform: translateY(-1px); }
         .btn-secondary { background-color: white; border: 1px solid #e5e7eb; color: var(--secondary-text); margin-top: 15px; }
         .btn-secondary:hover { background-color: #f9fafb; color: var(--primary-text); }
+        /* [BARU] Style khusus tombol bahaya (Hapus) agar lebih rapi */
+        .btn-danger { background-color: #fef2f2; border: 1px solid #fee2e2; color: var(--danger-color); }
+        .btn-danger:hover { background-color: #fee2e2; border-color: #fecaca; }
 
         .hidden { display: none !important; }
         .row { display: flex; gap: 15px; }
@@ -174,7 +177,7 @@
         /* Modal Styles */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5); z-index: 2000;
+            background: rgba(0,0,0,0.5); z-index: 10000; /* [PERBAIKAN] Z-index ditingkatkan agar di atas sidebar HP (9999) */
             display: flex; justify-content: center; align-items: center;
             opacity: 0; pointer-events: none; transition: opacity 0.3s;
             backdrop-filter: blur(4px);
@@ -207,7 +210,10 @@
             display: flex; justify-content: flex-end; gap: 10px;
             background: var(--bg-color); border-radius: 0 0 16px 16px;
             flex-shrink: 0; /* Mencegah tombol simpan tertutup/hilang di layar sempit */
+            align-items: center;
         }
+        /* [PERBAIKAN] Reset margin tombol di dalam footer agar sejajar */
+        .modal-footer .btn { margin: 0; }
 
         .preview-container {
             background: #f3f4f6; border-radius: 12px; padding: 10px;
@@ -260,7 +266,11 @@
             
             /* Modal Edit: Tampilan Fullscreen App-like */
             .modal-content { width: 100%; height: 100%; border-radius: 0; max-height: 100vh; display: flex; flex-direction: column; }
-            .modal-body { grid-template-columns: 1fr; }
+            .modal-body { 
+                grid-template-columns: 1fr; 
+                /* [PERBAIKAN] Menambah jarak bawah agar tidak tertutup navigasi HP */
+                padding-bottom: 100px; 
+            }
             .preview-container { order: -1; margin-bottom: 20px; }
             .preview-img { height: 180px; object-fit: cover; }
             .filter-box { flex-direction: column; align-items: stretch; }
@@ -674,15 +684,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h2 id="modal-title">Edit Tema</h2>
-                <div style="display: flex; align-items: center; gap: 5px;">
-                    <button id="delete-btn" class="btn btn-secondary btn-sm" style="width: auto; color: var(--danger-color); border-color: #fee2e2; background: #fef2f2;">Hapus</button>
-                    <button class="btn btn-secondary btn-sm" onclick="closeModal()" style="width: auto;">Batal</button>
-                    <button id="save-btn" class="btn btn-primary btn-sm" style="width: auto;">
-                        <svg style="width:18px;height:18px;fill:currentColor" viewBox="0 0 24 24"><path d="M15,9H5V5H15M12,19A3,3 0 0,1 9,16A3,3 0 0,1 12,13A3,3 0 0,1 15,16A3,3 0 0,1 12,19M17,3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V7L17,3Z" /></svg>
-                        Simpan
-                    </button>
-                    <button class="close-btn" onclick="closeModal()">&times;</button>
-                </div>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="editor-form">
@@ -727,6 +729,15 @@
                         Gambar akan muncul di sini jika URL valid.
                     </p>
                 </div>
+            </div>
+            <div class="modal-footer">
+                <!-- [PERBAIKAN] Layout tombol: Hapus di kiri, Batal & Simpan di kanan -->
+                <button id="delete-btn" class="btn btn-danger btn-sm" style="margin-right: auto;">Hapus</button>
+                <button class="btn btn-secondary btn-sm" onclick="closeModal()">Batal</button>
+                <button id="save-btn" class="btn btn-primary btn-sm">
+                    <svg style="width:18px;height:18px;fill:currentColor" viewBox="0 0 24 24"><path d="M15,9H5V5H15M12,19A3,3 0 0,1 9,16A3,3 0 0,1 12,13A3,3 0 0,1 15,16A3,3 0 0,1 12,19M17,3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V7L17,3Z" /></svg>
+                    Simpan
+                </button>
             </div>
         </div>
     </div>
