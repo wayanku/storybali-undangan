@@ -3236,7 +3236,7 @@
 
                 const searchTerm = searchInput.value.toLowerCase();
                 const filteredItems = itemsWithId.filter(item => 
-                    item.themeName.toLowerCase().includes(searchTerm)
+                    item.themeName.toLowerCase().includes(searchTerm) && item.visible !== false
                 );
 
 
