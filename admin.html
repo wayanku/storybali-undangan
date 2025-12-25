@@ -430,6 +430,21 @@
         }
         .insight-item:nth-child(1) { animation-delay: 0.1s; } .insight-item:nth-child(2) { animation-delay: 0.2s; } .insight-item:nth-child(3) { animation-delay: 0.3s; }
         .insight-icon { flex-shrink: 0; margin-top: 2px; }
+
+        /* [BARU] Styles untuk Lacak Pesanan */
+        .order-card {
+            background: var(--card-bg); border-radius: 12px; padding: 20px;
+            box-shadow: var(--shadow-sm); border: 1px solid #e5e7eb;
+            display: flex; flex-direction: column; gap: 15px; position: relative;
+            transition: transform 0.2s; animation: fadeInUp 0.5s ease-out forwards;
+        }
+        .order-card:hover { transform: translateY(-3px); border-color: var(--accent-color); box-shadow: var(--shadow-md); }
+        .order-header { display: flex; justify-content: space-between; align-items: flex-start; }
+        .order-id { font-size: 0.85rem; font-weight: 700; color: var(--accent-color); background: rgba(90, 107, 89, 0.1); padding: 4px 8px; border-radius: 6px; }
+        .order-client { font-size: 1.1rem; font-weight: 800; color: var(--primary-text); margin: 5px 0 0 0; }
+        .progress-container { width: 100%; background: #e5e7eb; height: 8px; border-radius: 4px; overflow: hidden; margin-top: 5px; }
+        .progress-bar { height: 100%; background: var(--accent-color); transition: width 0.5s ease; border-radius: 4px; }
+        .order-status { font-size: 0.9rem; color: var(--secondary-text); display: flex; justify-content: space-between; align-items: center; }
     </style>
 </head>
 <body>
@@ -470,6 +485,10 @@
                 <li class="nav-item" onclick="switchTab('themes', this)">
                     <svg viewBox="0 0 24 24"><path fill="currentColor" d="M20,6H4V4H20M20,9H4V7H20M20,12H4V10H20M4,15H15V13H4M4,18H15V16H4V18Z" /></svg>
                     <span class="nav-text">Kelola Tema</span>
+                </li>
+                <li class="nav-item" onclick="switchTab('orders', this)">
+                    <svg viewBox="0 0 24 24"><path fill="currentColor" d="M19,3H14.82C14.4,1.84 13.3,1 12,1C10.7,1 9.6,1.84 9.18,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3M12,3A1,1 0 0,1 13,4A1,1 0 0,1 12,5A1,1 0 0,1 11,4A1,1 0 0,1 12,3M7,7H17V5H19V19H5V5H7V7M12,17L7,12L8.41,10.59L12,14.17L17.59,8.58L19,10L12,17Z" /></svg>
+                    <span class="nav-text">Lacak Pesanan</span>
                 </li>
                 <li class="nav-item" onclick="switchTab('settings', this)">
                     <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.21,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.67 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z" /></svg>
@@ -633,6 +652,22 @@
             </div>
             </div>
 
+            <!-- VIEW: ORDERS (LACAK PESANAN) -->
+            <div id="view-orders" class="view-section">
+                <div class="header" style="text-align: left; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h2 style="margin: 0; font-size: 1.5rem;">Lacak Pesanan</h2>
+                        <p style="margin: 5px 0 0;">Pantau progres pengerjaan undangan klien.</p>
+                    </div>
+                    <button onclick="openOrderModal()" class="btn btn-primary btn-sm" style="width: auto; margin: 0;">
+                        + Pesanan Baru
+                    </button>
+                </div>
+                <div id="order-list" class="theme-grid" style="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));">
+                    <!-- Order cards will be populated here -->
+                </div>
+            </div>
+
             <!-- VIEW: SETTINGS -->
             <div id="view-settings" class="view-section">
                 <div class="header" style="text-align: left; margin-bottom: 25px;">
@@ -757,6 +792,40 @@
         </div>
     </div>
 
+    <!-- Order Modal (Lacak Pesanan) -->
+    <div id="order-modal" class="modal-overlay">
+        <div class="modal-content" style="height: auto; max-width: 500px;">
+            <div class="modal-header">
+                <h2 id="order-modal-title">Update Pesanan</h2>
+                <button class="close-btn" onclick="closeOrderModal()">&times;</button>
+            </div>
+            <div class="modal-body" style="display: block; grid-template-columns: 1fr;">
+                <input type="hidden" id="order-edit-index">
+                <div class="form-group">
+                    <label>ID Pesanan</label>
+                    <input type="text" id="order-id" placeholder="Contoh: ORD-2023-001">
+                </div>
+                <div class="form-group">
+                    <label>Nama Klien</label>
+                    <input type="text" id="order-client" placeholder="Nama Mempelai / Klien">
+                </div>
+                <div class="form-group">
+                    <label>Status Pengerjaan</label>
+                    <input type="text" id="order-status-text" placeholder="Contoh: Sedang Revisi Desain">
+                </div>
+                <div class="form-group">
+                    <label>Progres (%) <span id="progress-val" style="color:var(--accent-color); font-weight:800;">0%</span></label>
+                    <input type="range" id="order-progress" min="0" max="100" value="0" style="width: 100%; accent-color: var(--accent-color);" oninput="document.getElementById('progress-val').textContent = this.value + '%'">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="delete-order-btn" class="btn btn-danger btn-sm" style="margin-right: auto; display: none;">Hapus</button>
+                <button class="btn btn-secondary btn-sm" onclick="closeOrderModal()">Batal</button>
+                <button onclick="saveOrder()" class="btn btn-primary btn-sm">Simpan</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Add Category Modal -->
     <div id="category-modal" class="modal-overlay">
         <div class="modal-content" style="height: auto; max-width: 400px;">
@@ -832,7 +901,7 @@
 
     <script>
         // KONFIGURASI
-        const GOOGLE_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbz_wmHWMRWYQILM7aYtM3CGJybFvbUjP85p-l2aTUOaw24wJhS5SiXBQU3fU3U8oN72cQ/exec';
+        const GOOGLE_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbxYGLvrMnaYCBSUKN63lQu-lLYENsj3elkkRdAfba9B27fk35Ankty_AuNA0h3N4PVSTQ/exec';
         // [BARU] API Key ImgBB telah dimasukkan
         const IMGBB_API_KEY = '7e6f3ce63649d305ccaceea00c28266d'; 
         
@@ -841,6 +910,11 @@
         
         // [BARU] Variabel untuk Pesan Pengunjung
         let VISITOR_CONFIG = { text: '', active: false };
+        let ordersData = []; // [BARU] Menyimpan data pesanan
+        let editingOrderOriginalName = null; // [BARU] Menyimpan ID asli saat edit pesanan untuk mencegah duplikasi
+
+        // [BARU] Variable untuk Auto-Update
+        let autoUpdateInterval = null;
 
         // [DIUBAH] Variabel global untuk instance Chart.js (Multiple Charts)
         let trendChart = null;
@@ -896,22 +970,9 @@
             }
             updateDarkModeIcon();
 
-            fetch(GOOGLE_SHEET_API_URL)
-                .then(response => response.json())
-                .then(data => {
-                    if (data && data.length > 0) {
-                        // [BARU] Sinkronisasi Password dari Server (Google Sheet)
-                        const configRow = data.find(row => row.category === 'ADMIN_CONFIG' && row.type === 'PASSWORD');
-                        if (configRow && configRow.themeName) {
-                            ADMIN_PASSWORD = configRow.themeName;
-                            localStorage.setItem('adminPassword', ADMIN_PASSWORD); // Update penyimpanan lokal
-                        }
-
-                        localStorage.setItem('catalogCache', JSON.stringify(data));
-                        processCatalogData(data);
-                    }
-                })
-                .catch(err => console.log("Menggunakan data bawaan/cache."));
+            // [BARU] Load Data Awal & Mulai Auto Update
+            loadData();
+            startAutoUpdate();
 
             // Event Listeners
             document.getElementById('login-btn').addEventListener('click', handleLogin);
@@ -936,12 +997,50 @@
             // renderThemeGrid(); // Called after login
         });
 
+        // [BARU] Fungsi Load Data (Bisa untuk Initial Load atau Background Update)
+        function loadData(isBackground = false) {
+            fetch(`${GOOGLE_SHEET_API_URL}?v=${new Date().getTime()}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.length > 0) {
+                        // Sinkronisasi Password
+                        const configRow = data.find(row => row.category === 'ADMIN_CONFIG' && row.type === 'PASSWORD');
+                        if (configRow && configRow.themeName) {
+                            ADMIN_PASSWORD = configRow.themeName;
+                            localStorage.setItem('adminPassword', ADMIN_PASSWORD);
+                        }
+
+                        // Simpan cache & proses data
+                        localStorage.setItem('catalogCache', JSON.stringify(data));
+                        processCatalogData(data);
+                        
+                        if (!isBackground) {
+                            console.log("Data berhasil dimuat.");
+                        }
+                    }
+                })
+                .catch(err => console.log("Gagal load data (mungkin offline) atau menggunakan cache."));
+        }
+
+        // [BARU] Fungsi Auto Update (Polling setiap 5 detik)
+        function startAutoUpdate() {
+            if (autoUpdateInterval) clearInterval(autoUpdateInterval);
+            autoUpdateInterval = setInterval(() => {
+                // Cek apakah ada modal yang terbuka agar tidak mengganggu admin yang sedang edit
+                const isModalOpen = document.querySelector('.modal-overlay.active');
+                if (!isModalOpen) {
+                    loadData(true); // true = mode background (silent update)
+                }
+            }, 5000); // Update setiap 5 detik
+        }
+
         function handleLogin() {
             const password = document.getElementById('admin-password').value;
             if (password === ADMIN_PASSWORD) { 
                 document.getElementById('login-section').classList.add('hidden');
                 document.getElementById('app-layout').classList.remove('hidden');
                 updateStats(); // Hitung statistik saat login
+                renderOrderList(); // [BARU] Render list pesanan
                 updateCategoryDropdown();
                 renderThemeGrid();
                 loadAnalyticsData(); // Load chart data
@@ -1036,6 +1135,7 @@
 
         function processCatalogData(data) {
             const newCatalogData = {};
+            ordersData = []; // Reset orders
             data.forEach(row => {
                 // [DIUBAH] Cek konfigurasi admin (Password & Pesan Pengunjung)
                 if (row.category === 'ADMIN_CONFIG') {
@@ -1046,6 +1146,12 @@
                         document.getElementById('visitor-msg-input').value = VISITOR_CONFIG.text;
                         document.getElementById('visitor-msg-toggle').checked = VISITOR_CONFIG.active;
                     }
+                    return;
+                }
+
+                // [BARU] Pisahkan data pesanan (ORDERS)
+                if (row.category === 'ORDERS') {
+                    ordersData.push(row);
                     return;
                 }
 
@@ -1061,6 +1167,7 @@
             catalogData = newCatalogData;
             updateStats();
             updateCategoryDropdown(); // Update dropdown saat data berubah
+            renderOrderList(); // Update tampilan pesanan
             renderThemeGrid();
         }
 
@@ -1123,7 +1230,8 @@
                         if (searchTerm && !name.toLowerCase().includes(searchTerm)) return;
 
                         const price = theme.price ? `Rp ${parseInt(theme.price).toLocaleString('id-ID')}` : 'Rp -';
-                        const isHidden = theme.visible === false;
+                        // [PERBAIKAN] Cek status visible lebih teliti untuk badge 'Hidden'
+                        const isHidden = String(theme.visible).trim().toLowerCase() === 'false';
                         
                         const card = document.createElement('div');
                         card.className = 'theme-card';
@@ -1191,7 +1299,9 @@
                 }
                 document.getElementById('admin-discount').value = discountVal;
                 document.getElementById('admin-label').value = theme.label || "";
-                document.getElementById('admin-visibility').value = (theme.visible !== false).toString();
+                // [PERBAIKAN] Cek status visible lebih teliti (handle boolean & string)
+                const isHidden = String(theme.visible).trim().toLowerCase() === 'false';
+                document.getElementById('admin-visibility').value = (!isHidden).toString();
                 
                 currentEditingOriginalName = theme.themeName;
                 updateImagePreview.call(document.getElementById('admin-image'));
@@ -1212,6 +1322,182 @@
             }
         }
 
+        // [BARU] Order Management Functions
+        function renderOrderList() {
+            // [OPTIMASI] Jika sedang drag/interaksi, mungkin skip render? 
+            // Tapi karena kita pause auto-update saat modal buka, ini aman.
+            // Kita bisa tambahkan pengecekan sederhana agar tidak flicker jika data persis sama,
+            // tapi untuk sekarang re-render aman karena DOM order list ringan.
+            
+            const grid = document.getElementById('order-list');
+            grid.innerHTML = '';
+
+            if (ordersData.length === 0) {
+                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--secondary-text);">Belum ada pesanan yang dilacak.</div>';
+                return;
+            }
+
+            ordersData.forEach((order, index) => {
+                // Mapping data sheet ke UI:
+                // themeName -> Order ID
+                // image -> Nama Klien (Text)
+                // previewUrl -> Status Text
+                // price -> Progress (Number)
+                
+                const progress = parseInt(order.price) || 0;
+                
+                const card = document.createElement('div');
+                card.className = 'order-card';
+                card.style.animationDelay = `${index * 0.05}s`;
+                card.onclick = () => openOrderModal(index);
+                
+                card.innerHTML = `
+                    <div class="order-header">
+                        <span class="order-id">${order.themeName}</span>
+                        <span style="font-size:0.8em; color:var(--secondary-text); cursor:pointer;">Edit ✎</span>
+                    </div>
+                    <h3 class="order-client">${order.image}</h3>
+                    <div>
+                        <div class="order-status">
+                            <span>${order.previewUrl}</span>
+                            <span style="font-weight:700; color:var(--accent-color);">${progress}%</span>
+                        </div>
+                        <div class="progress-container">
+                            <div class="progress-bar" style="width: ${progress}%"></div>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function openOrderModal(index = null) {
+            const modal = document.getElementById('order-modal');
+            const title = document.getElementById('order-modal-title');
+            const deleteBtn = document.getElementById('delete-order-btn');
+            
+            if (index === null) {
+                title.textContent = "Tambah Pesanan Baru";
+                document.getElementById('order-edit-index').value = "";
+                document.getElementById('order-id').value = "ORD-" + Math.floor(Math.random() * 10000); // Auto generate ID simpel
+                document.getElementById('order-client').value = "";
+                document.getElementById('order-status-text').value = "Pesanan Diterima";
+                document.getElementById('order-progress').value = 0;
+                document.getElementById('progress-val').textContent = "0%";
+                deleteBtn.style.display = 'none';
+                editingOrderOriginalName = null; // Reset ID asli untuk pesanan baru
+            } else {
+                title.textContent = "Update Progres Pesanan";
+                const order = ordersData[index];
+                document.getElementById('order-edit-index').value = index;
+                document.getElementById('order-id').value = order.themeName;
+                document.getElementById('order-client').value = order.image;
+                document.getElementById('order-status-text').value = order.previewUrl;
+                document.getElementById('order-progress').value = order.price;
+                document.getElementById('progress-val').textContent = order.price + "%";
+                editingOrderOriginalName = order.themeName; // Simpan ID asli agar server tahu baris mana yang diupdate
+                deleteBtn.style.display = 'block';
+                deleteBtn.onclick = () => deleteOrder(index);
+            }
+            modal.classList.add('active');
+        }
+
+        function closeOrderModal() {
+            document.getElementById('order-modal').classList.remove('active');
+        }
+
+        function saveOrder() {
+            const index = document.getElementById('order-edit-index').value;
+            const id = document.getElementById('order-id').value.trim(); // Hapus spasi tidak sengaja
+            const client = document.getElementById('order-client').value;
+            const status = document.getElementById('order-status-text').value;
+            const progress = document.getElementById('order-progress').value;
+
+            if (!id || !client) return showToast('ID dan Nama Klien wajib diisi!', 'error');
+
+            // [PERBAIKAN] Cek duplikasi ID jika menambah pesanan baru
+            if (index === "") {
+                const exists = ordersData.some(o => o.themeName === id);
+                if (exists) {
+                    return showToast('ID Pesanan sudah ada! Gunakan ID yang berbeda.', 'error');
+                }
+            }
+
+            // [PERBAIKAN] Tambahkan indikator loading agar admin tahu proses sedang berjalan
+            const btn = document.querySelector('#order-modal .btn-primary');
+            const originalText = btn.textContent;
+            btn.textContent = 'Menyimpan...';
+            btn.disabled = true;
+
+            // [PERBAIKAN] Gunakan ID asli yang disimpan saat modal dibuka
+            // Ini memastikan jika ID diubah, sistem tetap tahu baris lama yang harus diupdate
+            const originalName = index !== "" ? editingOrderOriginalName : null;
+
+            // [PERBAIKAN] Gunakan type dari data asli jika sedang edit, agar backend bisa menemukan baris yang tepat
+            const currentOrder = index !== "" ? ordersData[index] : null;
+            const orderType = currentOrder ? (currentOrder.type || 'active') : 'active';
+
+            const formData = {
+                action: 'save',
+                category: 'ORDERS',
+                type: orderType, // [PERBAIKAN] Gunakan type dinamis, bukan hardcoded 'active'
+                themeName: id,
+                originalThemeName: originalName,
+                image: client,
+                previewUrl: status,
+                price: progress,
+                originalPrice: 0, discount: '-', label: '-', visible: true
+            };
+
+            // [PERBAIKAN] Tunggu respon server sebelum update UI
+            fetch(GOOGLE_SHEET_API_URL, { method: 'POST', body: JSON.stringify(formData) })
+                .then(res => res.json())
+                .then(data => {
+                    // Update data lokal hanya jika sukses
+                    const newOrder = { category: 'ORDERS', type: orderType, themeName: id, image: client, previewUrl: status, price: progress };
+                    if (index !== "") ordersData[index] = newOrder;
+                    else ordersData.push(newOrder);
+                    
+                    renderOrderList();
+                    closeOrderModal();
+                    loadData(true); // Refresh data dari server untuk memastikan sinkron
+                    showToast('Pesanan berhasil disimpan ke server!', 'success');
+                })
+                .catch(err => {
+                    console.error(err);
+                    showToast('Gagal menyimpan. Cek koneksi internet.', 'error');
+                })
+                .finally(() => {
+                    btn.textContent = originalText;
+                    btn.disabled = false;
+                });
+        }
+
+        function deleteOrder(index) {
+            if (!confirm("Hapus pesanan ini?")) return;
+            const order = ordersData[index];
+            
+            // [PERBAIKAN] Sertakan type dan themeName agar backend bisa menemukan baris yang tepat untuk dihapus
+            const formData = { 
+                action: 'delete', 
+                category: 'ORDERS', 
+                type: order.type || 'active', // Penting: sertakan type asli
+                themeName: order.themeName,   // Penting: sertakan ID
+                originalThemeName: order.themeName 
+            };
+            
+            ordersData.splice(index, 1);
+            renderOrderList();
+            closeOrderModal();
+            
+            fetch(GOOGLE_SHEET_API_URL, { method: 'POST', body: JSON.stringify(formData) })
+                .then(res => res.json())
+                .then(data => {
+                    if(data.status === 'success') showToast('Pesanan dihapus dari server.', 'success');
+                })
+                .catch(e => console.error("Gagal hapus:", e));
+        }
+
         // Category Management Functions
         function openCategoryModal() {
             document.getElementById('category-modal').classList.add('active');
@@ -1225,6 +1511,7 @@
             if (catalogData[name]) return showToast('Kategori sudah ada!', 'error');
 
             // Initialize new category structure
+            localStorage.removeItem('catalogCache'); // Hapus cache karena struktur data berubah
             catalogData[name] = [
                 { type: 'withPhoto', themes: [] },
                 { type: 'withoutPhoto', themes: [] }
@@ -1263,6 +1550,7 @@
             .then(res => res.json())
             .then(data => {
                 showToast('Pesan pengunjung berhasil disimpan!', 'success');
+                localStorage.removeItem('catalogCache'); // Hapus cache setelah update
                 VISITOR_CONFIG = { text, active }; // Update lokal
             })
             .catch(err => {
@@ -1330,6 +1618,7 @@
                 // Update state lokal HANYA jika berhasil
                 ADMIN_PASSWORD = newPass;
                 localStorage.setItem('adminPassword', newPass);
+                localStorage.removeItem('catalogCache'); // Hapus cache jika ada perubahan konfigurasi
                 showToast('Password berhasil disimpan di Cloud!', 'success');
                 closeChangePasswordModal();
             })
@@ -1405,6 +1694,7 @@
             .then(data => {
                 if (data.status === 'success') {
                     showToast('Data berhasil disimpan!', 'success');
+                    localStorage.removeItem('catalogCache'); // Hapus cache setelah menyimpan
                     
                     // [BARU] Update data lokal agar tidak perlu reload
                     const typeIndex = type === 'withoutPhoto' ? 1 : 0;
@@ -1471,6 +1761,7 @@
             .then(data => {
                 if (data.status === 'success') {
                     showToast('Tema berhasil dihapus!', 'success');
+                    localStorage.removeItem('catalogCache'); // Hapus cache setelah menghapus
                     
                     // [BARU] Hapus dari data lokal tanpa reload
                     const category = document.getElementById('admin-category').value;
@@ -1550,6 +1841,7 @@
                 }
             }
             showToast(`Selesai! ${count} tema terupload.`, 'success');
+            localStorage.removeItem('catalogCache'); // Hapus cache setelah sinkronisasi besar
             btn.disabled = false;
             btn.textContent = "Upload Semua Data Bawaan";
         }
