@@ -2182,6 +2182,10 @@
                 <a href="#" class="header-logo" id="header-logo-link">
                     <img src="https://wayanku.github.io/storybali-undangan/IMG_6302%20(2).JPG" alt="Storybali Logo">
                 </a>
+                <!-- [BARU] Tombol Lacak Pesanan di Header -->
+                <div id="track-order-btn" class="cart-icon-wrapper" title="Lacak Pesanan" style="margin-right: 10px;">
+                    <svg viewBox="0 0 24 24"><path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6A6,6 0 0,0 6,12A6,6 0 0,0 12,18A6,6 0 0,0 18,12A6,6 0 0,0 12,6M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8Z" fill="var(--primary-text)"/></svg>
+                </div>
                 <div class="search-container">
                     <svg viewBox="0 0 24 24"><path d="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L21.5,20L20,21.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z" /></svg>
                     <input type="text" id="search-input" placeholder="Cari tema undangan...">
@@ -2540,6 +2544,57 @@
         </div>
     </div>
 
+    <!-- [BARU] Modal Lacak Pesanan -->
+    <div id="track-order-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h4>Lacak Status Pesanan</h4>
+            <p>Masukkan ID Pesanan Anda untuk melihat progres pengerjaan.</p>
+            <div class="checkout-form-group">
+                <input type="text" id="track-order-id-input" placeholder="Contoh: ORD-12345" style="text-align: center; font-weight: bold; letter-spacing: 1px;">
+            </div>
+            
+            <div id="track-result" class="hidden" style="margin-top: 15px; padding: 15px; background: #f3f4f6; border-radius: 10px; text-align: left;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                    <span style="font-weight: 600; font-size: 0.9em;">Status:</span>
+                    <span id="track-status-text" style="color: var(--accent-color); font-weight: 700; font-size: 0.9em;">-</span>
+                </div>
+                <div style="width: 100%; background: #d1d5db; height: 8px; border-radius: 4px; overflow: hidden;">
+                    <div id="track-progress-bar" style="width: 0%; height: 100%; background: var(--accent-color); transition: width 0.5s ease;"></div>
+                </div>
+                <div style="text-align: right; font-size: 0.8em; margin-top: 3px; color: var(--secondary-text);">Progres: <span id="track-progress-text">0%</span></div>
+            </div>
+
+            <div class="catalog-item-actions" style="margin-top: 20px;">
+                <button id="check-order-btn" class="btn-primary">Cek Sekarang</button>
+                <button onclick="document.getElementById('track-order-modal').classList.remove('active')" class="btn-secondary">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- [BARU] Modal Sukses Order (Menampilkan ID) -->
+    <div id="order-success-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-icon" style="background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.2);">
+                <svg viewBox="0 0 24 24" style="fill: #10b981;"><path d="M12 2C6.5 2 2 6.5 2 12S6.5 22 12 22 22 17.5 22 12 17.5 2 12 2M10 17L5 12L6.41 10.59L10 14.17L17.59 6.58L19 8L10 17Z"/></svg>
+            </div>
+            <h4>Pesanan Diterima!</h4>
+            <p>ID Pesanan Anda adalah:</p>
+            
+            <!-- [BARU] Container ID dengan Tombol Salin -->
+            <div style="background: #f3f4f6; padding: 10px; border-radius: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; margin: 10px 0;">
+                <b id="generated-order-id" style="font-size: 1.2em; color: var(--accent-color); letter-spacing: 1px;">-</b>
+                <button id="copy-id-btn" style="background: white; border: 1px solid #d1d5db; border-radius: 6px; padding: 5px 8px; cursor: pointer; display: flex; align-items: center;" title="Salin ID">
+                    <svg style="width:18px;height:18px;fill:#6b7280;" viewBox="0 0 24 24"><path d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z" /></svg>
+                </button>
+            </div>
+            <p style="font-size: 0.9em; color: var(--secondary-text);">Simpan ID ini untuk mengecek status.</p>
+
+            <div class="catalog-item-actions">
+                <a href="#" id="continue-to-wa-btn" class="btn-primary" target="_blank">Lanjut ke WhatsApp</a>
+            </div>
+        </div>
+    </div>
+
     <!-- HTML untuk Modal Keranjang Belanja -->
     <div id="cart-modal" class="modal-overlay">
         <div class="modal-content">
@@ -2695,7 +2750,8 @@
     <script>
         // --- KONFIGURASI GLOBAL & DATA ---
         // Variabel ini dibuat global agar bisa diakses oleh Menu Admin dan fungsi lainnya
-        const GOOGLE_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbz_wmHWMRWYQILM7aYtM3CGJybFvbUjP85p-l2aTUOaw24wJhS5SiXBQU3fU3U8oN72cQ/exec';
+        const GOOGLE_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbxYGLvrMnaYCBSUKN63lQu-lLYENsj3elkkRdAfba9B27fk35Ankty_AuNA0h3N4PVSTQ/exec';
+        let allOrdersCache = []; // [BARU] Cache untuk data pesanan
 
         // Data katalog (Default/Fallback jika Google Sheet belum disetting)
         let catalogData = {
@@ -2775,7 +2831,8 @@
         function fetchCatalogFromGoogleSheet() {
             if (!GOOGLE_SHEET_API_URL) return; // Jangan fetch jika URL kosong
 
-            fetch(GOOGLE_SHEET_API_URL)
+            // [PERBAIKAN] Tambahkan timestamp (?v=...) agar browser TIDAK menggunakan cache lama
+            fetch(`${GOOGLE_SHEET_API_URL}?v=${new Date().getTime()}`)
                 .then(response => response.json())
                 .then(data => {
                     if (!data || data.length === 0) return;
@@ -2794,6 +2851,14 @@
             // Reset catalogData agar bersih dan siap diisi data baru
             const newCatalogData = {};
             let visitorMessageData = null;
+            allOrdersCache = []; // Reset cache pesanan
+
+            // [BARU] Pisahkan data pesanan untuk fitur tracking
+            data.forEach(row => {
+                if (row.category === 'ORDERS') {
+                    allOrdersCache.push(row);
+                }
+            });
 
             data.forEach(row => {
                 // [BARU] Cek apakah ini data konfigurasi pesan pengunjung
@@ -2889,6 +2954,9 @@
             const weddingForm = document.getElementById('wedding-data-form');
             const metatahForm = document.getElementById('metatah-data-form');
             const birthdayForm = document.getElementById('birthday-data-form');
+            const trackOrderBtn = document.getElementById('track-order-btn'); // [BARU]
+            const checkOrderBtn = document.getElementById('check-order-btn'); // [BARU]
+            let trackInterval = null; // [BARU] Untuk auto-update status pesanan
             let activeFormType = ''; // Untuk melacak form mana yang aktif
 
             // --- Audio untuk Efek Suara ---
@@ -3235,9 +3303,15 @@
                 });
 
                 const searchTerm = searchInput.value.toLowerCase();
-                const filteredItems = itemsWithId.filter(item => 
-                    item.themeName.toLowerCase().includes(searchTerm) && item.visible !== false
-                );
+                const filteredItems = itemsWithId.filter(item => {
+                    // [PERBAIKAN] Logika filter yang lebih kuat dan anti-cache
+                    // Item dianggap SEMBUNYI jika visible secara eksplisit bernilai false atau "false"
+                    // Defaultnya adalah TAMPIL (jika undefined/null/true)
+                    const isHidden = item.visible === false || String(item.visible).trim().toLowerCase() === 'false';
+                    
+                    // Tampilkan jika nama cocok DAN tidak disembunyikan
+                    return item.themeName.toLowerCase().includes(searchTerm) && !isHidden;
+                });
 
 
                 // --- PENYEMPURNAAN: Jangan langsung hapus, transisikan! ---
@@ -3655,6 +3729,18 @@
                 switchPage(cartPage, checkoutFormPage);
             });
 
+            // [BARU] Fungsi Generate Order ID
+            function generateOrderID() {
+                const timestamp = new Date().getTime().toString().slice(-4);
+                const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+                return `ORD-${timestamp}${random}`;
+            }
+
+            // [BARU] Fungsi Simpan Order ke Google Sheet
+            function saveOrderToSheet(orderData) {
+                return fetch(GOOGLE_SHEET_API_URL, { method: 'POST', body: JSON.stringify(orderData) });
+            }
+
             // Event listener terpusat untuk tombol "Kirim Data Pesanan"
             document.getElementById('submit-order-data-btn').addEventListener('click', function() {
                 let waMessage = '';
@@ -3707,16 +3793,134 @@
                     waMessage = createGeneralOrderMessage(messageType, data);
                 }
 
+                // [BARU] Integrasi Simpan ke Admin & Generate ID
                 if (waMessage) {
-                    window.open(`https://wa.me/6285738517248?text=${encodeURIComponent(waMessage)}`, '_blank');
-                    // Kembali ke halaman utama setelah mengirim
-                    switchPage(checkoutFormPage, mainMenu);
+                    const btn = document.getElementById('submit-order-data-btn');
+                    const originalText = btn.textContent;
+                    btn.textContent = 'Memproses...';
+                    btn.disabled = true;
+
+                    const orderID = generateOrderID();
+                    
+                    // Ambil nama klien untuk disimpan di admin
+                    let clientName = "Klien";
+                    if (activeFormType === 'wedding') clientName = document.querySelector('#checkout-form-page #groom-name-page').value + " & " + document.querySelector('#checkout-form-page #bride-name-page').value;
+                    else if (activeFormType === 'metatah') clientName = document.querySelector('#checkout-form-page #metatah-name-page').value;
+                    else clientName = document.querySelector('#checkout-form-page #birthday-name-page').value;
+
+                    // [BARU] Generate Waktu Pesanan Saat Ini
+                    const orderTimestamp = new Date().toLocaleString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+                    // Data untuk dikirim ke Google Sheet (Admin)
+                    const sheetPayload = {
+                        action: 'save',
+                        category: 'ORDERS',
+                        type: 'active', // [PERBAIKAN] Menambahkan 'type' agar konsisten dengan admin
+                        themeName: orderID, // ID Pesanan
+                        image: clientName, // Nama Klien
+                        previewUrl: 'Menunggu Konfirmasi', // Status Awal
+                        price: 0, 
+                        originalPrice: 0, discount: '-', label: orderTimestamp, visible: true // [BARU] Kirim timestamp di kolom label
+                    };
+
+                    // Kirim ke Backend
+                    saveOrderToSheet(sheetPayload)
+                        .then(() => {
+                            // Tambahkan ID ke pesan WA
+                            waMessage = `*ID PESANAN: ${orderID}*\n(Simpan ID ini untuk cek status)\n\n` + waMessage;
+                            
+                            // Tampilkan Modal Sukses
+                            document.getElementById('generated-order-id').textContent = orderID;
+                            document.getElementById('continue-to-wa-btn').href = `https://wa.me/6285738517248?text=${encodeURIComponent(waMessage)}`;
+                            document.getElementById('order-success-modal').classList.add('active');
+                            
+                            // Reset UI
+                            btn.textContent = originalText;
+                            btn.disabled = false;
+                        })
+                        .catch(err => {
+                            alert("Gagal menyimpan pesanan. Silakan coba lagi.");
+                            btn.textContent = originalText;
+                            btn.disabled = false;
+                        });
                 }
+            });
+
+            // [BARU] Event Listener untuk Tombol Salin ID
+            document.getElementById('copy-id-btn').addEventListener('click', function() {
+                const idText = document.getElementById('generated-order-id').textContent;
+                navigator.clipboard.writeText(idText).then(() => {
+                    // Ubah ikon sementara menjadi centang
+                    const originalHTML = this.innerHTML;
+                    this.innerHTML = '<svg style="width:18px;height:18px;fill:#10b981;" viewBox="0 0 24 24"><path d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z" /></svg>';
+                    setTimeout(() => {
+                        this.innerHTML = originalHTML;
+                    }, 2000);
+                });
             });
 
             // Event listener untuk tombol "Batal" di halaman form
             document.getElementById('cancel-order-btn').addEventListener('click', function() {
                 history.back(); // Kembali ke halaman keranjang
+            });
+
+            // [BARU] Event Listener untuk Tombol Lacak Pesanan
+            trackOrderBtn.addEventListener('click', function() {
+                if (trackInterval) clearInterval(trackInterval); // Hentikan auto-update jika ada
+                document.getElementById('track-order-modal').classList.add('active');
+                document.getElementById('track-result').classList.add('hidden');
+                document.getElementById('track-order-id-input').value = '';
+            });
+
+            // [BARU] Hentikan auto-update saat modal lacak ditutup
+            document.querySelector('#track-order-modal .btn-secondary').addEventListener('click', () => {
+                if (trackInterval) clearInterval(trackInterval);
+            });
+
+            // [BARU] Logika Cek Status Pesanan
+            checkOrderBtn.addEventListener('click', function() {
+                const inputID = document.getElementById('track-order-id-input').value.trim();
+                if (!inputID) { alert("Masukkan ID Pesanan!"); return; }
+
+                const btn = this;
+                btn.textContent = "Mengecek...";
+                btn.disabled = true;
+
+                // Hentikan interval lama jika ada sebelum memulai yang baru
+                if (trackInterval) clearInterval(trackInterval);
+
+                // [BARU] Fungsi terpisah untuk fetch dan update, agar bisa dipanggil berulang
+                function fetchAndUpdateStatus(orderID) {
+                    // Fetch data terbaru dari sheet untuk memastikan status update
+                    fetch(`${GOOGLE_SHEET_API_URL}?v=${new Date().getTime()}`)
+                        .then(res => res.json())
+                        .then(data => {
+                            const order = data.find(row => 
+                                row.category === 'ORDERS' && 
+                                String(row.themeName).trim().toLowerCase() === orderID.toLowerCase()
+                            );
+                            const resultDiv = document.getElementById('track-result');
+                            if (order) {
+                                resultDiv.classList.remove('hidden');
+                                document.getElementById('track-status-text').textContent = order.previewUrl || "Diproses";
+                                let progress = parseInt(String(order.price).replace(/[^0-9]/g, '')) || 0;
+                                if (progress > 100) progress = 100;
+                                document.getElementById('track-progress-bar').style.width = progress + "%";
+                                document.getElementById('track-progress-text').textContent = progress + "%";
+                            } else {
+                                alert("ID Pesanan tidak ditemukan!");
+                                resultDiv.classList.add('hidden');
+                                if (trackInterval) clearInterval(trackInterval); // Hentikan jika ID salah
+                            }
+                        })
+                        .finally(() => { if(btn) { btn.textContent = "Cek Sekarang"; btn.disabled = false; } });
+                }
+
+                // Panggil pertama kali
+                fetchAndUpdateStatus(inputID);
+
+                // [BARU] Mulai auto-update setiap 7 detik
+                trackInterval = setInterval(() => fetchAndUpdateStatus(inputID), 7000);
             });
 
             // --- PERBAIKAN AKSESIBILITAS: Fungsi untuk menampilkan dan menutup modal ---
