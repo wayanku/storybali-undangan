@@ -51,7 +51,7 @@ body { font-family: var(--font-family); background-color: var(--bg-color); margi
 body.checkout-active { background-color: var(--accent-color); }
 
 /* Header Toko Online */
-.top-header { position: sticky; top: 0; width: 100%; background-color: var(--card-bg); border-bottom: 1px solid var(--card-border); z-index: 1010; padding-top: calc(10px + env(safe-area-inset-top)); padding-bottom: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: padding-top 0.3s ease; }
+.top-header { position: sticky; top: 0; width: 100%; background-color: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: none; z-index: 1010; padding-top: calc(10px + env(safe-area-inset-top)); padding-bottom: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); transition: padding-top 0.3s ease; }
 #claimed-discount-banner { background: linear-gradient(45deg, #e53e3e, #c0392b); color: white; width: 100%; text-align: center; padding: 10px 15px; font-size: 0.9em; display: flex; justify-content: center; align-items: center; gap: 10px; font-family: 'Poppins', sans-serif; box-sizing: border-box; text-shadow: 1px 1px 3px rgba(0,0,0,0.3); animation: banner-pulse 2s ease-in-out infinite; }
 .banner-icon { width: 20px; height: 20px; fill: #ffffff; flex-shrink: 0; }
 .banner-text { font-weight: 700; }
@@ -192,7 +192,8 @@ body.checkout-active { background-color: var(--accent-color); }
 #category-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; margin-bottom: 30px; }
 .category-card { position: relative; border-radius: 15px; overflow: hidden; background-color: #fff; padding: 10px; display: flex; flex-direction: column; box-shadow: 0 4px 15px rgba(73, 86, 59, 0.08); transition: transform 0.3s ease, box-shadow 0.3s ease; opacity: 0; animation: fadeIn 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
 .category-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(73, 86, 59, 0.15); }
-.category-card-image { width: 100%; height: auto; display: block; border-radius: 8px; background-color: #f0f2f0; }
+.category-card-image { width: 100%; height: auto; display: block; border-radius: 8px; background-color: #f0f2f0; transition: transform 0.5s ease; }
+.category-card:hover .category-card-image { transform: scale(1.05); }
 .category-card-image-wrapper { position: relative; width: 100%; aspect-ratio: 1 / 1; border-radius: 8px; overflow: hidden; }
 .category-card-content { padding: 15px 0 5px 0; flex-grow: 1; display: flex; flex-direction: column; }
 .category-card-title { margin: 0; font-size: 1em; font-weight: 600; color: var(--primary-text); text-align: left; flex-grow: 1; margin-bottom: 15px; }
@@ -317,6 +318,7 @@ body.checkout-active { background-color: var(--accent-color); }
 .loading-spinner .dot:nth-child(3) { animation-delay: 0.4s; }
 .floating-nav a.active { background-color: var(--accent-color); color: var(--accent-text-color); }
 .floating-nav a.active svg { stroke: var(--accent-text-color); }
+@keyframes slideUpNav { from { transform: translate(-50%, 100%); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; } .testimonials-grid { animation: none !important; } .loading-spinner .dot { animation: none !important; } }
 
 /* Popup Discount */
