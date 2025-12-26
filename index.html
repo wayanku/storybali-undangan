@@ -16,6 +16,9 @@
     <!-- Favicon (ikon di tab browser) -->
     <link rel="icon" href="https://wayanku.github.io/storybali-undangan/IMG_6302%20(2).JPG" type="image/x-icon">
     <link rel="apple-touch-icon" href="https://wayanku.github.io/storybali-undangan/IMG_6302%20(2).JPG">
+    <!-- [PERBAIKAN] Icon spesifik untuk Android agar logo muncul (bukan huruf S) -->
+    <link rel="icon" type="image/jpeg" sizes="192x192" href="https://wayanku.github.io/storybali-undangan/IMG_6302%20(2).JPG">
+    <link rel="icon" type="image/jpeg" sizes="512x512" href="https://wayanku.github.io/storybali-undangan/IMG_6302%20(2).JPG">
 
     <!-- Open Graph Meta Tags (untuk tampilan saat share di media sosial) -->
     <meta property="og:title" content="Storybali Undangan - Undangan Digital Bali">
@@ -1453,5 +1456,16 @@
     
     <!-- [PERBAIKAN] Menghubungkan file JavaScript eksternal -->
     <script src="main.js"></script>
+    <script>
+        // [BARU] Script Paksa Matikan Zoom di iOS (iPhone/iPad)
+        // Karena iOS sering mengabaikan user-scalable=no di meta tag
+        document.addEventListener('gesturestart', function (e) {
+            e.preventDefault();
+        });
+        // Mencegah zoom saat double tap (ketuk dua kali)
+        document.addEventListener('dblclick', function(e) {
+            e.preventDefault(); 
+        }, { passive: false });
+    </script>
 </body>
 </html>
