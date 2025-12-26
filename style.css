@@ -418,3 +418,94 @@ body.checkout-active { background-color: var(--accent-color); }
 .float-info-btn.state-hurt .emoji-smile { opacity: 0; }
 .float-info-btn.state-hurt .emoji-fear { opacity: 0; }
 .float-info-btn.state-hurt .emoji-hurt { opacity: 1; }
+
+/* [BARU] Service Menu Grid (Ala Shopee) */
+.service-menu-section {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px 10px;
+    padding: 10px 5px 20px 5px;
+    margin-bottom: 10px;
+    background-color: var(--bg-color); /* Menyatu dengan background */
+}
+
+.service-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s;
+    text-decoration: none;
+    color: inherit;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.service-item:active { transform: scale(0.95); }
+
+.service-icon-box {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    background: #fff;
+    border: 1px solid rgba(0,0,0,0.03);
+    transition: transform 0.2s;
+}
+
+.service-icon-box svg {
+    width: 24px;
+    height: 24px;
+    fill: currentColor;
+}
+
+.service-label {
+    font-size: 0.75em;
+    color: var(--primary-text);
+    line-height: 1.2;
+    font-weight: 600;
+    max-width: 70px;
+}
+
+/* [BARU] Style untuk Modal Layanan Premium */
+.service-modal-content {
+    padding: 0 !important; /* Override padding default modal */
+    overflow: hidden;
+    text-align: center;
+    max-width: 320px;
+}
+.service-header-bg {
+    background: linear-gradient(135deg, var(--accent-color), #4E5C4D);
+    padding: 30px 20px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.service-icon-large {
+    width: 80px; height: 80px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: white;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    animation: badgePop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.service-icon-large svg { width: 40px; height: 40px; fill: currentColor; }
+.close-btn-absolute {
+    position: absolute; top: 10px; right: 10px;
+    background: rgba(0,0,0,0.2); border: none; color: white;
+    width: 30px; height: 30px; border-radius: 50%;
+    cursor: pointer; font-size: 1.2em;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s;
+}
+.close-btn-absolute:hover { background: rgba(0,0,0,0.4); }
+.service-body { padding: 25px; }
+.service-body h4 { margin: 0 0 10px 0; font-size: 1.3em; color: var(--primary-text); font-weight: 800; }
+.service-body p { color: var(--secondary-text); font-size: 0.95em; margin-bottom: 25px; line-height: 1.5; }
