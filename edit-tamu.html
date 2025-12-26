@@ -34,21 +34,6 @@
             margin: 0;
             padding: 1rem;
         }
-        
-        /* [BARU] Tombol Kembali ke Beranda */
-        .btn-back {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            text-decoration: none;
-            font-weight: 600;
-            color: var(--primary-color);
-            margin-bottom: 2rem;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            transition: background-color 0.2s;
-        }
-        .btn-back:hover { background-color: #e9e9e9; }
 
         .container {
             max-width: 800px;
@@ -182,118 +167,61 @@
             background-color: var(--surface-color);
             border-radius: var(--border-radius);
             margin-bottom: 1.5rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            box-shadow: var(--shadow-sm);
             overflow: hidden;
-            border: 1px solid #e2e8f0;
-            /* [BARU] Animasi saat muncul */
-            opacity: 0;
-            transform: translateY(20px);
-            animation: fadeInResult 0.5s ease-out forwards;
-            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid var(--border-color);
         }
-        .result-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        .result-card-header {
+            background-color: #f8f9fa;
+            padding: 1rem 1.5rem; font-weight: 600;
+            border-bottom: 1px solid var(--border-color);
         }
-        @keyframes fadeInResult {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+        .result-card-body { padding: 1.5rem; }
 
-        /* [DIUBAH] Body kartu menjadi kontainer utama */
-        .result-card-body { 
-            padding: 1.5rem; 
-            display: flex;
-            flex-direction: column;
-            gap: 1rem; /* Jarak antar bagian */
-        }
-
-        /* [BARU] Style untuk Info Tamu yang dipersonalisasi */
-        .guest-info {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 1.25rem 1.5rem;
-            background: linear-gradient(to right, #f8fafc, #fff);
-            border-bottom: 1px solid #f1f5f9;
-        }
-        .guest-avatar {
-            width: 48px; height: 48px; border-radius: 12px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.5rem; font-weight: 600;
-            color: #1e293b; flex-shrink: 0;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            text-transform: uppercase;
-        }
-        .guest-details { flex: 1; }
-        .guest-name {
-            font-size: 1.15rem; font-weight: 700; color: var(--text-color); margin: 0;
-        }
-        .guest-label {
-            font-size: 0.85rem; color: #64748b; margin-top: 2px;
-        }
-
-        .link-container {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 0.75rem 1rem;
+        .result-link {
             font-family: monospace;
-            font-size: 0.9rem;
-            color: #475569;
+            background-color: #f3f4f6;
+            padding: 0.75rem;
+            border-radius: 6px;
             word-break: break-all;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
+            margin-bottom: 1rem;
+            border: 1px solid var(--border-color);
         }
 
         .message-preview {
+            font-family: monospace;
             white-space: pre-wrap;
-            background-color: #fffbeb;
-            color: #92400e;
-            border: 1px solid #fcd34d;
+            background-color: #f3f4f6;
             padding: 1rem;
-            border-radius: 8px;
+            border-radius: 6px;
             max-height: 150px;
             overflow-y: auto;
             font-size: 0.9em;
-            line-height: 1.5;
+            margin-top: 1rem;
+            border: 1px solid var(--border-color);
         }
 
-        .action-buttons {
-            display: flex;
-            flex-wrap: wrap;
+        .button-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
             gap: 0.75rem;
             margin-top: 1.5rem;
         }
         
-        .btn-action {
-            flex: 1;
+        .btn {
             display: inline-flex; align-items: center; justify-content: center;
             gap: 0.5rem; text-decoration: none;
-            border: none; padding: 0.75rem 1rem; border-radius: 8px;
+            border: none; padding: 0.7rem 1rem; border-radius: 6px;
             cursor: pointer; font-weight: 600; font-size: 0.9rem;
             transition: all 0.2s;
-            min-width: 120px;
         }
-        .btn-action:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
-        
-        .btn-copy-link { background-color: #e2e8f0; color: #1e293b; }
-        .btn-copy-link:hover { background-color: #cbd5e1; }
-        
-        .btn-copy-msg { background-color: #ffedd5; color: #9a3412; }
-        .btn-copy-msg:hover { background-color: #fed7aa; }
-        
+        .btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+        .btn-copy { background-color: var(--secondary-color); color: white; }
+        .btn-copy:hover { background-color: var(--secondary-dark); }
         .btn-whatsapp { background-color: var(--whatsapp-color); color: white; }
-        .btn-whatsapp:hover { background-color: #1da851; }
-        
-        .btn-action.copied { background-color: var(--success-color); color: white; }
-        .btn-icon-only { background: none; border: none; cursor: pointer; color: var(--primary-color); padding: 4px; border-radius: 4px; transition: background 0.2s; }
-        .btn-icon-only:hover { background-color: #e2e8f0; }
-        .btn-icon-only.copied { color: var(--success-color); }
+        .btn-whatsapp:hover { background-color: #1EBE57; }
+        .btn.copied { background-color: var(--success-color); }
+        .btn svg { width: 1rem; height: 1rem; }
         
         /* Aturan untuk Mobile */
         @media (max-width: 768px) {
@@ -395,19 +323,9 @@
         const outputDiv = document.getElementById('output-links');
         const resultsContainer = document.getElementById('results-container');
 
-        const iconCopy = `&lt;svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"&gt;&lt;path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"&gt;&lt;/path&gt;&lt;/svg&gt;`;
-        const iconWa = `&lt;svg fill="currentColor" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"&gt;&lt;path d="M12.04 2.003C6.58 2.003 2.13 6.463 2.13 12.003c0 1.76.46 3.44 1.32 4.91l-1.44 5.25 5.37-1.41a10.27 10.27 0 004.66 1.17h.01c5.46 0 9.91-4.46 9.91-9.92 0-5.46-4.45-9.91-9.91-9.91zm0 18.23c-1.63 0-3.2-.4-4.58-1.18l-.33-.19-3.41.9.92-3.32-.21-.34a8.43 8.43 0 01-1.3-4.58c0-4.64 3.78-8.42 8.42-8.42a8.42 8.42 0 018.42 8.42c0 4.64-3.78 8.42-8.42 8.42zm4.84-5.96c-.26-.13-1.56-.77-1.8-.86-.24-.09-.42-.13-.6.13s-.68.86-.83 1.03-.3.2-.54.06c-1.02-.46-1.93-1.1-2.78-2.14-.38-.46-.07-.7.06-.94.13-.13.26-.34.4-.46.13-.13.18-.21.26-.34.09-.13.04-.26 0-.38s-.6-.71-.82-.98c-.22-.26-.45-.22-.6-.22-.16 0-.33 0-.5 0s-.42.06-.65.34c-.22.26-.86 1-.86 2.32 0 1.36.88 2.69 1 2.86.13.18 1.75 2.8 4.24 3.93.58.26 1.04.42 1.4.53.6.2 1.15.16 1.58.1.48-.06 1.56-.64 1.78-1.26.22-.6.22-1.12.18-1.26-.03-.12-.2-.2-.44-.33z"/&gt;&lt;/svg&gt;`;
+        const iconCopy = `<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>`;
+        const iconWa = `<svg fill="currentColor" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12.04 2.003C6.58 2.003 2.13 6.463 2.13 12.003c0 1.76.46 3.44 1.32 4.91l-1.44 5.25 5.37-1.41a10.27 10.27 0 004.66 1.17h.01c5.46 0 9.91-4.46 9.91-9.92 0-5.46-4.45-9.91-9.91-9.91zm0 18.23c-1.63 0-3.2-.4-4.58-1.18l-.33-.19-3.41.9.92-3.32-.21-.34a8.43 8.43 0 01-1.3-4.58c0-4.64 3.78-8.42 8.42-8.42a8.42 8.42 0 018.42 8.42c0 4.64-3.78 8.42-8.42 8.42zm4.84-5.96c-.26-.13-1.56-.77-1.8-.86-.24-.09-.42-.13-.6.13s-.68.86-.83 1.03-.3.2-.54.06c-1.02-.46-1.93-1.1-2.78-2.14-.38-.46-.07-.7.06-.94.13-.13.26-.34.4-.46.13-.13.18-.21.26-.34.09-.13.04-.26 0-.38s-.6-.71-.82-.98c-.22-.26-.45-.22-.6-.22-.16 0-.33 0-.5 0s-.42.06-.65.34c-.22.26-.86 1-.86 2.32 0 1.36.88 2.69 1 2.86.13.18 1.75 2.8 4.24 3.93.58.26 1.04.42 1.4.53.6.2 1.15.16 1.58.1.48-.06 1.56-.64 1.78-1.26.22-.6.22-1.12.18-1.26-.03-.12-.2-.2-.44-.33z"/></svg>`;
         
-        // [BARU] Fungsi untuk menghasilkan warna pastel dari sebuah string
-        function generateColor(str) {
-            let hash = 0;
-            for (let i = 0; i < str.length; i++) {
-                hash = str.charCodeAt(i) + ((hash &lt;&lt; 5) - hash);
-            }
-            const h = hash % 360;
-            return `hsl(${h}, 80%, 90%)`; // Light, pastel color
-        }
-
         function updateTemplatePreview() {
             const selectedEvent = document.querySelector('input[name="event-type"]:checked').value;
             const selectedLang = document.querySelector('input[name="lang"]:checked').value;
@@ -436,58 +354,42 @@
                 const originalName = guestName.trim();
                 const nameForUrl = encodeURIComponent(originalName).replace(/%20/g, '+');
                 const finalUrl = `${baseUrl}?to=${nameForUrl}`;
-                
-                // Generate Initials & Color
-                const initials = originalName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-                const avatarColor = generateColor(originalName);
-                
                 const resultCard = document.createElement('div');
                 resultCard.className = 'result-card';
-                
-                let messageSection = '';
-                let whatsappLink = '';
-                let copyMsgBtn = '';
+                let cardContent;
 
                 if (includeMessageCheckbox.checked) {
                     const baseTemplate = templatePreview.value;
                     const finalMessage = baseTemplate.replace(/\[Nama Tamu\]/g, originalName).replace(/\[Link Undangan\]/g, finalUrl);
-                    whatsappLink = `https://wa.me/?text=${encodeURIComponent(finalMessage)}`;
+                    const whatsappLink = `https://wa.me/?text=${encodeURIComponent(finalMessage)}`;
                     
-                    messageSection = `
-                        <div>
-                            <label style="font-size:0.85rem; font-weight:600; color:#64748b; margin-bottom:0.5rem; display:block;">Preview Pesan WhatsApp:</label>
-                            <div class="message-preview">${finalMessage}</div>
-                        </div>`;
-                    
-                    copyMsgBtn = `<button type="button" class="btn-action btn-copy-msg btn-copy" data-copy-text="${finalMessage}">${iconCopy} Salin Pesan</button>`;
-                } else {
-                    whatsappLink = `https://wa.me/?text=${encodeURIComponent(finalUrl)}`;
-                }
-                
-                resultCard.innerHTML = `
-                    <div class="guest-info">
-                        <div class="guest-avatar" style="background-color: ${avatarColor};">${initials}</div>
-                        <div class="guest-details">
-                            <h3 class="guest-name">${originalName}</h3>
-                            <div class="guest-label">Tamu Undangan</div>
-                        </div>
-                    </div>
-                    <div class="result-card-body">
-                        <div>
-                            <label style="font-size:0.85rem; font-weight:600; color:#64748b; margin-bottom:0.5rem; display:block;">Link Personal:</label>
-                            <div class="link-container">
-                                <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${finalUrl}</span>
-                                <button type="button" class="btn-icon-only btn-copy" data-copy-text="${finalUrl}" title="Salin Link">${iconCopy}</button>
+                    cardContent = `
+                        <div class="result-card-header">${originalName}</div>
+                        <div class="result-card-body">
+                            <label>Link Undangan:</label>
+                            <div class="result-link">${finalUrl}</div>
+                            <label>Pesan Lengkap:</label>
+                            <pre class="message-preview">${finalMessage}</pre>
+                            <div class="button-group">
+                                <button type="button" class="btn btn-copy" data-copy-text="${finalUrl}">${iconCopy} Salin Link</button>
+                                <button type="button" class="btn btn-copy" data-copy-text="${finalMessage}">${iconCopy} Salin Pesan</button>
+                                <a href="${whatsappLink}" target="_blank" class="btn btn-whatsapp">${iconWa} Kirim WA</a>
                             </div>
-                        </div>
-                        ${messageSection}
-                        <div class="action-buttons">
-                            <button type="button" class="btn-action btn-copy-link btn-copy" data-copy-text="${finalUrl}">${iconCopy} Salin Link</button>
-                            ${copyMsgBtn}
-                            <a href="${whatsappLink}" target="_blank" class="btn-action btn-whatsapp">${iconWa} Kirim WA</a>
-                        </div>
-                    </div>`;
-                
+                        </div>`;
+                } else {
+                    const whatsappLink = `https://wa.me/?text=${encodeURIComponent(finalUrl)}`;
+                    cardContent = `
+                        <div class="result-card-header">${originalName}</div>
+                        <div class="result-card-body">
+                            <label>Link Undangan:</label>
+                             <div class="result-link">${finalUrl}</div>
+                            <div class="button-group">
+                                <button type="button" class="btn btn-copy" data-copy-text="${finalUrl}">${iconCopy} Salin Link</button>
+                                <a href="${whatsappLink}" target="_blank" class="btn btn-whatsapp">${iconWa} Kirim WA</a>
+                            </div>
+                        </div>`;
+                }
+                resultCard.innerHTML = cardContent;
                 outputDiv.appendChild(resultCard);
             });
 
