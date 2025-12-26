@@ -5,95 +5,85 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editor Undangan Canggih</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #f8f9fa; --panel-bg: #ffffff; --border-color: #dee2e6;
-            --primary-color: #4a69bd; --secondary-color: #6c757d; --header-bg: #2f3542;
-            --text-color: #212529; --input-bg: #f1f3f5; --success-color: #1abc9c;
-            --bg-color: #f4f7f9;
+            --bg-color: #f8fafc;
             --panel-bg: #ffffff;
-            --border-color: #e0e6ed;
-            --primary-color: #007bff;
-            --primary-color-dark: #0056b3;
-            --secondary-color: #6c757d;
+            --border-color: #e2e8f0;
+            --primary-color: #5A6B59; /* Green from storybali */
+            --primary-color-dark: #435042;
+            --secondary-color: #B59A75; /* Gold from storybali */
             --header-bg: #ffffff;
-            --header-text: #343a40;
-            --text-color: #343a40;
-            --input-bg: #ffffff;
+            --header-text: #111827;
+            --text-color: #1f2937;
+            --text-secondary: #64748b;
+            --input-bg: #f8fafc;
             --success-color: #28a745;
             --danger-color: #dc3545;
-            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
-            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            --font-display: 'Manrope', var(--font-sans);
         }
         * { box-sizing: border-box; }
-        body, html { margin: 0; padding: 0; height: 100%; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: var(--bg-color); color: var(--text-color); overflow: hidden; }
-        header { background-color: var(--header-bg); color: white; padding: 15px 30px; font-size: 1.3rem; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
-        body, html { margin: 0; padding: 0; height: 100%; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: var(--bg-color); color: var(--text-color); overflow: hidden; font-size: 16px; }
+        body, html { margin: 0; padding: 0; height: 100%; font-family: var(--font-sans); background-color: var(--bg-color); color: var(--text-color); overflow: hidden; font-size: 16px; }
         
         /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; }
-        ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #aaa; }
+        ::-webkit-scrollbar-track { background: var(--bg-color); }
+        ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
 
-        header { background-color: var(--header-bg); color: var(--header-text); padding: 12px 30px; font-size: 1.2rem; font-weight: 600; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); box-shadow: var(--shadow-sm); z-index: 10; }
+        header { background-color: var(--header-bg); color: var(--header-text); padding: 12px 30px; font-size: 1.2rem; font-weight: 700; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); box-shadow: var(--shadow-sm); z-index: 10; }
         .main-container { display: flex; height: calc(100vh - 61px); width: 100%; }
         .panel { display: flex; flex-direction: column; overflow: hidden; }
         #editor-panel { flex: 0 0 400px; background-color: var(--panel-bg); border-right: 1px solid var(--border-color); }
-        #preview-panel { flex: 1 1 auto; padding: 20px; background-color: #e9ecef; display: flex; justify-content: center; align-items: center; }
-        .panel-header { padding: 15px 20px; border-bottom: 1px solid var(--border-color); background-color: #fdfdff; }
-        .panel-header h2 { margin: 0; font-size: 1.1rem; }
-        .panel-header { padding: 15px 20px; border-bottom: 1px solid var(--border-color); background-color: #fcfdff; }
+        #preview-panel { flex: 1 1 auto; padding: 20px; background-color: var(--bg-color); display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .panel-header { padding: 15px 20px; border-bottom: 1px solid var(--border-color); background-color: var(--panel-bg); }
         .panel-header h2 { margin: 0; font-size: 1.05rem; font-weight: 600; color: var(--header-text); }
         .panel-content { padding: 20px; overflow-y: auto; flex-grow: 1; }
-        #preview-iframe { width: 100%; max-width: 375px; height: 90%; max-height: 812px; border: 12px solid #111; border-radius: 40px; background-color: white; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
-        #preview-iframe { width: 100%; max-width: 375px; height: 90%; max-height: 812px; border: 12px solid #111; border-radius: 40px; background-color: white; box-shadow: var(--shadow-md); }
+        #preview-iframe { width: 100%; max-width: 375px; height: 90%; max-height: 812px; border: 12px solid #1f2937; border-radius: 40px; background-color: white; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); }
 
         #input-container { display: flex; flex-direction: column; }
-        #input-html { width: 100%; height: 150px; border: 1px solid var(--border-color); border-radius: 6px; padding: 10px; font-family: 'SF Mono', 'Courier New', monospace; font-size: 0.9rem; resize: vertical; background-color: var(--input-bg); }
         #input-html { width: 100%; height: 150px; border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; font-family: 'SF Mono', 'Courier New', monospace; font-size: 0.9rem; resize: vertical; background-color: var(--input-bg); transition: border-color 0.2s, box-shadow 0.2s; }
-        #input-html:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2); }
+        #input-html:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(90, 107, 89, 0.2); }
         #dynamic-form-container { flex: 1 1 auto; overflow-y: auto; padding-top: 15px;}
         .button-group { display: flex; gap: 10px; margin-top: 10px; }
-        button { padding: 8px 15px; border: none; border-radius: 6px; font-size: 0.9rem; font-weight: 500; cursor: pointer; transition: all 0.2s; }
-        button { padding: 10px 18px; border: none; border-radius: 6px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
-        #reset-btn { background-color: #e74c3c; color: white; }
-        details { border: 1px solid var(--border-color); border-radius: 6px; margin-bottom: 15px; overflow: hidden; }
-        summary { font-weight: 600; padding: 12px 15px; cursor: pointer; background-color: #f7f7f9; user-select: none; }
-        #reset-btn { background-color: var(--danger-color); color: white; }
-        #reset-btn:hover { background-color: #c82333; }
+        button { padding: 10px 18px; border: 1px solid transparent; border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
+        button.primary { background-color: var(--primary-color); color: white; }
+        button.primary:hover { background-color: var(--primary-color-dark); }
+        #reset-btn { background-color: #fef2f2; color: var(--danger-color); border-color: #fecaca; }
+        #reset-btn:hover { background-color: #fee2e2; }
         details { border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 15px; overflow: hidden; background-color: var(--panel-bg); transition: box-shadow 0.2s; }
         details[open] { box-shadow: var(--shadow-sm); }
-        summary { font-weight: 600; padding: 12px 15px; cursor: pointer; background-color: #f8f9fa; user-select: none; position: relative; }
-        summary::after { content: '›'; position: absolute; right: 15px; top: 50%; transform: translateY(-50%) rotate(90deg); font-size: 1.4rem; color: var(--secondary-color); transition: transform 0.2s; }
-        details[open] > summary::after { transform: translateY(-50%) rotate(-90deg); }
+        summary { font-weight: 600; padding: 12px 15px; cursor: pointer; background-color: #f8fafc; user-select: none; position: relative; list-style: none; }
+        summary::-webkit-details-marker { display: none; }
+        summary::after { content: '›'; position: absolute; right: 15px; top: 50%; transform: translateY(-50%) rotate(90deg); font-size: 1.4rem; color: var(--text-secondary); transition: transform 0.2s; }
+        details[open] > summary::after { transform: translateY(-50%) rotate(-90deg); } /* [FIX] Rotasi dibalik */
         .fieldset-content { padding: 15px; }
         .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 6px; font-size: 0.9rem; color: var(--secondary-color); text-transform: capitalize; font-weight: 500;}
-        .form-group input, .form-group textarea { width: 100%; padding: 8px 12px; border: 1px solid #ced4da; border-radius: 5px; font-size: 1rem; }
-        .form-group label { display: block; margin-bottom: 8px; font-size: 0.85rem; color: var(--secondary-color); text-transform: capitalize; font-weight: 600;}
-        .form-group input[type="text"], .form-group textarea { width: 100%; padding: 10px 12px; border: 1px solid #ced4da; border-radius: 6px; font-size: 0.95rem; background-color: var(--input-bg); transition: border-color 0.2s, box-shadow 0.2s; }
-        .form-group input[type="text"]:focus, .form-group textarea:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2); }
+        .form-group label { display: block; margin-bottom: 8px; font-size: 0.85rem; color: var(--text-secondary); text-transform: capitalize; font-weight: 600;}
+        .form-group input[type="text"], .form-group input[type="datetime-local"], .form-group textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.95rem; background-color: var(--input-bg); transition: border-color 0.2s, box-shadow 0.2s; font-family: inherit; }
+        .form-group input[type="text"]:focus, .form-group input[type="datetime-local"]:focus, .form-group textarea:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(90, 107, 89, 0.2); }
         .form-group input[type="color"] { padding: 0; height: 38px; border: none; background: none; }
-        .gallery-editor ul { list-style: none; padding: 0; margin: 0; }
-        .gallery-editor li { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 6px; background-color: #f8f9fa; margin-bottom: 8px; }
+        .gallery-editor ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
         .gallery-editor li { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 6px; background-color: #f8f9fa; margin-bottom: 8px; border: 1px solid var(--border-color); }
         .gallery-editor img { width: 40px; height: 40px; object-fit: cover; border-radius: 4px; border: 1px solid var(--border-color); }
         .gallery-editor input { flex-grow: 1; }
-        .gallery-editor .remove-btn { background-color: #dc3545; color: white; border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-weight: bold; }
-        .gallery-editor .add-btn { width: 100%; margin-top: 10px; background-color: var(--primary-color); color: white;}
-        .status-message { text-align: center; padding: 20px; color: var(--secondary-color); }
         .gallery-editor .remove-btn { background-color: var(--danger-color); color: white; border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-weight: bold; flex-shrink: 0; }
         .gallery-editor .remove-btn:hover { background-color: #c82333; }
         .gallery-editor .add-btn { width: 100%; margin-top: 10px; background-color: var(--primary-color); color: white; }
         .gallery-editor .add-btn:hover { background-color: var(--primary-color-dark); }
-        .status-message { text-align: center; padding: 30px 20px; color: var(--secondary-color); background-color: #f8f9fa; border-radius: 8px; border: 1px dashed var(--border-color); }
+        .status-message { text-align: center; padding: 30px 20px; color: var(--text-secondary); background-color: #f8fafc; border-radius: 8px; border: 1px dashed var(--border-color); }
         
         /* Template Selection Styles */
         .template-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; margin-bottom: 20px; }
         .template-card { background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; cursor: pointer; transition: all 0.2s; }
         .template-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-sm); border-color: var(--primary-color); }
-        .template-card.active { border: 2px solid var(--primary-color); box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15); }
+        .template-card.active { border: 2px solid var(--primary-color); box-shadow: 0 0 0 3px rgba(90, 107, 89, 0.15); }
         .template-img-box { width: 100%; height: 80px; background-color: #f8f9fa; display: flex; align-items: center; justify-content: center; overflow: hidden; }
         .template-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
         .template-card:hover .template-img { transform: scale(1.05); }
@@ -108,20 +98,21 @@
             #preview-panel { order: -1; padding: 20px 0; }
             #preview-iframe { height: 667px; /* Ukuran tinggi iPhone 8 */ }
         }
-
+        
         /* Mobile Layout */
         @media (max-width: 768px) {
-            header { flex-direction: column; gap: 15px; padding: 15px; height: auto; align-items: stretch; }
+            header { flex-direction: column; gap: 15px; padding: 15px; align-items: stretch; }
             .main-container { height: auto; }
             #editor-panel { flex: 1 1 auto; }
+            .button-group { justify-content: center; }
         }
     </style>
 </head>
 <body>
     <header>
         <div style="display: flex; align-items: center; gap: 10px;">
-            <a href="../index.html" style="text-decoration: none; color: var(--secondary-color); font-size: 1.2rem; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 8px; background: #f1f5f9;" title="Kembali ke Beranda">&#8592;</a>
-            <h1 style="font-size: 1.1rem;">Editor Undangan</h1>
+            <a href="../index.html" style="text-decoration: none; color: var(--text-secondary); font-size: 1.2rem; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 8px; background: #f1f5f9; transition: background 0.2s;" title="Kembali ke Beranda" onmouseover="this.style.background='#e2e8f0'" onmouseout="this.style.background='#f1f5f9'">&#8592;</a>
+            <h1 style="font-size: 1.1rem; font-family: var(--font-display);">Editor Undangan</h1>
         </div>
         <div class="button-group">
             <button id="preview-fullscreen-btn" class="primary">
@@ -135,7 +126,7 @@
         <div id="editor-panel" class="panel">
             <div class="panel-content">
                 <div id="input-container">
-                    <div id="template-loader">
+                    <div id="template-loader" class="fieldset-content" style="padding:0 0 20px 0;">
                         <label style="display:block; margin-bottom:12px; font-weight:600; color:var(--secondary-color);">Pilih Kategori Template:</label>
                         <div class="template-grid">
                             <div class="template-card" onclick="loadTemplate('pernikahan.html', this)">
@@ -162,7 +153,7 @@
                 </div>
                 <div id="dynamic-form-container">
                     <div class="panel-header" style="padding:15px 0;"><h2>2. Panel Editor</h2></div>
-                    <div class="status-message">Form edit akan muncul di sini setelah kode valid ditempelkan.</div>
+                    <div class="status-message">Pilih template di atas untuk mulai mengedit konten undangan Anda.</div>
                 </div>
             </div>
         </div>
@@ -222,7 +213,7 @@
                 const match = originalHtml.match(regex);
 
                 if (!match || !match[1]) {
-                    formContainer.innerHTML = '<div class="panel-header" style="padding:15px 0;"><h2>2. Panel Editor</h2></div><div class="status-message" style="color: #e74c3c;">Error: Objek `invitationData` tidak ditemukan. Pastikan kode valid.</div>';
+                    formContainer.innerHTML = '<div class="panel-header" style="padding:15px 0;"><h2>2. Panel Editor</h2></div><div class="status-message" style="color: var(--danger-color);">Error: Objek `invitationData` tidak ditemukan. Pastikan kode valid.</div>';
                     return;
                 }
                 
@@ -248,8 +239,8 @@
                     const value = currentObj[key];
                     const currentPath = [...path, key];
 
-                    // [BARU] Hilangkan fitur quote dan ceremony
-                    if (key === 'quote' || key === 'ceremony') continue;
+                    // [BARU] Hilangkan fitur quote, ceremony, dan creator
+                    if (key === 'quote' || key === 'ceremony' || key === 'creator') continue;
 
                     // [MODIFIKASI] Jika key adalah 'images', gunakan editor khusus
                     if (key === 'images' && path.length === 0) {
@@ -294,7 +285,7 @@
                 let input;
                 const useTextarea = String(value).length > 70 && !key.toLowerCase().includes('url');
 
-                if (useTextarea) {
+                if (useTextarea || key.toLowerCase().includes('text') || key.toLowerCase().includes('translation')) {
                     input = document.createElement('textarea');
                     input.rows = 3;
                 } else if (key.toLowerCase().includes('color')) {
@@ -326,7 +317,7 @@
                     { label: 'Foto Mempelai Pria', key: 'groom' },
                     { label: 'Foto Mempelai Wanita', key: 'bride' },
                     { label: 'Foto Utama 1 (Sampul & Galeri)', key: 'photo1' },
-                    { label: 'Foto Utama 2 (Sampul & Galeri)', key: 'photo2' }
+                    { label: 'Foto Utama 2 (Sampul & Galeri)', key: 'photo2' },
                 ];
 
                 inputs.forEach(item => {
@@ -340,11 +331,13 @@
                     fileInput.type = 'file';
                     fileInput.accept = 'image/*';
                     
-                    // Preview kecil jika sudah ada data
+                    // [DIUBAH] Logika ambil gambar preview lebih canggih
                     let previewImg = null;
                     if (item.key === 'groom' && imagesObj.groom) previewImg = imagesObj.groom;
                     if (item.key === 'bride' && imagesObj.bride) previewImg = imagesObj.bride;
                     if (item.key === 'photo1' && imagesObj.coverSlides && imagesObj.coverSlides[0]) previewImg = imagesObj.coverSlides[0];
+                    if (item.key === 'photo2' && imagesObj.coverSlides && imagesObj.coverSlides[1]) previewImg = imagesObj.coverSlides[1];
+                    if (item.key === 'photo1' && imagesObj.profile) previewImg = imagesObj.profile; // Untuk template metatah
                     
                     const imgPreview = document.createElement('img');
                     imgPreview.style.width = '60px';
@@ -378,7 +371,7 @@
                 note.style.color = '#666';
                 note.style.fontStyle = 'italic';
                 note.textContent = '* Foto akan disimpan di browser Anda. Foto 1 & 2 akan diduplikasi otomatis untuk mengisi semua slot galeri.';
-                content.appendChild(note);
+                // content.appendChild(note); // Note disembunyikan agar lebih bersih
 
                 details.append(summary, content);
                 container.appendChild(details);
@@ -524,15 +517,17 @@
                     invitationData.images.temp[key] = base64Data;
 
                     // Ambil foto 1 dan 2 (gunakan yang baru atau yang lama jika ada)
-                    const p1 = invitationData.images.temp.photo1 || invitationData.images.coverSlides[0];
-                    const p2 = invitationData.images.temp.photo2 || invitationData.images.coverSlides[1];
+                    const p1 = invitationData.images.temp.photo1 || (invitationData.images.coverSlides ? invitationData.images.coverSlides[0] : '');
+                    const p2 = invitationData.images.temp.photo2 || (invitationData.images.coverSlides ? invitationData.images.coverSlides[1] : '');
 
                     // LOGIKA DUPLIKASI:
-                    // Cover Slides (3 slot): [P1, P2, P1]
-                    invitationData.images.coverSlides = [p1, p2, p1];
-                    
-                    // Moments (5 slot): [P1, P2, P1, P2, P1]
-                    invitationData.images.moments = [p1, p2, p1, p2, p1];
+                    // Hanya update jika properti ini ada di data asli
+                    if (invitationData.images.coverSlides) {
+                        invitationData.images.coverSlides = [p1, p2, p1];
+                    }
+                    if (invitationData.images.moments) {
+                        invitationData.images.moments = [p1, p2, p1, p2, p1];
+                    }
 
                     // Update Favicon & OG Image pakai P1
                     invitationData.images.favicon = p1;
@@ -619,7 +614,7 @@
                     invitationData = {};
                     originalHtml = '';
                     outputIframe.srcdoc = '';
-                    formContainer.innerHTML = '<div class="panel-header" style="padding:15px 0;"><h2>2. Panel Editor</h2></div><div class="status-message">Silakan pilih template di atas untuk memulai.</div>';
+                    formContainer.innerHTML = '<div class="panel-header" style="padding:15px 0;"><h2>2. Panel Editor</h2></div><div class="status-message">Pilih template di atas untuk mulai mengedit konten undangan Anda.</div>';
                 }
             };
 
