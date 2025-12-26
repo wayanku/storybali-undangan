@@ -1139,7 +1139,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         if (serviceName === 'Buat Undangan Mandiri') {
-            window.location.href = 'buat-undangan.html';
+            window.location.href = 'buat undangan/buat-undangan.html';
             return;
         }
 
