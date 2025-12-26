@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generator Link Undangan Profesional</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #6B7D69;
+            --primary-dark: #5A6B58;
+            --secondary-color: #B59A75;
+            --secondary-dark: #a18865;
+            --background-color: #F7F7F7;
+            --surface-color: #FFFFFF;
+            --text-color: #333333;
+            --border-color: #e0e0e0;
+            --success-color: #28a745;
+            --whatsapp-color: #25D366;
+            --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --border-radius: 12px;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 1rem;
+        }
+        
+        /* [BARU] Tombol Kembali ke Beranda */
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 2rem;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: background-color 0.2s;
+        }
+        .btn-back:hover { background-color: #e9e9e9; }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+        header h1 {
+            font-size: 2.2rem;
+            color: var(--primary-dark);
+            font-weight: 700;
+            margin: 0;
+        }
+        header p {
+            font-size: 1rem;
+            color: #666;
+            margin-top: 0.5rem;
+        }
+
+        .card {
+            background-color: var(--surface-color);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            margin-bottom: 2rem;
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .step-number {
+            background-color: var(--primary-color);
+            color: white;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 1.25rem;
+        }
+        .step-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: var(--primary-dark);
+        }
+
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group:last-child { margin-bottom: 0; }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--primary-dark);
+        }
+
+        input[type="url"],
+        textarea {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: var(--font-family);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        input[type="url"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(107, 125, 105, 0.2);
+        }
+        textarea { resize: vertical; }
+
+        .checkbox-group {
+            display: flex; gap: 0.75rem; align-items: center;
+            background-color: #f8f9fa; padding: 1rem; border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+        .checkbox-group input { transform: scale(1.2); }
+
+        #message-options-container {
+            border: 1px solid var(--secondary-color);
+            border-radius: 8px;
+            margin-top: 1rem;
+            background-color: #fdfcf9;
+            opacity: 0;
+            max-height: 0;
+            padding: 0 1.5rem;
+            overflow: hidden;
+            transition: all 0.4s ease-in-out;
+        }
+        #message-options-container.visible {
+            opacity: 1;
+            max-height: 1000px;
+            padding: 1.5rem;
+        }
+
+        .toggle-group { display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap;}
+        .toggle-group label { flex-grow: 1; }
+        .toggle-group input { display: none; }
+        .toggle-group span {
+            display: block; text-align: center;
+            background-color: #f0f0f0; border: 1px solid var(--border-color);
+            padding: 0.6rem 1rem; border-radius: 6px; cursor: pointer;
+            font-weight: 500; transition: all 0.2s;
+        }
+        .toggle-group input:checked + span {
+            background-color: var(--primary-color); color: white;
+            border-color: var(--primary-color); box-shadow: var(--shadow-sm);
+        }
+
+        .btn-submit {
+            width: 100%; background-color: var(--primary-color); color: white;
+            border: none; padding: 1rem; border-radius: 8px;
+            font-size: 1.1rem; font-weight: 600; cursor: pointer;
+            transition: background-color 0.2s, transform 0.2s;
+        }
+        .btn-submit:hover { background-color: var(--primary-dark); transform: translateY(-2px); }
+
+        hr { border: none; height: 1px; background-color: var(--border-color); margin: 2.5rem 0; }
+
+        .result-card {
+            background-color: var(--surface-color);
+            border-radius: var(--border-radius);
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+            /* [BARU] Animasi saat muncul */
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInResult 0.5s ease-out forwards;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .result-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        @keyframes fadeInResult {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* [DIUBAH] Body kartu menjadi kontainer utama */
+        .result-card-body { 
+            padding: 1.5rem; 
+            display: flex;
+            flex-direction: column;
+            gap: 1rem; /* Jarak antar bagian */
+        }
+
+        /* [BARU] Style untuk Info Tamu yang dipersonalisasi */
+        .guest-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.25rem 1.5rem;
+            background: linear-gradient(to right, #f8fafc, #fff);
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .guest-avatar {
+            width: 48px; height: 48px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; font-weight: 600;
+            color: #1e293b; flex-shrink: 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            text-transform: uppercase;
+        }
+        .guest-details { flex: 1; }
+        .guest-name {
+            font-size: 1.15rem; font-weight: 700; color: var(--text-color); margin: 0;
+        }
+        .guest-label {
+            font-size: 0.85rem; color: #64748b; margin-top: 2px;
+        }
+
+        .link-container {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            font-family: monospace;
+            font-size: 0.9rem;
+            color: #475569;
+            word-break: break-all;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .message-preview {
+            white-space: pre-wrap;
+            background-color: #fffbeb;
+            color: #92400e;
+            border: 1px solid #fcd34d;
+            padding: 1rem;
+            border-radius: 8px;
+            max-height: 150px;
+            overflow-y: auto;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+        }
+        
+        .btn-action {
+            flex: 1;
+            display: inline-flex; align-items: center; justify-content: center;
+            gap: 0.5rem; text-decoration: none;
+            border: none; padding: 0.75rem 1rem; border-radius: 8px;
+            cursor: pointer; font-weight: 600; font-size: 0.9rem;
+            transition: all 0.2s;
+            min-width: 120px;
+        }
+        .btn-action:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+        
+        .btn-copy-link { background-color: #e2e8f0; color: #1e293b; }
+        .btn-copy-link:hover { background-color: #cbd5e1; }
+        
+        .btn-copy-msg { background-color: #ffedd5; color: #9a3412; }
+        .btn-copy-msg:hover { background-color: #fed7aa; }
+        
+        .btn-whatsapp { background-color: var(--whatsapp-color); color: white; }
+        .btn-whatsapp:hover { background-color: #1da851; }
+        
+        .btn-action.copied { background-color: var(--success-color); color: white; }
+        .btn-icon-only { background: none; border: none; cursor: pointer; color: var(--primary-color); padding: 4px; border-radius: 4px; transition: background 0.2s; }
+        .btn-icon-only:hover { background-color: #e2e8f0; }
+        .btn-icon-only.copied { color: var(--success-color); }
+        
+        /* Aturan untuk Mobile */
+        @media (max-width: 768px) {
+            body { padding: 0.5rem; }
+            header h1 { font-size: 1.8rem; }
+            header p { font-size: 0.9rem; }
+            .card { padding: 1rem; }
+            .step-header h2 { font-size: 1.2rem; }
+            .step-number { width: 2rem; height: 2rem; font-size: 1rem;}
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Generator Pesan Undangan</h1>
+            <p>Buat link dan pesan undangan personal untuk tamu Anda dengan cepat.</p>
+        </header>
+
+        <form id="generator-form">
+            <section class="card">
+                <div class="step-header">
+                    <span class="step-number">1</span>
+                    <h2>Informasi Dasar</h2>
+                </div>
+                <div class="form-group">
+                    <label for="base-url">URL Undangan Dasar</label>
+                    <input type="url" id="base-url" placeholder="Contoh: https://undangan-saya.com/" required>
+                </div>
+                <div class="form-group">
+                    <label for="guest-list">Daftar Nama Tamu (Satu per baris)</label>
+                    <textarea id="guest-list" rows="5" placeholder="I Gede Putra&#10;Keluarga Bapak Made&#10;John & Jane" required></textarea>
+                </div>
+            </section>
+            
+            <section class="card">
+                <div class="step-header">
+                    <span class="step-number">2</span>
+                    <h2>Opsi Kata Pengantar</h2>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="include-message" style="transform: scale(1.2);">
+                    <label for="include-message">Sertakan Kata Pengantar Otomatis</label>
+                </div>
+                <div id="message-options-container">
+                    <div class="form-group">
+                        <label>Pilih Jenis Acara</label>
+                        <div class="toggle-group" id="event-type-selector">
+                           <label><input type="radio" name="event-type" value="pernikahan" checked><span>Pernikahan</span></label>
+                           <label><input type="radio" name="event-type" value="metatah"><span>Metatah</span></label>
+                           <label><input type="radio" name="event-type" value="tigabulanan"><span>Tiga Bulanan</span></label>
+                           <label><input type="radio" name="event-type" value="ultah"><span>Ulang Tahun</span></label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Pilih Bahasa</label>
+                        <div class="toggle-group" id="lang-selector">
+                            <label><input type="radio" name="lang" value="id" checked><span>Indonesia</span></label>
+                            <label><input type="radio" name="lang" value="en"><span>English</span></label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                         <label for="message-template-preview">Template Pesan (Bisa Diedit)</label>
+                         <textarea id="message-template-preview" rows="8"></textarea>
+                    </div>
+                </div>
+            </section>
+
+            <button type="submit" class="btn-submit">Buat Link Undangan</button>
+        </form>
+        
+        <div id="results-container" style="display: none;">
+            <hr>
+            <header>
+                 <h1 style="font-size: 2rem;">Hasil Link Undangan</h1>
+            </header>
+            <div id="output-links"></div>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const templates = {
+            pernikahan: { id: `Om Swastyastu,\n\nKepada Yth. [Nama Tamu]\n\nTanpa mengurangi rasa hormat, kami mengundang bapak/ibu/saudara/i dalam acara Upacara Manusa Yadnya Pawiwahan (Pernikahan) kami.\n\nBerikut link undangan kami, untuk info selengkapnya dari acara silahkan kunjungi:\n[Link Undangan]\n\nKami sangat mengharapkan kehadiran bapak/ibu/saudara/i untuk memberikan doa restu dalam acara kami.\n\nMerupakan suatu kehormatan dan kebahagiaan bagi kami apabila anda berkenan hadir.\n\nTerima Kasih\nOm Shanti Shanti Shanti Om`, en: `Om Swastyastu,\n\nTo. [Nama Tamu]\n\nWithout reducing respect, we would like to invite you to our wedding ceremony (Pawiwahan).\n\nHere is the link to our invitation, for more details please visit:\n[Link Undangan]\n\nYour presence and blessings would mean the world to us. It is an honor and a happiness for us if you are willing to attend.\n\nThank you,\nOm Shanti Shanti Shanti Om` },
+            metatah: { id: `Om Swastyastu,\n\nKepada Yth. [Nama Tamu]\n\nAtas Asung Kertha Wara Nugraha Ida Sang Hyang Widhi Wasa, kami bermaksud mengundang Bapak/Ibu/Saudara/i untuk hadir dalam Upacara Manusa Yadnya Metatah (Potong Gigi) putra/putri kami.\n\nUntuk detail lengkap acara, silakan kunjungi tautan undangan di bawah ini:\n[Link Undangan]\n\nKehadiran serta doa restu Anda adalah anugerah yang sangat berarti bagi kami.\n\nMatur Suksma,\nOm Shanti Shanti Shanti Om`, en: `Om Swastyastu,\n\nTo. [Nama Tamu]\n\nBy the grace of God, we intend to invite you to attend the Metatah (Tooth-Filing) ceremony for our son/daughter.\n\nFor complete event details, please visit the invitation link below:\n[Link Undangan]\n\nYour presence and blessings are a very meaningful gift to us.\n\nThank you,\nOm Shanti Shanti Shanti Om` },
+            tigabulanan: { id: `Om Swastyastu,\n\nKepada Yth. [Nama Tamu]\n\nKami keluarga besar mengundang Bapak/Ibu/Saudara/i untuk turut serta memberikan doa dalam upacara Tiga Bulanan (Nyambutin) putra/putri kami.\n\nInformasi mengenai waktu dan tempat acara dapat dilihat pada link berikut:\n[Link Undangan]\n\nKehadiran Anda adalah doa terbaik bagi putra/putri kami.\n\nMatur Suksma,\nOm Shanti Shanti Shanti Om`, en: `Om Swastyastu,\n\nTo. [Nama Tamu]\n\nOur family invites you to join us in prayer for the Three-Month ceremony (Tiga Bulanan) of our son/daughter.\n\nInformation regarding the time and place of the event can be found at the following link:\n[Link Undangan]\n\nYour presence is the best prayer for our child.\n\nThank you,\nOm Shanti Shanti Shanti Om` },
+            ultah: { id: `Hallo [Nama Tamu]!\n\nJangan lupa datang ya ke acara ulang tahunku! Aku berharap kamu bisa hadir untuk merayakan bersama.\n\nInfo lengkapnya ada di link di bawah ini:\n[Link Undangan]\n\nSampai ketemu!`, en: `Hi [Nama Tamu]!\n\nDon't forget to come to my birthday party! I hope you can be there to celebrate with me.\n\nAll the details are in the link below:\n[Link Undangan]\n\nSee you there!` }
+        };
+
+        const form = document.getElementById('generator-form');
+        const baseUrlInput = document.getElementById('base-url');
+        const guestListInput = document.getElementById('guest-list');
+        const includeMessageCheckbox = document.getElementById('include-message');
+        const messageOptionsContainer = document.getElementById('message-options-container');
+        const eventTypeSelector = document.getElementById('event-type-selector');
+        const langSelector = document.getElementById('lang-selector');
+        const templatePreview = document.getElementById('message-template-preview');
+        const outputDiv = document.getElementById('output-links');
+        const resultsContainer = document.getElementById('results-container');
+
+        const iconCopy = `&lt;svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"&gt;&lt;path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"&gt;&lt;/path&gt;&lt;/svg&gt;`;
+        const iconWa = `&lt;svg fill="currentColor" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"&gt;&lt;path d="M12.04 2.003C6.58 2.003 2.13 6.463 2.13 12.003c0 1.76.46 3.44 1.32 4.91l-1.44 5.25 5.37-1.41a10.27 10.27 0 004.66 1.17h.01c5.46 0 9.91-4.46 9.91-9.92 0-5.46-4.45-9.91-9.91-9.91zm0 18.23c-1.63 0-3.2-.4-4.58-1.18l-.33-.19-3.41.9.92-3.32-.21-.34a8.43 8.43 0 01-1.3-4.58c0-4.64 3.78-8.42 8.42-8.42a8.42 8.42 0 018.42 8.42c0 4.64-3.78 8.42-8.42 8.42zm4.84-5.96c-.26-.13-1.56-.77-1.8-.86-.24-.09-.42-.13-.6.13s-.68.86-.83 1.03-.3.2-.54.06c-1.02-.46-1.93-1.1-2.78-2.14-.38-.46-.07-.7.06-.94.13-.13.26-.34.4-.46.13-.13.18-.21.26-.34.09-.13.04-.26 0-.38s-.6-.71-.82-.98c-.22-.26-.45-.22-.6-.22-.16 0-.33 0-.5 0s-.42.06-.65.34c-.22.26-.86 1-.86 2.32 0 1.36.88 2.69 1 2.86.13.18 1.75 2.8 4.24 3.93.58.26 1.04.42 1.4.53.6.2 1.15.16 1.58.1.48-.06 1.56-.64 1.78-1.26.22-.6.22-1.12.18-1.26-.03-.12-.2-.2-.44-.33z"/&gt;&lt;/svg&gt;`;
+        
+        // [BARU] Fungsi untuk menghasilkan warna pastel dari sebuah string
+        function generateColor(str) {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                hash = str.charCodeAt(i) + ((hash &lt;&lt; 5) - hash);
+            }
+            const h = hash % 360;
+            return `hsl(${h}, 80%, 90%)`; // Light, pastel color
+        }
+
+        function updateTemplatePreview() {
+            const selectedEvent = document.querySelector('input[name="event-type"]:checked').value;
+            const selectedLang = document.querySelector('input[name="lang"]:checked').value;
+            templatePreview.value = templates[selectedEvent][selectedLang];
+        }
+
+        includeMessageCheckbox.addEventListener('change', function() {
+            messageOptionsContainer.classList.toggle('visible', this.checked);
+        });
+
+        eventTypeSelector.addEventListener('change', updateTemplatePreview);
+        langSelector.addEventListener('change', updateTemplatePreview);
+        
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            let baseUrl = baseUrlInput.value.trim();
+            if (!baseUrl) { alert('Mohon masukkan URL Undangan Dasar.'); return; }
+            if (!baseUrl.endsWith('/')) { baseUrl += '/'; }
+            
+            const validGuests = guestListInput.value.trim().split('\n').filter(name => name.trim() !== '');
+            if (validGuests.length === 0) { alert('Mohon masukkan setidaknya satu nama tamu.'); return; }
+
+            outputDiv.innerHTML = '';
+
+            validGuests.forEach((guestName) => {
+                const originalName = guestName.trim();
+                const nameForUrl = encodeURIComponent(originalName).replace(/%20/g, '+');
+                const finalUrl = `${baseUrl}?to=${nameForUrl}`;
+                
+                // Generate Initials & Color
+                const initials = originalName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+                const avatarColor = generateColor(originalName);
+                
+                const resultCard = document.createElement('div');
+                resultCard.className = 'result-card';
+                
+                let messageSection = '';
+                let whatsappLink = '';
+                let copyMsgBtn = '';
+
+                if (includeMessageCheckbox.checked) {
+                    const baseTemplate = templatePreview.value;
+                    const finalMessage = baseTemplate.replace(/\[Nama Tamu\]/g, originalName).replace(/\[Link Undangan\]/g, finalUrl);
+                    whatsappLink = `https://wa.me/?text=${encodeURIComponent(finalMessage)}`;
+                    
+                    messageSection = `
+                        <div>
+                            <label style="font-size:0.85rem; font-weight:600; color:#64748b; margin-bottom:0.5rem; display:block;">Preview Pesan WhatsApp:</label>
+                            <div class="message-preview">${finalMessage}</div>
+                        </div>`;
+                    
+                    copyMsgBtn = `<button type="button" class="btn-action btn-copy-msg btn-copy" data-copy-text="${finalMessage}">${iconCopy} Salin Pesan</button>`;
+                } else {
+                    whatsappLink = `https://wa.me/?text=${encodeURIComponent(finalUrl)}`;
+                }
+                
+                resultCard.innerHTML = `
+                    <div class="guest-info">
+                        <div class="guest-avatar" style="background-color: ${avatarColor};">${initials}</div>
+                        <div class="guest-details">
+                            <h3 class="guest-name">${originalName}</h3>
+                            <div class="guest-label">Tamu Undangan</div>
+                        </div>
+                    </div>
+                    <div class="result-card-body">
+                        <div>
+                            <label style="font-size:0.85rem; font-weight:600; color:#64748b; margin-bottom:0.5rem; display:block;">Link Personal:</label>
+                            <div class="link-container">
+                                <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${finalUrl}</span>
+                                <button type="button" class="btn-icon-only btn-copy" data-copy-text="${finalUrl}" title="Salin Link">${iconCopy}</button>
+                            </div>
+                        </div>
+                        ${messageSection}
+                        <div class="action-buttons">
+                            <button type="button" class="btn-action btn-copy-link btn-copy" data-copy-text="${finalUrl}">${iconCopy} Salin Link</button>
+                            ${copyMsgBtn}
+                            <a href="${whatsappLink}" target="_blank" class="btn-action btn-whatsapp">${iconWa} Kirim WA</a>
+                        </div>
+                    </div>`;
+                
+                outputDiv.appendChild(resultCard);
+            });
+
+            resultsContainer.style.display = 'block';
+            resultsContainer.scrollIntoView({ behavior: 'smooth' });
+        });
+
+        outputDiv.addEventListener('click', function(event) {
+            const button = event.target.closest('.btn-copy');
+            if (button) {
+                const textToCopy = button.dataset.copyText;
+                if (textToCopy) {
+                     navigator.clipboard.writeText(textToCopy).then(() => {
+                        const originalContent = button.innerHTML;
+                        button.innerHTML = 'Tersalin!';
+                        button.classList.add('copied');
+                        setTimeout(() => {
+                            button.innerHTML = originalContent;
+                            button.classList.remove('copied');
+                        }, 2000);
+                    }).catch(err => console.error('Gagal menyalin: ', err));
+                }
+            }
+        });
+
+        updateTemplatePreview();
+    });
+    </script>
+
+</body>
+</html>
