@@ -503,6 +503,10 @@
                     <svg viewBox="0 0 24 24"><path fill="currentColor" d="M19,3H14.82C14.4,1.84 13.3,1 12,1C10.7,1 9.6,1.84 9.18,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3M12,3A1,1 0 0,1 13,4A1,1 0 0,1 12,5A1,1 0 0,1 11,4A1,1 0 0,1 12,3M7,7H17V5H19V19H5V5H7V7M12,17L7,12L8.41,10.59L12,14.17L17.59,8.58L19,10L12,17Z" /></svg>
                     <span class="nav-text">Lacak Pesanan</span>
                 </li>
+                <li class="nav-item" onclick="switchTab('services', this)">
+                    <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6A6,6 0 0,0 6,12A6,6 0 0,0 12,18A6,6 0 0,0 18,12A6,6 0 0,0 12,6M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8Z" /></svg>
+                    <span class="nav-text">Kelola Layanan</span>
+                </li>
                 <li class="nav-item" onclick="switchTab('settings', this)">
                     <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.21,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.67 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z" /></svg>
                     <span class="nav-text">Pengaturan</span>
@@ -679,6 +683,20 @@
                 <div id="order-list" class="theme-grid" style="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));">
                     <!-- Order cards will be populated here -->
                 </div>
+            </div>
+
+            <!-- VIEW: SERVICES (KELOLA LAYANAN) -->
+            <div id="view-services" class="view-section">
+                <div class="header" style="text-align: left; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h2 style="margin: 0; font-size: 1.5rem;">Kelola Layanan</h2>
+                        <p style="margin: 5px 0 0;">Atur visibilitas menu layanan di halaman utama.</p>
+                    </div>
+                    <button onclick="saveServicesConfig()" class="btn btn-primary btn-sm" id="save-services-btn" style="width: auto; margin: 0;">
+                        Simpan Perubahan
+                    </button>
+                </div>
+                <div id="services-list" class="theme-grid" style="grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));"></div>
             </div>
 
             <!-- VIEW: SETTINGS -->
@@ -926,6 +944,18 @@
         // [BARU] Variabel untuk Pesan Pengunjung
         let VISITOR_CONFIG = { text: '', active: false };
         let ordersData = []; // [BARU] Menyimpan data pesanan
+        // [BARU] Data Layanan Default (Sama seperti di main.js)
+        const SERVICES_DATA = [
+            { id: 'Wedding Organizer', label: 'Jasa WO', icon: '<path d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14M12,2A6,6 0 0,0 6,8A6,6 0 0,0 12,14A6,6 0 0,0 18,8A6,6 0 0,0 12,2M12,16C9.97,16 7.14,16.91 6.34,18H17.66C16.86,16.91 14.03,16 12,16Z" />', color: '#FF5722', bg: '#FFF3E0' },
+            { id: 'Fotografer', label: 'Fotografer', icon: '<path d="M4,4H7L9,2H15L17,4H20A2,2 0 0,1 22,6V18A2,2 0 0,1 20,20H4A2,2 0 0,1 2,18V6A2,2 0 0,1 4,4M12,7A5,5 0 0,0 7,12A5,5 0 0,0 12,17A5,5 0 0,0 17,12A5,5 0 0,0 12,7M12,9A3,3 0 0,1 15,12A3,3 0 0,1 12,15A3,3 0 0,1 9,12A3,3 0 0,1 12,9Z" />', color: '#2196F3', bg: '#E3F2FD' },
+            { id: 'MUA & Busana', label: 'MUA & Rias', icon: '<path d="M12,2C13.11,2 14,2.89 14,4V8H10V4C10,2.89 10.89,2 12,2M13.53,10H10.47C8.5,10 6.79,11.37 6.34,13.29L6.12,14.23C5.89,15.21 6.63,16.13 7.63,16.13H16.37C17.37,16.13 18.11,15.21 17.88,14.23L17.66,13.29C17.21,11.37 15.5,10 13.53,10M19,18H5V22H19V18Z" />', color: '#E91E63', bg: '#FCE4EC' },
+            { id: 'Sewa Tenda', label: 'Sewa Tenda', icon: '<path d="M12,3L2,12H5V20H19V12H22L12,3M12,7.7C14.1,7.7 15.8,9.4 15.8,11.5C15.8,14.1 12,17.5 12,17.5C12,17.5 8.2,14.1 8.2,11.5C8.2,9.4 9.9,7.7 12,7.7Z" />', color: '#4CAF50', bg: '#E8F5E9' },
+            { id: 'Dekorasi', label: 'Dekorasi', icon: '<path d="M12,2L14.5,8.5L21,9.8L16.5,14.5L17.3,21L12,17.8L6.7,21L7.5,14.5L3,9.8L9.5,8.5L12,2M12,5.8L10.4,10L6.1,10.6L9.3,13.6L8.4,17.8L12,15.7L15.6,17.8L14.7,13.6L17.9,10.6L13.6,10L12,5.8Z" />', color: '#9C27B0', bg: '#F3E5F5' },
+            { id: 'Catering', label: 'Catering', icon: '<path d="M11,9H9V2H7V9H5V2H3V9C3,11.12 4.66,12.84 6.75,12.97V22H9.25V12.97C11.34,12.84 13,11.12 13,9V2H11V9M16,6V14H18.5V22H21V2C18.24,2 16,4.24 16,6Z" />', color: '#FF9800', bg: '#FFF3E0' },
+            { id: 'Sewa Mobil', label: 'Sewa Mobil', icon: '<path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5H6.5C5.84 5 5.28 5.42 5.08 6.01L3 12V20C3 20.55 3.45 21 4 21H5C5.55 21 6 20.55 6 20V19H18V20C18 20.55 18.45 21 19 21H20C20.55 21 21 20.55 21 20V12L18.92 6.01M6.5 16C5.67 16 5 15.33 5 14.5C5 13.67 5.67 13 6.5 13C7.33 13 8 13.67 8 14.5C8 15.33 7.33 16 6.5 16M17.5 16C16.67 16 16 15.33 16 14.5C16 13.67 16.67 13 17.5 13C18.33 13 19 13.67 19 14.5C19 15.33 18.33 16 17.5 16M5 11L6.5 6.5H17.5L19 11H5Z" />', color: '#607D8B', bg: '#ECEFF1' },
+            { id: 'Lainnya', label: 'Lainnya', icon: '<path d="M4,4H8V8H4V4M10,4H14V8H10V4M16,4H20V8H16V4M4,10H8V14H4V10M10,10H14V14H10V10M16,10H20V14H16V10M4,16H8V20H4V16M10,16H14V20H10V16M16,16H20V20H16V16Z" />', color: '#795548', bg: '#EFEBE9' }
+        ];
+        let servicesConfig = []; // Menyimpan status visibilitas dari sheet
         let editingOrderOriginalName = null; // [BARU] Menyimpan ID asli saat edit pesanan untuk mencegah duplikasi
 
         // [BARU] Variable untuk Auto-Update
@@ -994,6 +1024,15 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data && data.length > 0) {
+                        // [OPTIMASI] Cek apakah data berubah sebelum memproses ulang
+                        const currentCache = localStorage.getItem('catalogCache');
+                        const newDataString = JSON.stringify(data);
+                        
+                        if (isBackground && currentCache === newDataString) {
+                            // Data tidak berubah, tidak perlu re-render (tampilan aman)
+                            return; 
+                        }
+
                         // Sinkronisasi Password
                         const configRow = data.find(row => row.category === 'ADMIN_CONFIG' && row.type === 'PASSWORD');
                         if (configRow && configRow.themeName) {
@@ -1002,7 +1041,7 @@
                         }
 
                         // Simpan cache & proses data
-                        localStorage.setItem('catalogCache', JSON.stringify(data));
+                        localStorage.setItem('catalogCache', newDataString);
                         processCatalogData(data);
                         
                         if (!isBackground) {
@@ -1013,7 +1052,7 @@
                 .catch(err => console.log("Gagal load data (mungkin offline) atau menggunakan cache."));
         }
 
-        // [BARU] Fungsi Auto Update (Polling setiap 5 detik)
+        // [BARU] Fungsi Auto Update (Polling setiap 30 detik)
         function startAutoUpdate() {
             if (autoUpdateInterval) clearInterval(autoUpdateInterval);
             autoUpdateInterval = setInterval(() => {
@@ -1022,7 +1061,7 @@
                 if (!isModalOpen) {
                     loadData(true); // true = mode background (silent update)
                 }
-            }, 5000); // Update setiap 5 detik
+            }, 30000); // Update setiap 30 detik (diperlambat dari 5 detik)
         }
 
         function handleLogin() {
@@ -1031,6 +1070,7 @@
                 document.getElementById('login-section').classList.add('hidden');
                 document.getElementById('app-layout').classList.remove('hidden');
                 updateStats(); // Hitung statistik saat login
+                renderServicesAdmin(); // [BARU] Render list layanan
                 renderOrderList(); // [BARU] Render list pesanan
                 updateCategoryDropdown();
                 renderThemeGrid();
@@ -1144,6 +1184,9 @@
                 if (row.category === 'ORDERS') {
                     ordersData.push(row);
                     return;
+                } else if (row.category === 'ADMIN_SERVICES') {
+                    servicesConfig.push(row);
+                    return;
                 }
 
                 if (!newCatalogData[row.category]) {
@@ -1158,6 +1201,7 @@
             catalogData = newCatalogData;
             updateStats();
             updateCategoryDropdown(); // Update dropdown saat data berubah
+            renderServicesAdmin(); // Update tampilan layanan
             renderOrderList(); // Update tampilan pesanan
             renderThemeGrid();
         }
@@ -1487,6 +1531,79 @@
                     if(data.status === 'success') showToast('Pesanan dihapus dari server.', 'success');
                 })
                 .catch(e => console.error("Gagal hapus:", e));
+        }
+
+        // [BARU] Fungsi Render List Layanan di Admin
+        function renderServicesAdmin() {
+            const container = document.getElementById('services-list');
+            container.innerHTML = '';
+
+            SERVICES_DATA.forEach(service => {
+                // Cek config dari sheet
+                const config = servicesConfig.find(row => row.themeName === service.id);
+                const isVisible = config ? (String(config.visible) !== 'false') : true;
+
+                const card = document.createElement('div');
+                card.className = 'theme-card';
+                card.style.flexDirection = 'row';
+                card.style.alignItems = 'center';
+                card.style.padding = '15px';
+                card.style.gap = '15px';
+                
+                card.innerHTML = `
+                    <div style="width:40px; height:40px; border-radius:10px; background:${service.bg}; color:${service.color}; display:flex; align-items:center; justify-content:center;">
+                        <svg style="width:24px;height:24px;fill:currentColor" viewBox="0 0 24 24">${service.icon}</svg>
+                    </div>
+                    <div style="flex:1;">
+                        <h4 style="margin:0; font-size:1rem;">${service.label}</h4>
+                        <span style="font-size:0.8rem; color:var(--secondary-text);">${service.id}</span>
+                    </div>
+                    <label class="switch" style="position:relative; display:inline-block; width:40px; height:24px;">
+                        <input type="checkbox" class="service-toggle" data-id="${service.id}" ${isVisible ? 'checked' : ''} style="opacity:0; width:0; height:0;">
+                        <span class="slider round" style="position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0; background-color:#ccc; transition:.4s; border-radius:24px;"></span>
+                    </label>
+                    <style>
+                        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+                        input:checked + .slider { background-color: var(--accent-color); }
+                        input:checked + .slider:before { transform: translateX(16px); }
+                    </style>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // [BARU] Fungsi Simpan Konfigurasi Layanan
+        async function saveServicesConfig() {
+            const btn = document.getElementById('save-services-btn');
+            const originalText = btn.textContent;
+            btn.textContent = 'Menyimpan...';
+            btn.disabled = true;
+
+            const toggles = document.querySelectorAll('.service-toggle');
+            let count = 0;
+
+            for (const toggle of toggles) {
+                const serviceId = toggle.dataset.id;
+                const isVisible = toggle.checked;
+
+                const formData = {
+                    action: 'save',
+                    category: 'ADMIN_SERVICES',
+                    type: 'CONFIG',
+                    themeName: serviceId,
+                    visible: isVisible,
+                    image: '-', previewUrl: '-', price: 0, originalPrice: 0, discount: '-', label: '-'
+                };
+
+                await fetch(GOOGLE_SHEET_API_URL, { method: 'POST', body: JSON.stringify(formData) });
+                count++;
+            }
+
+            showToast('Konfigurasi layanan berhasil disimpan!', 'success');
+            btn.textContent = originalText;
+            btn.disabled = false;
+            localStorage.removeItem('catalogCache'); // Clear cache
+            loadData(true); // Refresh data
         }
 
         // Category Management Functions
