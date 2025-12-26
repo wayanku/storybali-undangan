@@ -89,6 +89,17 @@
         .gallery-editor .add-btn:hover { background-color: var(--primary-color-dark); }
         .status-message { text-align: center; padding: 30px 20px; color: var(--secondary-color); background-color: #f8f9fa; border-radius: 8px; border: 1px dashed var(--border-color); }
         
+        /* Template Selection Styles */
+        .template-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; margin-bottom: 20px; }
+        .template-card { background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; cursor: pointer; transition: all 0.2s; }
+        .template-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-sm); border-color: var(--primary-color); }
+        .template-card.active { border: 2px solid var(--primary-color); box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15); }
+        .template-img-box { width: 100%; height: 80px; background-color: #f8f9fa; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .template-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
+        .template-card:hover .template-img { transform: scale(1.05); }
+        .template-info { padding: 8px 5px; text-align: center; border-top: 1px solid var(--border-color); }
+        .template-name { font-size: 0.8rem; font-weight: 600; color: var(--text-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        
         /* Tablet Layout */
         @media (max-width: 1200px) {
             body, html { overflow: auto; }
@@ -100,19 +111,23 @@
 
         /* Mobile Layout */
         @media (max-width: 768px) {
-            header { flex-direction: column; gap: 15px; padding: 15px; height: auto; }
+            header { flex-direction: column; gap: 15px; padding: 15px; height: auto; align-items: stretch; }
             .main-container { height: auto; }
+            #editor-panel { flex: 1 1 auto; }
         }
     </style>
 </head>
 <body>
     <header>
         <div style="display: flex; align-items: center; gap: 10px;">
-            <a href="../index.html" style="text-decoration: none; color: inherit; font-size: 1.2rem;" title="Kembali ke Beranda">&#8592;</a>
-            <span>Editor Undangan Canggih</span>
+            <a href="../index.html" style="text-decoration: none; color: var(--secondary-color); font-size: 1.2rem; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 8px; background: #f1f5f9;" title="Kembali ke Beranda">&#8592;</a>
+            <h1 style="font-size: 1.1rem;">Editor Undangan</h1>
         </div>
         <div class="button-group">
-            <button id="preview-fullscreen-btn">Lihat Hasil Akhir</button>
+            <button id="preview-fullscreen-btn" class="primary">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                Lihat Hasil Akhir
+            </button>
             <button id="reset-btn">Reset & Mulai Ulang</button>
         </div>
     </header>
@@ -121,12 +136,27 @@
             <div class="panel-content">
                 <div id="input-container">
                     <div id="template-loader">
-                        <label style="display:block; margin-bottom:8px; font-weight:600; color:var(--secondary-color);">Pilih Template:</label>
-                        <select id="template-select" style="width:100%; padding:10px; border:1px solid #ced4da; border-radius:6px; background-color: white;">
-                            <option value="">-- Pilih Template --</option>
-                            <option value="pernikahan.html">Undangan Pernikahan</option>
-                            <option value="metatah.html">Undangan Metatah</option>
-                        </select>
+                        <label style="display:block; margin-bottom:12px; font-weight:600; color:var(--secondary-color);">Pilih Kategori Template:</label>
+                        <div class="template-grid">
+                            <div class="template-card" onclick="loadTemplate('pernikahan.html', this)">
+                                <div class="template-img-box">
+                                    <img src="https://wayanku.github.io/storybali-undangan/foto%20nikah%202,foto%20nikah1,foto%20nikah%203/foto%20pernikahann%20tema%201.webp" class="template-img" alt="Pernikahan">
+                                </div>
+                                <div class="template-info"><div class="template-name">Pernikahan</div></div>
+                            </div>
+                            <div class="template-card" onclick="loadTemplate('metatah.html', this)">
+                                <div class="template-img-box">
+                                    <img src="https://wayanku.github.io/storybali-undangan/foto%20nikah%202,foto%20nikah1,foto%20nikah%203/metatah%20tema%201.webp" class="template-img" alt="Metatah">
+                                </div>
+                                <div class="template-info"><div class="template-name">Metatah</div></div>
+                            </div>
+                            <div class="template-card" onclick="loadTemplate('ulangtahun.html', this)">
+                                <div class="template-img-box">
+                                    <img src="https://wayanku.github.io/storybali-undangan/foto%20katalog%20ulang%20tahun.jpg" class="template-img" alt="Ulang Tahun">
+                                </div>
+                                <div class="template-info"><div class="template-name">Ulang Tahun</div></div>
+                            </div>
+                        </div>
                     </div>
                     <textarea id="input-html" style="display:none;"></textarea>
                 </div>
@@ -137,7 +167,7 @@
             </div>
         </div>
         <div id="preview-panel" class="panel">
-            <div class="panel-header"><h2>3. Live Preview</h2></div>
+            <div class="panel-header"><h2>3. Pratinjau</h2></div>
             <iframe id="preview-iframe" title="Pratinjau Undangan"></iframe>
         </div>
     </div>
@@ -148,7 +178,6 @@
             const outputIframe = document.getElementById('preview-iframe');
             const formContainer = document.getElementById('dynamic-form-container');
             const resetBtn = document.getElementById('reset-btn');
-            const templateSelect = document.getElementById('template-select');
             const previewFullscreenBtn = document.getElementById('preview-fullscreen-btn');
 
             let originalHtml = '';
@@ -162,10 +191,13 @@
                 };
             };
 
-            // Fitur Pilih Template Otomatis
-            templateSelect.addEventListener('change', async (e) => {
-                const fileName = e.target.value;
+            // [BARU] Fungsi Load Template via Card
+            window.loadTemplate = async (fileName, cardElement) => {
                 if (!fileName) return;
+
+                // Update UI Active State
+                document.querySelectorAll('.template-card').forEach(el => el.classList.remove('active'));
+                if(cardElement) cardElement.classList.add('active');
 
                 try {
                     inputHtmlEl.value = 'Memuat template...';
@@ -177,7 +209,7 @@
                 } catch (err) {
                     alert('Gagal memuat template. Pastikan file ' + fileName + ' ada di folder yang sama dan Anda menggunakan Local Server (Live Server).');
                 }
-            });
+            };
             
             const processHtmlInput = () => {
                 originalHtml = inputHtmlEl.value;
@@ -215,6 +247,9 @@
                 for (const key in currentObj) {
                     const value = currentObj[key];
                     const currentPath = [...path, key];
+
+                    // [BARU] Hilangkan fitur quote dan ceremony
+                    if (key === 'quote' || key === 'ceremony') continue;
 
                     // [MODIFIKASI] Jika key adalah 'images', gunakan editor khusus
                     if (key === 'images' && path.length === 0) {
