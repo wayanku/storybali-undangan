@@ -228,6 +228,67 @@
     <div class="main-content-wrapper">
         <div class="container">
             <div id="main-menu" class="page">
+            
+            <!-- [BARU] Menu Layanan Tambahan (Ala Shopee) -->
+            <div class="service-menu-section">
+                <!-- Item 1: Wedding Organizer -->
+                <div class="service-item" onclick="handleServiceClick('Wedding Organizer')">
+                    <div class="service-icon-box" style="color: #FF5722; background-color: #FFF3E0;">
+                        <svg viewBox="0 0 24 24"><path d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14M12,2A6,6 0 0,0 6,8A6,6 0 0,0 12,14A6,6 0 0,0 18,8A6,6 0 0,0 12,2M12,16C9.97,16 7.14,16.91 6.34,18H17.66C16.86,16.91 14.03,16 12,16Z" /></svg>
+                    </div>
+                    <span class="service-label">Jasa WO</span>
+                </div>
+                <!-- Item 2: Fotografer -->
+                <div class="service-item" onclick="handleServiceClick('Fotografer')">
+                    <div class="service-icon-box" style="color: #2196F3; background-color: #E3F2FD;">
+                        <svg viewBox="0 0 24 24"><path d="M4,4H7L9,2H15L17,4H20A2,2 0 0,1 22,6V18A2,2 0 0,1 20,20H4A2,2 0 0,1 2,18V6A2,2 0 0,1 4,4M12,7A5,5 0 0,0 7,12A5,5 0 0,0 12,17A5,5 0 0,0 17,12A5,5 0 0,0 12,7M12,9A3,3 0 0,1 15,12A3,3 0 0,1 12,15A3,3 0 0,1 9,12A3,3 0 0,1 12,9Z" /></svg>
+                    </div>
+                    <span class="service-label">Fotografer</span>
+                </div>
+                <!-- Item 3: MUA & Busana -->
+                <div class="service-item" onclick="handleServiceClick('MUA & Busana')">
+                    <div class="service-icon-box" style="color: #E91E63; background-color: #FCE4EC;">
+                        <svg viewBox="0 0 24 24"><path d="M12,2C13.11,2 14,2.89 14,4V8H10V4C10,2.89 10.89,2 12,2M13.53,10H10.47C8.5,10 6.79,11.37 6.34,13.29L6.12,14.23C5.89,15.21 6.63,16.13 7.63,16.13H16.37C17.37,16.13 18.11,15.21 17.88,14.23L17.66,13.29C17.21,11.37 15.5,10 13.53,10M19,18H5V22H19V18Z" /></svg>
+                    </div>
+                    <span class="service-label">MUA & Rias</span>
+                </div>
+                <!-- Item 4: Sewa Tenda -->
+                <div class="service-item" onclick="handleServiceClick('Sewa Tenda')">
+                    <div class="service-icon-box" style="color: #4CAF50; background-color: #E8F5E9;">
+                        <svg viewBox="0 0 24 24"><path d="M12,3L2,12H5V20H19V12H22L12,3M12,7.7C14.1,7.7 15.8,9.4 15.8,11.5C15.8,14.1 12,17.5 12,17.5C12,17.5 8.2,14.1 8.2,11.5C8.2,9.4 9.9,7.7 12,7.7Z" /></svg>
+                    </div>
+                    <span class="service-label">Sewa Tenda</span>
+                </div>
+                <!-- Item 5: Dekorasi -->
+                <div class="service-item" onclick="handleServiceClick('Dekorasi')">
+                    <div class="service-icon-box" style="color: #9C27B0; background-color: #F3E5F5;">
+                        <svg viewBox="0 0 24 24"><path d="M12,2L14.5,8.5L21,9.8L16.5,14.5L17.3,21L12,17.8L6.7,21L7.5,14.5L3,9.8L9.5,8.5L12,2M12,5.8L10.4,10L6.1,10.6L9.3,13.6L8.4,17.8L12,15.7L15.6,17.8L14.7,13.6L17.9,10.6L13.6,10L12,5.8Z" /></svg>
+                    </div>
+                    <span class="service-label">Dekorasi</span>
+                </div>
+                <!-- Item 6: Catering -->
+                <div class="service-item" onclick="handleServiceClick('Catering')">
+                    <div class="service-icon-box" style="color: #FF9800; background-color: #FFF3E0;">
+                        <svg viewBox="0 0 24 24"><path d="M11,9H9V2H7V9H5V2H3V9C3,11.12 4.66,12.84 6.75,12.97V22H9.25V12.97C11.34,12.84 13,11.12 13,9V2H11V9M16,6V14H18.5V22H21V2C18.24,2 16,4.24 16,6Z" /></svg>
+                    </div>
+                    <span class="service-label">Catering</span>
+                </div>
+                <!-- Item 7: Sewa Mobil -->
+                <div class="service-item" onclick="handleServiceClick('Sewa Mobil')">
+                    <div class="service-icon-box" style="color: #607D8B; background-color: #ECEFF1;">
+                        <svg viewBox="0 0 24 24"><path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5H6.5C5.84 5 5.28 5.42 5.08 6.01L3 12V20C3 20.55 3.45 21 4 21H5C5.55 21 6 20.55 6 20V19H18V20C18 20.55 18.45 21 19 21H20C20.55 21 21 20.55 21 20V12L18.92 6.01M6.5 16C5.67 16 5 15.33 5 14.5C5 13.67 5.67 13 6.5 13C7.33 13 8 13.67 8 14.5C8 15.33 7.33 16 6.5 16M17.5 16C16.67 16 16 15.33 16 14.5C16 13.67 16.67 13 17.5 13C18.33 13 19 13.67 19 14.5C19 15.33 18.33 16 17.5 16M5 11L6.5 6.5H17.5L19 11H5Z" /></svg>
+                    </div>
+                    <span class="service-label">Sewa Mobil</span>
+                </div>
+                <!-- Item 8: Lainnya -->
+                <div class="service-item" onclick="handleServiceClick('Lainnya')">
+                    <div class="service-icon-box" style="color: #795548; background-color: #EFEBE9;">
+                        <svg viewBox="0 0 24 24"><path d="M4,4H8V8H4V4M10,4H14V8H10V4M16,4H20V8H16V4M4,10H8V14H4V10M10,10H14V14H10V10M16,10H20V14H16V10M4,16H8V20H4V16M10,16H14V20H10V16M16,16H20V20H16V16Z" /></svg>
+                    </div>
+                    <span class="service-label">Lainnya</span>
+                </div>
+            </div>
+
             <!-- Vouchers Scroll -->
             <div class="shopee-vouchers-scroll">
                 <div class="voucher-card">
@@ -518,6 +579,26 @@
                 </a>
                 <!-- Tombol untuk menutup modal -->
                 <a href="#" id="modal-close-btn" class="btn-secondary">Tutup</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- [BARU] Modal Detail Layanan (Desain Premium) -->
+    <div id="service-modal" class="modal-overlay">
+        <div class="modal-content service-modal-content">
+            <div class="service-header-bg">
+                <div class="service-icon-large" id="service-modal-icon">
+                    <!-- Icon SVG akan masuk di sini -->
+                </div>
+                <button class="close-btn-absolute" id="service-modal-close">&times;</button>
+            </div>
+            <div class="service-body">
+                <h4 id="service-modal-title">Nama Layanan</h4>
+                <p id="service-modal-desc">Deskripsi layanan...</p>
+                <button id="service-modal-chat-btn" class="btn-primary" style="width: 100%; justify-content: center;">
+                    <svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:currentColor;margin-right:8px;"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.76.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.81 3.07 1.24 4.74 1.24 5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2zm4.88 13.38c-.27.13-1.62.8-1.88.93-.25.13-.43.2-.62-.2-.18-.38-.75-1.23-.92-1.5-.17-.27-.33-.31-.62-.18-.28.13-1.25.48-1.52.58-.27.1-.54.15-.81.05-.27-.1-.58-.34-1.1-.83-.6-.55-1.15-1.23-1.32-1.61-.17-.38-.04-.58.11-.75.13-.15.28-.38.43-.51.13-.13.18-.23.28-.38.1-.15.05-.28-.02-.4-.08-.13-.75-1.8-1.02-2.46-.27-.66-.55-.57-.75-.57-.18 0-.38-.05-.58-.05s-.53.08-.81.38c-.27.3-.92.9-1.12 2.13s.23 2.3.26 2.45c.03.15.53 1.23 2.5 2.2.48.23.86.36 1.15.46.45.15.86.13 1.18.08.38-.05 1.18-.48 1.35-.93.17-.45.17-.83.12-.93-.05-.1-.18-.15-.43-.28z"/></svg>
+                    Konsultasi via WhatsApp
+                </button>
             </div>
         </div>
     </div>
