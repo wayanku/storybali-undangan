@@ -12,6 +12,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
+    
+    <!-- [BARU] Meta Tags untuk Mencegah Caching Berlebih (Agar Update Masuk) -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
 
     <!-- Favicon (ikon di tab browser) -->
     <link rel="icon" href="https://wayanku.github.io/storybali-undangan/IMG_6302%20(2).JPG" type="image/x-icon">
@@ -59,7 +64,7 @@
     </script>
 
     <!-- [PERBAIKAN] Menghubungkan file CSS eksternal -->
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=2.1">
     <style>
         /* [BARU] Style agar aplikasi terasa native (tidak bisa zoom/geser berlebih) */
         html, body {
@@ -122,6 +127,9 @@
             <h1>Storybali Undangan</h1>
             <h2>Pilih Kategori Undangan Impian Anda</h2>
         </div>
+
+        <!-- [BARU] Indikator Slide (Dots) -->
+        <div class="slider-dots" id="slider-dots-container"></div>
     </div>
     
     <!-- [BARU] Fitur Voucher & Flash Sale ala Shopee -->
@@ -230,63 +238,8 @@
             <div id="main-menu" class="page">
             
             <!-- [BARU] Menu Layanan Tambahan (Ala Shopee) -->
-            <div class="service-menu-section">
-                <!-- Item 1: Wedding Organizer -->
-                <div class="service-item" onclick="handleServiceClick('Wedding Organizer')">
-                    <div class="service-icon-box" style="color: #FF5722; background-color: #FFF3E0;">
-                        <svg viewBox="0 0 24 24"><path d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14M12,2A6,6 0 0,0 6,8A6,6 0 0,0 12,14A6,6 0 0,0 18,8A6,6 0 0,0 12,2M12,16C9.97,16 7.14,16.91 6.34,18H17.66C16.86,16.91 14.03,16 12,16Z" /></svg>
-                    </div>
-                    <span class="service-label">Jasa WO</span>
-                </div>
-                <!-- Item 2: Fotografer -->
-                <div class="service-item" onclick="handleServiceClick('Fotografer')">
-                    <div class="service-icon-box" style="color: #2196F3; background-color: #E3F2FD;">
-                        <svg viewBox="0 0 24 24"><path d="M4,4H7L9,2H15L17,4H20A2,2 0 0,1 22,6V18A2,2 0 0,1 20,20H4A2,2 0 0,1 2,18V6A2,2 0 0,1 4,4M12,7A5,5 0 0,0 7,12A5,5 0 0,0 12,17A5,5 0 0,0 17,12A5,5 0 0,0 12,7M12,9A3,3 0 0,1 15,12A3,3 0 0,1 12,15A3,3 0 0,1 9,12A3,3 0 0,1 12,9Z" /></svg>
-                    </div>
-                    <span class="service-label">Fotografer</span>
-                </div>
-                <!-- Item 3: MUA & Busana -->
-                <div class="service-item" onclick="handleServiceClick('MUA & Busana')">
-                    <div class="service-icon-box" style="color: #E91E63; background-color: #FCE4EC;">
-                        <svg viewBox="0 0 24 24"><path d="M12,2C13.11,2 14,2.89 14,4V8H10V4C10,2.89 10.89,2 12,2M13.53,10H10.47C8.5,10 6.79,11.37 6.34,13.29L6.12,14.23C5.89,15.21 6.63,16.13 7.63,16.13H16.37C17.37,16.13 18.11,15.21 17.88,14.23L17.66,13.29C17.21,11.37 15.5,10 13.53,10M19,18H5V22H19V18Z" /></svg>
-                    </div>
-                    <span class="service-label">MUA & Rias</span>
-                </div>
-                <!-- Item 4: Sewa Tenda -->
-                <div class="service-item" onclick="handleServiceClick('Sewa Tenda')">
-                    <div class="service-icon-box" style="color: #4CAF50; background-color: #E8F5E9;">
-                        <svg viewBox="0 0 24 24"><path d="M12,3L2,12H5V20H19V12H22L12,3M12,7.7C14.1,7.7 15.8,9.4 15.8,11.5C15.8,14.1 12,17.5 12,17.5C12,17.5 8.2,14.1 8.2,11.5C8.2,9.4 9.9,7.7 12,7.7Z" /></svg>
-                    </div>
-                    <span class="service-label">Sewa Tenda</span>
-                </div>
-                <!-- Item 5: Dekorasi -->
-                <div class="service-item" onclick="handleServiceClick('Dekorasi')">
-                    <div class="service-icon-box" style="color: #9C27B0; background-color: #F3E5F5;">
-                        <svg viewBox="0 0 24 24"><path d="M12,2L14.5,8.5L21,9.8L16.5,14.5L17.3,21L12,17.8L6.7,21L7.5,14.5L3,9.8L9.5,8.5L12,2M12,5.8L10.4,10L6.1,10.6L9.3,13.6L8.4,17.8L12,15.7L15.6,17.8L14.7,13.6L17.9,10.6L13.6,10L12,5.8Z" /></svg>
-                    </div>
-                    <span class="service-label">Dekorasi</span>
-                </div>
-                <!-- Item 6: Catering -->
-                <div class="service-item" onclick="handleServiceClick('Catering')">
-                    <div class="service-icon-box" style="color: #FF9800; background-color: #FFF3E0;">
-                        <svg viewBox="0 0 24 24"><path d="M11,9H9V2H7V9H5V2H3V9C3,11.12 4.66,12.84 6.75,12.97V22H9.25V12.97C11.34,12.84 13,11.12 13,9V2H11V9M16,6V14H18.5V22H21V2C18.24,2 16,4.24 16,6Z" /></svg>
-                    </div>
-                    <span class="service-label">Catering</span>
-                </div>
-                <!-- Item 7: Sewa Mobil -->
-                <div class="service-item" onclick="handleServiceClick('Sewa Mobil')">
-                    <div class="service-icon-box" style="color: #607D8B; background-color: #ECEFF1;">
-                        <svg viewBox="0 0 24 24"><path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5H6.5C5.84 5 5.28 5.42 5.08 6.01L3 12V20C3 20.55 3.45 21 4 21H5C5.55 21 6 20.55 6 20V19H18V20C18 20.55 18.45 21 19 21H20C20.55 21 21 20.55 21 20V12L18.92 6.01M6.5 16C5.67 16 5 15.33 5 14.5C5 13.67 5.67 13 6.5 13C7.33 13 8 13.67 8 14.5C8 15.33 7.33 16 6.5 16M17.5 16C16.67 16 16 15.33 16 14.5C16 13.67 16.67 13 17.5 13C18.33 13 19 13.67 19 14.5C19 15.33 18.33 16 17.5 16M5 11L6.5 6.5H17.5L19 11H5Z" /></svg>
-                    </div>
-                    <span class="service-label">Sewa Mobil</span>
-                </div>
-                <!-- Item 8: Lainnya -->
-                <div class="service-item" onclick="handleServiceClick('Lainnya')">
-                    <div class="service-icon-box" style="color: #795548; background-color: #EFEBE9;">
-                        <svg viewBox="0 0 24 24"><path d="M4,4H8V8H4V4M10,4H14V8H10V4M16,4H20V8H16V4M4,10H8V14H4V10M10,10H14V14H10V10M16,10H20V14H16V10M4,16H8V20H4V16M10,16H14V20H10V16M16,16H20V20H16V16Z" /></svg>
-                    </div>
-                    <span class="service-label">Lainnya</span>
-                </div>
+            <div class="service-menu-section" id="service-menu-container">
+                <!-- Item Layanan akan di-generate otomatis oleh JavaScript -->
             </div>
 
             <!-- Vouchers Scroll -->
@@ -376,7 +329,7 @@
             </div>
 
                 <!-- [FIX] Menambahkan h3 untuk urutan heading yang benar -->
-                <h3 style="font-size: 1.4em; font-weight: 600; margin-bottom: 25px; color: var(--primary-text);">Kategori Undangan</h3>
+                <h3 style="margin-bottom: 25px; font-weight: 800;">Kategori Undangan</h3>
                 <div id="category-grid">
                     <!-- Kartu Kategori akan di-generate oleh JavaScript -->
                     <div class="category-card skeleton">
@@ -416,6 +369,8 @@
                     <!-- Item Katalog akan di-generate oleh JavaScript -->
                 </div>
 
+                <!-- [BARU] Tombol Load More -->
+                <button id="load-more-btn" class="hidden">Muat Lebih Banyak</button>
             </div>
 
             <!-- Halaman Keranjang Belanja (Checkout) -->
