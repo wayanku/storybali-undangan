@@ -9,7 +9,8 @@
     <meta name="description" content="Storybali Undangan menyediakan undangan digital premium untuk pernikahan, metatah, ulang tahun, dan acara lainnya di Bali. Desain elegan dan modern.">
     <meta name="keywords" content="undangan digital, undangan bali, undangan pernikahan, undangan metatah, undangan online, e-invitation">
     <meta name="author" content="Storybali Undangan">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0
+    <meta name="mobile-web-app-capable" content="yes">
 
     <!-- Favicon (ikon di tab browser) -->
     <link rel="icon" href="https://wayanku.github.io/storybali-undangan/IMG_6302%20(2).JPG" type="image/x-icon">
@@ -54,6 +55,13 @@
 
     <!-- [PERBAIKAN] Menghubungkan file CSS eksternal -->
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* [BARU] Style agar aplikasi terasa native (tidak bisa zoom/geser berlebih) */
+        html, body {
+            overscroll-behavior: none;
+            overflow-x: hidden;
+        }
+    </style>
 </head>
 <body>
 
