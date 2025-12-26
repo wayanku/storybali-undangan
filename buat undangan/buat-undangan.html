@@ -1,0 +1,621 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editor Undangan Canggih</title>
+    <style>
+        :root {
+            --bg-color: #f8f9fa; --panel-bg: #ffffff; --border-color: #dee2e6;
+            --primary-color: #4a69bd; --secondary-color: #6c757d; --header-bg: #2f3542;
+            --text-color: #212529; --input-bg: #f1f3f5; --success-color: #1abc9c;
+            --bg-color: #f4f7f9;
+            --panel-bg: #ffffff;
+            --border-color: #e0e6ed;
+            --primary-color: #007bff;
+            --primary-color-dark: #0056b3;
+            --secondary-color: #6c757d;
+            --header-bg: #ffffff;
+            --header-text: #343a40;
+            --text-color: #343a40;
+            --input-bg: #ffffff;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        * { box-sizing: border-box; }
+        body, html { margin: 0; padding: 0; height: 100%; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: var(--bg-color); color: var(--text-color); overflow: hidden; }
+        header { background-color: var(--header-bg); color: white; padding: 15px 30px; font-size: 1.3rem; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+        body, html { margin: 0; padding: 0; height: 100%; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: var(--bg-color); color: var(--text-color); overflow: hidden; font-size: 16px; }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #aaa; }
+
+        header { background-color: var(--header-bg); color: var(--header-text); padding: 12px 30px; font-size: 1.2rem; font-weight: 600; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); box-shadow: var(--shadow-sm); z-index: 10; }
+        .main-container { display: flex; height: calc(100vh - 61px); width: 100%; }
+        .panel { display: flex; flex-direction: column; overflow: hidden; }
+        #editor-panel { flex: 0 0 400px; background-color: var(--panel-bg); border-right: 1px solid var(--border-color); }
+        #preview-panel { flex: 1 1 auto; padding: 20px; background-color: #e9ecef; display: flex; justify-content: center; align-items: center; }
+        .panel-header { padding: 15px 20px; border-bottom: 1px solid var(--border-color); background-color: #fdfdff; }
+        .panel-header h2 { margin: 0; font-size: 1.1rem; }
+        .panel-header { padding: 15px 20px; border-bottom: 1px solid var(--border-color); background-color: #fcfdff; }
+        .panel-header h2 { margin: 0; font-size: 1.05rem; font-weight: 600; color: var(--header-text); }
+        .panel-content { padding: 20px; overflow-y: auto; flex-grow: 1; }
+        #preview-iframe { width: 100%; max-width: 375px; height: 90%; max-height: 812px; border: 12px solid #111; border-radius: 40px; background-color: white; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        #preview-iframe { width: 100%; max-width: 375px; height: 90%; max-height: 812px; border: 12px solid #111; border-radius: 40px; background-color: white; box-shadow: var(--shadow-md); }
+
+        #input-container { display: flex; flex-direction: column; }
+        #input-html { width: 100%; height: 150px; border: 1px solid var(--border-color); border-radius: 6px; padding: 10px; font-family: 'SF Mono', 'Courier New', monospace; font-size: 0.9rem; resize: vertical; background-color: var(--input-bg); }
+        #input-html { width: 100%; height: 150px; border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; font-family: 'SF Mono', 'Courier New', monospace; font-size: 0.9rem; resize: vertical; background-color: var(--input-bg); transition: border-color 0.2s, box-shadow 0.2s; }
+        #input-html:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2); }
+        #dynamic-form-container { flex: 1 1 auto; overflow-y: auto; padding-top: 15px;}
+        .button-group { display: flex; gap: 10px; margin-top: 10px; }
+        button { padding: 8px 15px; border: none; border-radius: 6px; font-size: 0.9rem; font-weight: 500; cursor: pointer; transition: all 0.2s; }
+        button { padding: 10px 18px; border: none; border-radius: 6px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
+        #reset-btn { background-color: #e74c3c; color: white; }
+        details { border: 1px solid var(--border-color); border-radius: 6px; margin-bottom: 15px; overflow: hidden; }
+        summary { font-weight: 600; padding: 12px 15px; cursor: pointer; background-color: #f7f7f9; user-select: none; }
+        #reset-btn { background-color: var(--danger-color); color: white; }
+        #reset-btn:hover { background-color: #c82333; }
+        details { border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 15px; overflow: hidden; background-color: var(--panel-bg); transition: box-shadow 0.2s; }
+        details[open] { box-shadow: var(--shadow-sm); }
+        summary { font-weight: 600; padding: 12px 15px; cursor: pointer; background-color: #f8f9fa; user-select: none; position: relative; }
+        summary::after { content: '›'; position: absolute; right: 15px; top: 50%; transform: translateY(-50%) rotate(90deg); font-size: 1.4rem; color: var(--secondary-color); transition: transform 0.2s; }
+        details[open] > summary::after { transform: translateY(-50%) rotate(-90deg); }
+        .fieldset-content { padding: 15px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 6px; font-size: 0.9rem; color: var(--secondary-color); text-transform: capitalize; font-weight: 500;}
+        .form-group input, .form-group textarea { width: 100%; padding: 8px 12px; border: 1px solid #ced4da; border-radius: 5px; font-size: 1rem; }
+        .form-group label { display: block; margin-bottom: 8px; font-size: 0.85rem; color: var(--secondary-color); text-transform: capitalize; font-weight: 600;}
+        .form-group input[type="text"], .form-group textarea { width: 100%; padding: 10px 12px; border: 1px solid #ced4da; border-radius: 6px; font-size: 0.95rem; background-color: var(--input-bg); transition: border-color 0.2s, box-shadow 0.2s; }
+        .form-group input[type="text"]:focus, .form-group textarea:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2); }
+        .form-group input[type="color"] { padding: 0; height: 38px; border: none; background: none; }
+        .gallery-editor ul { list-style: none; padding: 0; margin: 0; }
+        .gallery-editor li { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 6px; background-color: #f8f9fa; margin-bottom: 8px; }
+        .gallery-editor li { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 6px; background-color: #f8f9fa; margin-bottom: 8px; border: 1px solid var(--border-color); }
+        .gallery-editor img { width: 40px; height: 40px; object-fit: cover; border-radius: 4px; border: 1px solid var(--border-color); }
+        .gallery-editor input { flex-grow: 1; }
+        .gallery-editor .remove-btn { background-color: #dc3545; color: white; border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-weight: bold; }
+        .gallery-editor .add-btn { width: 100%; margin-top: 10px; background-color: var(--primary-color); color: white;}
+        .status-message { text-align: center; padding: 20px; color: var(--secondary-color); }
+        .gallery-editor .remove-btn { background-color: var(--danger-color); color: white; border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-weight: bold; flex-shrink: 0; }
+        .gallery-editor .remove-btn:hover { background-color: #c82333; }
+        .gallery-editor .add-btn { width: 100%; margin-top: 10px; background-color: var(--primary-color); color: white; }
+        .gallery-editor .add-btn:hover { background-color: var(--primary-color-dark); }
+        .status-message { text-align: center; padding: 30px 20px; color: var(--secondary-color); background-color: #f8f9fa; border-radius: 8px; border: 1px dashed var(--border-color); }
+        
+        /* Tablet Layout */
+        @media (max-width: 1200px) {
+            body, html { overflow: auto; }
+            .main-container { flex-direction: column; height: auto; }
+            #editor-panel, #preview-panel { flex: 1 1 auto; border: none; }
+            #preview-panel { order: -1; padding: 20px 0; }
+            #preview-iframe { height: 667px; /* Ukuran tinggi iPhone 8 */ }
+        }
+
+        /* Mobile Layout */
+        @media (max-width: 768px) {
+            header { flex-direction: column; gap: 15px; padding: 15px; height: auto; }
+            .main-container { height: auto; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <a href="../index.html" style="text-decoration: none; color: inherit; font-size: 1.2rem;" title="Kembali ke Beranda">&#8592;</a>
+            <span>Editor Undangan Canggih</span>
+        </div>
+        <div class="button-group">
+            <button id="preview-fullscreen-btn">Lihat Hasil Akhir</button>
+            <button id="reset-btn">Reset & Mulai Ulang</button>
+        </div>
+    </header>
+    <div class="main-container">
+        <div id="editor-panel" class="panel">
+            <div class="panel-content">
+                <div id="input-container">
+                    <div id="template-loader">
+                        <label style="display:block; margin-bottom:8px; font-weight:600; color:var(--secondary-color);">Pilih Template:</label>
+                        <select id="template-select" style="width:100%; padding:10px; border:1px solid #ced4da; border-radius:6px; background-color: white;">
+                            <option value="">-- Pilih Template --</option>
+                            <option value="pernikahan.html">Undangan Pernikahan</option>
+                            <option value="metatah.html">Undangan Metatah</option>
+                        </select>
+                    </div>
+                    <textarea id="input-html" style="display:none;"></textarea>
+                </div>
+                <div id="dynamic-form-container">
+                    <div class="panel-header" style="padding:15px 0;"><h2>2. Panel Editor</h2></div>
+                    <div class="status-message">Form edit akan muncul di sini setelah kode valid ditempelkan.</div>
+                </div>
+            </div>
+        </div>
+        <div id="preview-panel" class="panel">
+            <div class="panel-header"><h2>3. Live Preview</h2></div>
+            <iframe id="preview-iframe" title="Pratinjau Undangan"></iframe>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const inputHtmlEl = document.getElementById('input-html');
+            const outputIframe = document.getElementById('preview-iframe');
+            const formContainer = document.getElementById('dynamic-form-container');
+            const resetBtn = document.getElementById('reset-btn');
+            const templateSelect = document.getElementById('template-select');
+            const previewFullscreenBtn = document.getElementById('preview-fullscreen-btn');
+
+            let originalHtml = '';
+            let invitationData = {};
+
+            const debounce = (func, delay) => {
+                let timeoutId;
+                return (...args) => {
+                    clearTimeout(timeoutId);
+                    timeoutId = setTimeout(() => func.apply(this, args), delay);
+                };
+            };
+
+            // Fitur Pilih Template Otomatis
+            templateSelect.addEventListener('change', async (e) => {
+                const fileName = e.target.value;
+                if (!fileName) return;
+
+                try {
+                    inputHtmlEl.value = 'Memuat template...';
+                    const response = await fetch(fileName);
+                    if (!response.ok) throw new Error('Gagal memuat file.');
+                    const html = await response.text();
+                    inputHtmlEl.value = html;
+                    processHtmlInput(); // Proses otomatis agar form langsung muncul
+                } catch (err) {
+                    alert('Gagal memuat template. Pastikan file ' + fileName + ' ada di folder yang sama dan Anda menggunakan Local Server (Live Server).');
+                }
+            });
+            
+            const processHtmlInput = () => {
+                originalHtml = inputHtmlEl.value;
+                if (!originalHtml) {
+                    formContainer.innerHTML = '<div class="panel-header" style="padding:15px 0;"><h2>2. Panel Editor</h2></div><div class="status-message">Silakan pilih template di atas untuk memulai.</div>';
+                    return;
+                }
+
+                const regex = /const invitationData = ({[\s\S]*?});/;
+                const match = originalHtml.match(regex);
+
+                if (!match || !match[1]) {
+                    formContainer.innerHTML = '<div class="panel-header" style="padding:15px 0;"><h2>2. Panel Editor</h2></div><div class="status-message" style="color: #e74c3c;">Error: Objek `invitationData` tidak ditemukan. Pastikan kode valid.</div>';
+                    return;
+                }
+                
+                try {
+                    invitationData = new Function(`return ${match[1]}`)();
+                    generateForm(invitationData);
+                    updatePreview();
+                    saveState();
+                } catch (e) {
+                    console.error("Error parsing invitationData:", e);
+                    formContainer.innerHTML = `<div class="status-message" style="color: #e74c3c;">Error memproses data: ${e.message}</div>`;
+                }
+            };
+            
+            const generateForm = (obj) => {
+                formContainer.innerHTML = '<div class="panel-header" style="padding:15px 0;"><h2>2. Panel Editor</h2></div>';
+                // Buat form untuk invitationData
+                buildFormRecursive(obj, formContainer);
+            };
+
+            const buildFormRecursive = (currentObj, parentEl, path = []) => {
+                for (const key in currentObj) {
+                    const value = currentObj[key];
+                    const currentPath = [...path, key];
+
+                    // [MODIFIKASI] Jika key adalah 'images', gunakan editor khusus
+                    if (key === 'images' && path.length === 0) {
+                        createCustomImageEditor(value, currentPath, parentEl);
+                        continue;
+                    }
+
+                    // [BARU] Jika key adalah 'event', gunakan editor khusus (Kalender)
+                    if (key === 'event' && path.length === 0) {
+                        createCustomEventEditor(value, currentPath, parentEl);
+                        continue;
+                    }
+
+                    if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+                        const details = document.createElement('details');
+                        details.open = true;
+                        const summary = document.createElement('summary');
+                        summary.textContent = key.replace(/([A-Z])/g, ' $1').trim();
+                        const fieldsetContent = document.createElement('div');
+                        fieldsetContent.className = 'fieldset-content';
+                        details.append(summary, fieldsetContent);
+                        parentEl.appendChild(details);
+                        buildFormRecursive(value, fieldsetContent, currentPath);
+                    } else {
+                        createFormGroup(key, value, currentPath, parentEl);
+                    }
+                }
+            };
+            
+            const createFormGroup = (key, value, path, container) => {
+                if (Array.isArray(value)) {
+                    createGalleryEditor(key, value, path, container);
+                    return;
+                }
+
+                const group = document.createElement('div');
+                group.className = 'form-group';
+                
+                const label = document.createElement('label');
+                label.textContent = key.replace(/([A-Z])/g, ' $1').trim();
+                
+                let input;
+                const useTextarea = String(value).length > 70 && !key.toLowerCase().includes('url');
+
+                if (useTextarea) {
+                    input = document.createElement('textarea');
+                    input.rows = 3;
+                } else if (key.toLowerCase().includes('color')) {
+                    input = document.createElement('input');
+                    input.type = 'color';
+                } else {
+                    input = document.createElement('input');
+                    input.type = 'text';
+                }
+
+                input.value = value;
+                input.dataset.path = path.join('.');
+                input.addEventListener('input', handleFormInput);
+
+                group.append(label, input);
+                return container.appendChild(group);
+            };
+
+            // [BARU] Editor Gambar Khusus (4 Slot Foto)
+            const createCustomImageEditor = (imagesObj, path, container) => {
+                const details = document.createElement('details');
+                details.open = true;
+                const summary = document.createElement('summary');
+                summary.textContent = "Upload Foto (Otomatis Duplikat)";
+                const content = document.createElement('div');
+                content.className = 'fieldset-content';
+
+                const inputs = [
+                    { label: 'Foto Mempelai Pria', key: 'groom' },
+                    { label: 'Foto Mempelai Wanita', key: 'bride' },
+                    { label: 'Foto Utama 1 (Sampul & Galeri)', key: 'photo1' },
+                    { label: 'Foto Utama 2 (Sampul & Galeri)', key: 'photo2' }
+                ];
+
+                inputs.forEach(item => {
+                    const group = document.createElement('div');
+                    group.className = 'form-group';
+                    
+                    const label = document.createElement('label');
+                    label.textContent = item.label;
+                    
+                    const fileInput = document.createElement('input');
+                    fileInput.type = 'file';
+                    fileInput.accept = 'image/*';
+                    
+                    // Preview kecil jika sudah ada data
+                    let previewImg = null;
+                    if (item.key === 'groom' && imagesObj.groom) previewImg = imagesObj.groom;
+                    if (item.key === 'bride' && imagesObj.bride) previewImg = imagesObj.bride;
+                    if (item.key === 'photo1' && imagesObj.coverSlides && imagesObj.coverSlides[0]) previewImg = imagesObj.coverSlides[0];
+                    
+                    const imgPreview = document.createElement('img');
+                    imgPreview.style.width = '60px';
+                    imgPreview.style.height = '60px';
+                    imgPreview.style.objectFit = 'cover';
+                    imgPreview.style.marginTop = '5px';
+                    imgPreview.style.borderRadius = '4px';
+                    imgPreview.style.display = previewImg ? 'block' : 'none';
+                    if (previewImg) imgPreview.src = previewImg;
+
+                    fileInput.addEventListener('change', (e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                            const reader = new FileReader();
+                            reader.onload = function(evt) {
+                                const base64 = evt.target.result;
+                                imgPreview.src = base64;
+                                imgPreview.style.display = 'block';
+                                handleCustomImageUpdate(item.key, base64);
+                            };
+                            reader.readAsDataURL(file);
+                        }
+                    });
+
+                    group.append(label, fileInput, imgPreview);
+                    content.appendChild(group);
+                });
+
+                const note = document.createElement('p');
+                note.style.fontSize = '0.8rem';
+                note.style.color = '#666';
+                note.style.fontStyle = 'italic';
+                note.textContent = '* Foto akan disimpan di browser Anda. Foto 1 & 2 akan diduplikasi otomatis untuk mengisi semua slot galeri.';
+                content.appendChild(note);
+
+                details.append(summary, content);
+                container.appendChild(details);
+            };
+
+            // [BARU] Editor Event Khusus (Kalender Otomatis)
+            const createCustomEventEditor = (eventObj, path, container) => {
+                const details = document.createElement('details');
+                details.open = true;
+                const summary = document.createElement('summary');
+                summary.textContent = "Detail Acara (Kalender Otomatis)";
+                const content = document.createElement('div');
+                content.className = 'fieldset-content';
+
+                // 1. Input Tanggal & Waktu
+                const groupDate = document.createElement('div');
+                groupDate.className = 'form-group';
+                const labelDate = document.createElement('label');
+                labelDate.textContent = "Tanggal & Waktu Acara";
+                const inputDate = document.createElement('input');
+                inputDate.type = 'datetime-local';
+                
+                // Coba parse nilai awal agar muncul di kalender
+                try {
+                    const d = new Date(eventObj.dateTime);
+                    if (!isNaN(d.getTime())) {
+                        // Konversi ke format datetime-local (YYYY-MM-DDTHH:mm)
+                        const offset = d.getTimezoneOffset() * 60000;
+                        const localISOTime = (new Date(d - offset)).toISOString().slice(0, 16);
+                        inputDate.value = localISOTime;
+                    }
+                } catch (e) {}
+
+                inputDate.addEventListener('input', (e) => {
+                    if (e.target.value) {
+                        handleEventUpdate(new Date(e.target.value));
+                    }
+                });
+                
+                groupDate.append(labelDate, inputDate);
+                content.appendChild(groupDate);
+
+                // 2. Lokasi
+                const groupLoc = document.createElement('div');
+                groupLoc.className = 'form-group';
+                const labelLoc = document.createElement('label');
+                labelLoc.textContent = "Lokasi Acara";
+                const inputLoc = document.createElement('textarea');
+                inputLoc.rows = 3;
+                inputLoc.value = eventObj.location || '';
+                inputLoc.addEventListener('input', (e) => {
+                    invitationData.event.location = e.target.value;
+                    updatePreviewAndSave();
+                });
+                groupLoc.append(labelLoc, inputLoc);
+                content.appendChild(groupLoc);
+
+                // 3. Google Maps
+                const groupMap = document.createElement('div');
+                groupMap.className = 'form-group';
+                const labelMap = document.createElement('label');
+                labelMap.textContent = "Link Google Maps";
+                const inputMap = document.createElement('input');
+                inputMap.type = 'text';
+                inputMap.value = eventObj.mapUrl || '';
+                inputMap.addEventListener('input', (e) => {
+                    invitationData.event.mapUrl = e.target.value;
+                    updatePreviewAndSave();
+                });
+                groupMap.append(labelMap, inputMap);
+                content.appendChild(groupMap);
+
+                details.append(summary, content);
+                container.appendChild(details);
+            };
+
+            const createGalleryEditor = (key, value, path, container) => {
+                const details = document.createElement('details');
+                details.open = true;
+                const summary = document.createElement('summary');
+                summary.textContent = key.replace(/([A-Z])/g, ' $1').trim();
+                const fieldsetContent = document.createElement('div');
+                fieldsetContent.className = 'fieldset-content gallery-editor';
+                
+                const list = document.createElement('ul');
+                
+                const renderList = () => {
+                    list.innerHTML = '';
+                    const currentArray = getObjectValueByPath(path);
+                    currentArray.forEach((url, index) => {
+                        const item = document.createElement('li');
+                        const img = document.createElement('img');
+                        img.src = url;
+                        img.onerror = () => img.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24"%3E%3Cpath fill="%23ccc" d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/%3E%3C/svg%3E'; // Placeholder on error
+                        
+                        const input = document.createElement('input');
+                        input.type = 'text';
+                        input.value = url;
+                        input.addEventListener('input', (e) => {
+                            updateObjectValueByPath([...path, index], e.target.value);
+                            img.src = e.target.value;
+                            updatePreviewAndSave();
+                        });
+
+                        const removeBtn = document.createElement('button');
+                        removeBtn.className = 'remove-btn';
+                        removeBtn.innerHTML = '&times;';
+                        removeBtn.onclick = () => {
+                            getObjectValueByPath(path).splice(index, 1);
+                            updatePreviewAndSave();
+                            renderList();
+                        };
+                        item.append(img, input, removeBtn);
+                        list.appendChild(item);
+                    });
+                };
+
+                const addBtn = document.createElement('button');
+                addBtn.className = 'add-btn';
+                addBtn.textContent = 'Tambah Gambar';
+                addBtn.onclick = () => {
+                    getObjectValueByPath(path).push('');
+                    updatePreviewAndSave();
+                    renderList();
+                };
+
+                renderList();
+                fieldsetContent.append(list, addBtn);
+                details.append(summary, fieldsetContent);
+                container.appendChild(details);
+            };
+
+            // [BARU] Logika Update Gambar Custom
+            const handleCustomImageUpdate = (key, base64Data) => {
+                // Update data spesifik
+                if (key === 'groom') {
+                    invitationData.images.groom = base64Data;
+                } else if (key === 'bride') {
+                    invitationData.images.bride = base64Data;
+                } else if (key === 'photo1' || key === 'photo2') {
+                    // Simpan sementara di properti temp jika belum ada
+                    if (!invitationData.images.temp) invitationData.images.temp = {};
+                    invitationData.images.temp[key] = base64Data;
+
+                    // Ambil foto 1 dan 2 (gunakan yang baru atau yang lama jika ada)
+                    const p1 = invitationData.images.temp.photo1 || invitationData.images.coverSlides[0];
+                    const p2 = invitationData.images.temp.photo2 || invitationData.images.coverSlides[1];
+
+                    // LOGIKA DUPLIKASI:
+                    // Cover Slides (3 slot): [P1, P2, P1]
+                    invitationData.images.coverSlides = [p1, p2, p1];
+                    
+                    // Moments (5 slot): [P1, P2, P1, P2, P1]
+                    invitationData.images.moments = [p1, p2, p1, p2, p1];
+
+                    // Update Favicon & OG Image pakai P1
+                    invitationData.images.favicon = p1;
+                    invitationData.images.ogImage = p1;
+                }
+
+                updatePreviewAndSave();
+            };
+
+            // [BARU] Logika Update Event dari Kalender
+            const handleEventUpdate = (dateObj) => {
+                const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+                const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+                const shortMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+
+                const dayName = days[dateObj.getDay()];
+                const dateNum = dateObj.getDate();
+                const monthName = months[dateObj.getMonth()];
+                const year = dateObj.getFullYear();
+                
+                const hours = String(dateObj.getHours()).padStart(2, '0');
+                const minutes = String(dateObj.getMinutes()).padStart(2, '0');
+                
+                // Update Data Undangan Otomatis
+                invitationData.event.day = dayName;
+                invitationData.event.date = String(dateNum);
+                invitationData.event.month = monthName;
+                invitationData.event.year = String(year);
+                invitationData.event.time = `${hours}.${minutes} WITA - Selesai`;
+                
+                // Update DateTime untuk Countdown (Format: Sep 29, 2025 08:00:00)
+                const shortMonth = shortMonths[dateObj.getMonth()];
+                invitationData.event.dateTime = `${shortMonth} ${dateNum}, ${year} ${hours}:${minutes}:00`;
+
+                updatePreviewAndSave();
+            };
+
+            const handleFormInput = (event) => {
+                const path = event.target.dataset.path.split('.');
+                updateObjectValueByPath(path, event.target.value);
+                updatePreviewAndSave();
+            };
+
+            const getObjectValueByPath = (path) => {
+                return path.reduce((obj, key) => obj[key], invitationData);
+            };
+
+            const updateObjectValueByPath = (path, value) => {
+                let current = invitationData;
+                for (let i = 0; i < path.length - 1; i++) {
+                    current = current[path[i]];
+                }
+                current[path[path.length - 1]] = value;
+            };
+
+            const updatePreview = () => {
+                const newObjectString = JSON.stringify(invitationData, null, 4);
+                const newScriptContent = `const invitationData = ${newObjectString};`;
+                if (originalHtml) {
+                    let updatedHtml = originalHtml.replace(/const invitationData = ({[\s\S]*?});/, newScriptContent);
+
+                    outputIframe.srcdoc = updatedHtml;
+                }
+            };
+
+            const saveState = () => {
+                localStorage.setItem('invitationEditor_html', inputHtmlEl.value);
+                localStorage.setItem('invitationEditor_data', JSON.stringify(invitationData));
+            };
+
+            const loadState = () => {
+                const savedHtml = localStorage.getItem('invitationEditor_html');
+                if (savedHtml) {
+                    inputHtmlEl.value = savedHtml;
+                    processHtmlInput();
+                }
+            };
+
+            const resetEditor = () => {
+                if (confirm('Apakah Anda yakin ingin mereset semua perubahan dan memulai ulang?')) {
+                    localStorage.removeItem('invitationEditor_html');
+                    localStorage.removeItem('invitationEditor_data');
+                    inputHtmlEl.value = '';
+                    invitationData = {};
+                    originalHtml = '';
+                    outputIframe.srcdoc = '';
+                    formContainer.innerHTML = '<div class="panel-header" style="padding:15px 0;"><h2>2. Panel Editor</h2></div><div class="status-message">Silakan pilih template di atas untuk memulai.</div>';
+                }
+            };
+
+            const openFullscreenPreview = () => {
+                if (!originalHtml) {
+                    alert("Pilih template terlebih dahulu untuk melihat hasil akhir.");
+                    return;
+                }
+
+                const newObjectString = JSON.stringify(invitationData, null, 4);
+                const newScriptContent = `const invitationData = ${newObjectString};`;
+                let updatedHtml = originalHtml.replace(/const invitationData = ({[\s\S]*?});/, newScriptContent);
+
+                const blob = new Blob([updatedHtml], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+                window.open(url, '_blank');
+            };
+
+
+            const updatePreviewAndSave = debounce(() => {
+                updatePreview();
+                saveState();
+            }, 300);
+
+            previewFullscreenBtn.addEventListener('click', openFullscreenPreview);
+            inputHtmlEl.addEventListener('paste', () => setTimeout(processHtmlInput, 50));
+            inputHtmlEl.addEventListener('input', debounce(processHtmlInput, 500));
+            resetBtn.addEventListener('click', resetEditor);
+
+            loadState();
+        });
+    </script>
+</body>
+</html>
