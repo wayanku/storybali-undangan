@@ -25,7 +25,7 @@ if (savedCart && savedCart !== '[]') {
 }
 
 // --- KONFIGURASI GLOBAL & DATA ---
-const GOOGLE_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbxYGLvrMnaYCBSUKN63lQu-lLYENsj3elkkRdAfba9B27fk35Ankty_AuNA0h3N4PVSTQ/exec';
+const GOOGLE_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbyPrxzjrltCuipal05wcAJbfUMOvg3sMn31m6IOBG8FFGpUdf2D2SJWF9bdlsmqpU9Y6Q/exec';
 let allOrdersCache = []; // Cache untuk data pesanan
 
 // --- Fungsi untuk Mengambil Data dari Google Sheets ---
