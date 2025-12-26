@@ -960,6 +960,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 notificationModal.classList.remove('active');
                 (headerCartIcon || navCartIcon).click(); 
             };
+        } else if (buttonConfig && buttonConfig.action === 'openWaService') {
+            newBtn.textContent = buttonConfig.text || 'Chat Admin';
+            newBtn.onclick = () => {
+                const message = `Halo Storybali, saya tertarik untuk tanya-tanya tentang layanan *${buttonConfig.service}*. Bisa minta info pricelist?`;
+                window.open(`https://wa.me/6285738517248?text=${encodeURIComponent(message)}`, '_blank');
+                notificationModal.classList.remove('active');
+            };
         } else {
             newBtn.textContent = 'Mengerti';
             newBtn.onclick = () => {
@@ -970,6 +977,51 @@ document.addEventListener('DOMContentLoaded', function() {
         notificationModal.classList.add('active');
         newBtn.focus();
     }
+
+    // [BARU] Handler untuk menu layanan tambahan (Service Menu)
+    window.handleServiceClick = function(serviceName) {
+        // Deskripsi untuk setiap layanan
+        const descriptions = {
+            'Wedding Organizer': "Wujudkan pernikahan impian tanpa stres! Tim WO kami siap membantu perencanaan dari A-Z agar momen spesialmu berjalan sempurna.",
+            'Fotografer': "Abadikan setiap momen berharga dengan kualitas terbaik. Fotografer profesional kami siap menangkap senyuman dan emosi di hari bahagiamu.",
+            'MUA & Busana': "Tampil memukau di hari istimewa dengan sentuhan MUA berpengalaman dan koleksi busana adat maupun modern yang elegan.",
+            'Sewa Tenda': "Tenda dekoratif berbagai ukuran untuk kenyamanan tamu undangan. Kokoh, bersih, dan estetik untuk segala cuaca.",
+            'Dekorasi': "Sulap lokasi acaramu menjadi tempat yang magis. Dekorasi pelaminan, photobooth, dan area tamu dengan desain kekinian.",
+            'Catering': "Manjakan lidah tamu undangan dengan hidangan lezat. Menu variatif, higienis, dan rasa yang tak terlupakan.",
+            'Sewa Mobil': "Kendaraan pengantin mewah dan nyaman. Siap antar jemput dengan driver profesional dan ramah.",
+            'Lainnya': "Punya kebutuhan khusus untuk acaramu? Diskusikan dengan kami, kami siap memberikan solusi terbaik!"
+        };
+
+        const modal = document.getElementById('service-modal');
+        const titleEl = document.getElementById('service-modal-title');
+        const descEl = document.getElementById('service-modal-desc');
+        const iconContainer = document.getElementById('service-modal-icon');
+        const chatBtn = document.getElementById('service-modal-chat-btn');
+        const closeBtn = document.getElementById('service-modal-close');
+
+        // Set Content
+        titleEl.textContent = serviceName;
+        descEl.textContent = descriptions[serviceName] || 'Tertarik dengan jasa ini? Hubungi kami untuk info lebih lanjut.';
+        
+        // Ambil icon dari elemen yang diklik (mencari elemen SVG yang sesuai di DOM)
+        // Kita cari elemen service-item yang memiliki onclick berisi serviceName
+        const clickedItem = document.querySelector(`.service-item[onclick*="${serviceName}"] .service-icon-box`);
+        if (clickedItem) {
+            iconContainer.innerHTML = clickedItem.innerHTML;
+        }
+
+        // Set Action Button
+        chatBtn.onclick = () => {
+            const message = `Halo Storybali, saya tertarik untuk tanya-tanya tentang layanan *${serviceName}*. Bisa minta info pricelist dan paketnya?`;
+            window.open(`https://wa.me/6285738517248?text=${encodeURIComponent(message)}`, '_blank');
+            modal.classList.remove('active');
+        };
+
+        closeBtn.onclick = () => modal.classList.remove('active');
+        
+        // Tampilkan Modal
+        modal.classList.add('active');
+    };
 
     notificationModal.addEventListener('click', (e) => {
         if (e.target === notificationModal) {
