@@ -1180,8 +1180,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function startNotificationLoop() {
-        setTimeout(showSocialProof, 15000);
-        setInterval(showSocialProof, Math.floor(Math.random() * (35000 - 20000 + 1)) + 20000);
+        setTimeout(showSocialProof, 45000); // Delay awal diperlama jadi 45 detik
+        setInterval(showSocialProof, Math.floor(Math.random() * (150000 - 90000 + 1)) + 90000); // Interval diperlama jadi 1.5 - 2.5 menit
     }
     startNotificationLoop();
 
