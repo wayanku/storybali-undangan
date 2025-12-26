@@ -43,7 +43,7 @@ let allOrdersCache = []; // Cache untuk data pesanan
 
 // [BARU] Data Master Layanan (Default)
 const SERVICES_DATA = [
-    { id: 'Wedding Organizer', label: 'Jasa WO', icon: '<path d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14M12,2A6,6 0 0,0 6,8A6,6 0 0,0 12,14A6,6 0 0,0 18,8A6,6 0 0,0 12,2M12,16C9.97,16 7.14,16.91 6.34,18H17.66C16.86,16.91 14.03,16 12,16Z" />', color: '#FF5722', bg: '#FFF3E0' },
+    { id: 'Buat Undangan Mandiri', label: 'Buat Undangan', icon: '<path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />', color: '#FF5722', bg: '#FFF3E0' },
     { id: 'Fotografer', label: 'Fotografer', icon: '<path d="M4,4H7L9,2H15L17,4H20A2,2 0 0,1 22,6V18A2,2 0 0,1 20,20H4A2,2 0 0,1 2,18V6A2,2 0 0,1 4,4M12,7A5,5 0 0,0 7,12A5,5 0 0,0 12,17A5,5 0 0,0 17,12A5,5 0 0,0 12,7M12,9A3,3 0 0,1 15,12A3,3 0 0,1 12,15A3,3 0 0,1 9,12A3,3 0 0,1 12,9Z" />', color: '#2196F3', bg: '#E3F2FD' },
     { id: 'MUA & Busana', label: 'MUA & Rias', icon: '<path d="M12,2C13.11,2 14,2.89 14,4V8H10V4C10,2.89 10.89,2 12,2M13.53,10H10.47C8.5,10 6.79,11.37 6.34,13.29L6.12,14.23C5.89,15.21 6.63,16.13 7.63,16.13H16.37C17.37,16.13 18.11,15.21 17.88,14.23L17.66,13.29C17.21,11.37 15.5,10 13.53,10M19,18H5V22H19V18Z" />', color: '#E91E63', bg: '#FCE4EC' },
     { id: 'Edit Tamu', label: 'Edit Tamu', icon: '<path d="M21.7,13.35L20.7,14.35L18.65,12.3L19.65,11.3C19.86,11.09 20.21,11.09 20.42,11.3L21.7,12.58C21.91,12.79 21.91,13.14 21.7,13.35M12,18.94L18.06,12.88L20.11,14.93L14.06,21H12V18.94M12,14C7.58,14 4,15.79 4,18V20H10V18.1L12,16.12V14M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,6A2,2 0 0,0 10,8A2,2 0 0,0 12,10A2,2 0 0,0 14,8A2,2 0 0,0 12,6Z" />', color: '#4CAF50', bg: '#E8F5E9' },
@@ -1135,6 +1135,11 @@ document.addEventListener('DOMContentLoaded', function() {
         // [PERUBAHAN] Jika service adalah 'Edit Tamu', buka halaman baru
         if (serviceName === 'Edit Tamu') {
             window.location.href = 'edit-tamu.html';
+            return;
+        }
+        
+        if (serviceName === 'Buat Undangan Mandiri') {
+            window.location.href = 'buat-undangan.html';
             return;
         }
 
