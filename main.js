@@ -25,8 +25,33 @@ if (savedCart && savedCart !== '[]') {
 }
 
 // --- KONFIGURASI GLOBAL & DATA ---
+const APP_VERSION = '2.1'; // [BARU] Versi Aplikasi (Ubah ini jika ada update besar)
+// Cek apakah versi berubah, jika ya hapus cache lama
+if (localStorage.getItem('app_version') !== APP_VERSION) {
+    console.log('Versi baru terdeteksi. Membersihkan cache...');
+    localStorage.removeItem('catalogCache'); 
+    localStorage.setItem('app_version', APP_VERSION);
+}
+
+// [BARU] Konfigurasi Paginasi Katalog
+const CATALOG_PAGE_SIZE = 6;
+let currentCatalogPage = 1;
+let currentCatalogItems = [];
+
 const GOOGLE_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbyPrxzjrltCuipal05wcAJbfUMOvg3sMn31m6IOBG8FFGpUdf2D2SJWF9bdlsmqpU9Y6Q/exec';
 let allOrdersCache = []; // Cache untuk data pesanan
+
+// [BARU] Data Master Layanan (Default)
+const SERVICES_DATA = [
+    { id: 'Wedding Organizer', label: 'Jasa WO', icon: '<path d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14M12,2A6,6 0 0,0 6,8A6,6 0 0,0 12,14A6,6 0 0,0 18,8A6,6 0 0,0 12,2M12,16C9.97,16 7.14,16.91 6.34,18H17.66C16.86,16.91 14.03,16 12,16Z" />', color: '#FF5722', bg: '#FFF3E0' },
+    { id: 'Fotografer', label: 'Fotografer', icon: '<path d="M4,4H7L9,2H15L17,4H20A2,2 0 0,1 22,6V18A2,2 0 0,1 20,20H4A2,2 0 0,1 2,18V6A2,2 0 0,1 4,4M12,7A5,5 0 0,0 7,12A5,5 0 0,0 12,17A5,5 0 0,0 17,12A5,5 0 0,0 12,7M12,9A3,3 0 0,1 15,12A3,3 0 0,1 12,15A3,3 0 0,1 9,12A3,3 0 0,1 12,9Z" />', color: '#2196F3', bg: '#E3F2FD' },
+    { id: 'MUA & Busana', label: 'MUA & Rias', icon: '<path d="M12,2C13.11,2 14,2.89 14,4V8H10V4C10,2.89 10.89,2 12,2M13.53,10H10.47C8.5,10 6.79,11.37 6.34,13.29L6.12,14.23C5.89,15.21 6.63,16.13 7.63,16.13H16.37C17.37,16.13 18.11,15.21 17.88,14.23L17.66,13.29C17.21,11.37 15.5,10 13.53,10M19,18H5V22H19V18Z" />', color: '#E91E63', bg: '#FCE4EC' },
+    { id: 'Sewa Tenda', label: 'Sewa Tenda', icon: '<path d="M12,3L2,12H5V20H19V12H22L12,3M12,7.7C14.1,7.7 15.8,9.4 15.8,11.5C15.8,14.1 12,17.5 12,17.5C12,17.5 8.2,14.1 8.2,11.5C8.2,9.4 9.9,7.7 12,7.7Z" />', color: '#4CAF50', bg: '#E8F5E9' },
+    { id: 'Dekorasi', label: 'Dekorasi', icon: '<path d="M12,2L14.5,8.5L21,9.8L16.5,14.5L17.3,21L12,17.8L6.7,21L7.5,14.5L3,9.8L9.5,8.5L12,2M12,5.8L10.4,10L6.1,10.6L9.3,13.6L8.4,17.8L12,15.7L15.6,17.8L14.7,13.6L17.9,10.6L13.6,10L12,5.8Z" />', color: '#9C27B0', bg: '#F3E5F5' },
+    { id: 'Catering', label: 'Catering', icon: '<path d="M11,9H9V2H7V9H5V2H3V9C3,11.12 4.66,12.84 6.75,12.97V22H9.25V12.97C11.34,12.84 13,11.12 13,9V2H11V9M16,6V14H18.5V22H21V2C18.24,2 16,4.24 16,6Z" />', color: '#FF9800', bg: '#FFF3E0' },
+    { id: 'Sewa Mobil', label: 'Sewa Mobil', icon: '<path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5H6.5C5.84 5 5.28 5.42 5.08 6.01L3 12V20C3 20.55 3.45 21 4 21H5C5.55 21 6 20.55 6 20V19H18V20C18 20.55 18.45 21 19 21H20C20.55 21 21 20.55 21 20V12L18.92 6.01M6.5 16C5.67 16 5 15.33 5 14.5C5 13.67 5.67 13 6.5 13C7.33 13 8 13.67 8 14.5C8 15.33 7.33 16 6.5 16M17.5 16C16.67 16 16 15.33 16 14.5C16 13.67 16.67 13 17.5 13C18.33 13 19 13.67 19 14.5C19 15.33 18.33 16 17.5 16M5 11L6.5 6.5H17.5L19 11H5Z" />', color: '#607D8B', bg: '#ECEFF1' },
+    { id: 'Lainnya', label: 'Lainnya', icon: '<path d="M4,4H8V8H4V4M10,4H14V8H10V4M16,4H20V8H16V4M4,10H8V14H4V10M10,10H14V14H10V10M16,10H20V14H16V10M4,16H8V20H4V16M10,16H14V20H10V16M16,16H20V20H16V16Z" />', color: '#795548', bg: '#EFEBE9' }
+];
 
 // --- Fungsi untuk Mengambil Data dari Google Sheets ---
 function fetchCatalogFromGoogleSheet() {
@@ -46,11 +71,14 @@ function fetchCatalogFromGoogleSheet() {
 function processCatalogData(data) {
     const newCatalogData = {};
     let visitorMessageData = null;
+    let servicesConfig = []; // [BARU] Konfigurasi layanan dari admin
     allOrdersCache = [];
 
     data.forEach(row => {
         if (row.category === 'ORDERS') {
             allOrdersCache.push(row);
+        } else if (row.category === 'ADMIN_SERVICES') { // [BARU] Ambil config layanan
+            servicesConfig.push(row);
         }
     });
 
@@ -72,6 +100,9 @@ function processCatalogData(data) {
     });
 
     catalogData = newCatalogData;
+    
+    // [BARU] Render Menu Layanan berdasarkan config
+    renderServices(servicesConfig);
     console.log("Data katalog berhasil diperbarui.");
 
     const floatContainer = document.getElementById('draggable-info-container');
@@ -94,6 +125,39 @@ function processCatalogData(data) {
     }
 }
 
+// [BARU] Fungsi Render Menu Layanan
+function renderServices(adminConfig) {
+    const container = document.getElementById('service-menu-container');
+    if (!container) return;
+    container.innerHTML = '';
+
+    SERVICES_DATA.forEach(service => {
+        // Cek apakah ada config dari admin, jika tidak ada default TRUE (tampil)
+        const config = adminConfig.find(row => row.themeName === service.id);
+        const isVisible = config ? (String(config.visible) !== 'false') : true;
+
+        if (isVisible) {
+            const item = document.createElement('div');
+            item.className = 'service-item';
+            item.onclick = () => handleServiceClick(service.id);
+            item.innerHTML = `
+                <div class="service-icon-box" style="color: ${service.color}; background-color: ${service.bg};">
+                    <svg viewBox="0 0 24 24">${service.icon}</svg>
+                </div>
+                <span class="service-label">${service.label}</span>
+            `;
+            container.appendChild(item);
+        }
+    });
+    
+    // Jika semua layanan disembunyikan, sembunyikan container agar rapi
+    if (container.children.length === 0) {
+        container.style.display = 'none';
+    } else {
+        container.style.display = 'grid';
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     
     document.addEventListener('contextmenu', function(e) {
@@ -104,6 +168,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const mainMenu = document.getElementById('main-menu');
     const topHeader = document.querySelector('.top-header');
     const themePage = document.getElementById('theme-page');
+    const loadMoreBtn = document.getElementById('load-more-btn'); // [BARU]
     const featuresWrapper = document.querySelector('.features-full-width-wrapper');
     const testimonialsSection = document.querySelector('.testimonials-section');
     const paymentMethodsSection = document.querySelector('.payment-methods-section');
@@ -138,6 +203,29 @@ document.addEventListener('DOMContentLoaded', function() {
     const checkOrderBtn = document.getElementById('check-order-btn');
     let trackInterval = null;
     let activeFormType = '';
+    
+    // [BARU] Setup Intersection Observer untuk Scroll Reveal
+    const revealObserverOptions = {
+        threshold: 0.1,
+        rootMargin: "0px 0px -30px 0px"
+    };
+    
+    const revealObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('is-visible');
+                observer.unobserve(entry.target); // Hanya animasi sekali
+            }
+        });
+    }, revealObserverOptions);
+    
+    // Fungsi helper untuk observe elemen baru
+    window.observeElements = function(elements) {
+        elements.forEach(el => {
+            el.classList.add('reveal-on-scroll');
+            revealObserver.observe(el);
+        });
+    };
 
     const orderSound = new Audio('https://github.com/wayanku/storybali-undangan/raw/main/apple-pay-sound-effect_43nu5Zaa.mp3');
     orderSound.load();
@@ -162,6 +250,7 @@ document.addEventListener('DOMContentLoaded', function() {
             categoryData.forEach((cat, index) => {
                 const card = document.createElement('div');
                 card.className = 'category-card';
+                // Hapus delay animasi CSS bawaan agar dikontrol oleh Scroll Reveal
                 card.style.animationDelay = `${index * 0.1}s`;
                 card.innerHTML = `
                     <picture class="category-card-image-wrapper">
@@ -173,6 +262,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                 `;
                 categoryGrid.appendChild(card);
+                
+                // [BARU] Tambahkan ke observer
+                window.observeElements([card]);
             });
 
             document.querySelectorAll('.category-button').forEach(button => {
@@ -209,6 +301,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     <span class="feature-name">${feature.name}</span>
                 `;
                 featuresGrid.appendChild(item);
+                
+                // [BARU] Tambahkan ke observer
+                window.observeElements([item]);
             });
         }, 800);
     }
@@ -252,6 +347,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     <p class="quote">${testimonial.quote}</p>
                 `;
                 testimonialsGrid.appendChild(card);
+                
+                // [BARU] Tambahkan ke observer
+                window.observeElements([card]);
             });
 
             const originalCards = Array.from(testimonialsGrid.children);
@@ -275,11 +373,29 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     let currentSlideIndex = 0;
+    // [BARU] Inisialisasi Dots
+    const dotsContainer = document.getElementById('slider-dots-container');
+    if (dotsContainer && coverSlides.length > 0) {
+        coverSlides.forEach((_, index) => {
+            const dot = document.createElement('div');
+            dot.className = `slider-dot ${index === 0 ? 'active' : ''}`;
+            dotsContainer.appendChild(dot);
+        });
+    }
+
     function changeSlide() {
         if (coverSlides.length === 0) return;
+        
+        // Hapus active dari slide & dot lama
         coverSlides[currentSlideIndex].classList.remove('active-slide');
+        const dots = document.querySelectorAll('.slider-dot');
+        if(dots.length > 0) dots[currentSlideIndex].classList.remove('active');
+
         currentSlideIndex = (currentSlideIndex + 1) % coverSlides.length;
+        
+        // Tambah active ke slide & dot baru
         coverSlides[currentSlideIndex].classList.add('active-slide');
+        if(dots.length > 0) dots[currentSlideIndex].classList.add('active');
     }
     setInterval(changeSlide, 5000);
 
@@ -319,6 +435,7 @@ document.addEventListener('DOMContentLoaded', function() {
             socialFloat.classList.toggle('hidden', isCartPage || isFormPage);
 
             if (isThemePage) {
+                currentCatalogPage = 1; // Reset halaman saat buka kategori baru
                 generateCatalog();
             } else if (!isCartPage && !isThemePage) {
                 featuresWrapper.classList.add('animating-in');
@@ -335,14 +452,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function generateCatalog() {
         const isWithoutPhoto = btnWithoutPhoto.classList.contains('active');
-        const defaultFinalPrice = isWithoutPhoto ? 'Rp 30.000' : 'Rp 50.000';
-        const defaultOriginalPrice = isWithoutPhoto ? 'Rp 60.000' : 'Rp 100.000';
-        const defaultDiscount = '50%';
         
-        generateSkeletonCatalog(4);
+        // [DIUBAH] Hanya tampilkan skeleton saat halaman pertama
+        if (currentCatalogPage === 1) {
+            generateSkeletonCatalog(CATALOG_PAGE_SIZE);
+        }
 
         setTimeout(() => {
-            generateItems(isWithoutPhoto, defaultFinalPrice, defaultOriginalPrice, defaultDiscount);
+            generateItems(isWithoutPhoto);
         }, 500);
     }
     
@@ -371,7 +488,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    function generateItems(isWithoutPhoto, defaultFinalPrice, defaultOriginalPrice, defaultDiscount) {
+    function generateItems(isWithoutPhoto) {
         const categoryName = themeTitle.textContent.replace('Pilihan Tema ', '');
         const categoryThemeData = catalogData[categoryName] || [];
         const themeType = isWithoutPhoto ? 'withoutPhoto' : 'withPhoto';
@@ -379,45 +496,54 @@ document.addEventListener('DOMContentLoaded', function() {
         const themes = themeSet ? themeSet.themes : [];
         
         const itemsWithId = themes.map((theme, index) => {
-            const itemPrice = theme.price 
-                ? (typeof theme.price === 'number' ? `Rp ${theme.price.toLocaleString('id-ID')}` : theme.price) 
-                : defaultFinalPrice;
-            
-            const itemOriginalPrice = theme.originalPrice 
-                ? (typeof theme.originalPrice === 'number' ? `Rp ${theme.originalPrice.toLocaleString('id-ID')}` : theme.originalPrice) 
-                : defaultOriginalPrice;
-
-            let displayDiscount = theme.discount || defaultDiscount;
-            if (!isNaN(displayDiscount) && Number(displayDiscount) <= 1 && Number(displayDiscount) > 0) {
-                displayDiscount = Math.round(Number(displayDiscount) * 100) + "%";
-            }
-
             return {
                 ...theme,
                 id: `${categoryName.replace(/\s/g, '-')}-${themeType}-${index}`,
                 themeName: theme.themeName || `${isWithoutPhoto ? 'Tanpa Foto' : 'Tema'} ${index + 1}`,
                 categoryName: categoryName,
-                price: itemPrice,
-                originalPriceDisplay: itemOriginalPrice,
-                discount: displayDiscount
             };
         });
 
         const searchTerm = searchInput.value.toLowerCase();
-        const filteredItems = itemsWithId.filter(item => {
+        currentCatalogItems = itemsWithId.filter(item => {
             const isHidden = item.visible === false || String(item.visible).trim().toLowerCase() === 'false';
             return item.themeName.toLowerCase().includes(searchTerm) && !isHidden;
         });
 
-        const skeletonItems = catalogGrid.querySelectorAll('.catalog-item');
-        skeletonItems.forEach(item => {
-            item.style.opacity = '0';
-        });
+        // [DIUBAH] Logika paginasi
+        const itemsToRender = currentCatalogItems.slice(0, currentCatalogPage * CATALOG_PAGE_SIZE);
 
-        filteredItems.forEach((theme, index) => {
-            const { id, themeName, price, originalPriceDisplay, discount } = theme;
+        if (currentCatalogPage === 1) {
+            catalogGrid.innerHTML = ''; // Bersihkan hanya di halaman pertama
+        }
+
+        // Tampilkan/sembunyikan tombol "Load More"
+        if (itemsToRender.length < currentCatalogItems.length) {
+            loadMoreBtn.classList.remove('hidden');
+        } else {
+            loadMoreBtn.classList.add('hidden');
+        }
+
+        // Render item untuk halaman saat ini
+        const startIndex = (currentCatalogPage - 1) * CATALOG_PAGE_SIZE;
+        const newItems = itemsToRender.slice(startIndex);
+
+        newItems.forEach((theme, index) => {
+            const { id, themeName } = theme;
+            const price = theme.price ? `Rp ${parseInt(theme.price).toLocaleString('id-ID')}` : 'Rp 50.000';
+            const originalPriceDisplay = theme.originalPrice ? `Rp ${parseInt(theme.originalPrice).toLocaleString('id-ID')}` : 'Rp 100.000';
+            const discount = theme.discount || '50%';
+
             const labelHtml = theme.label ? `<span class="catalog-item-label">${theme.label}</span>` : '';
             const previewTagHtml = theme.previewUrl ? `<span class="catalog-item-preview-tag">Tersedia</span>` : `<span class="catalog-item-preview-tag coming-soon-tag">Coming Soon</span>`;
+
+            // [BARU] Cek status di keranjang
+            const isInCart = shoppingCart.some(cartItem => cartItem.id === id);
+
+            const orderBtnClass = isInCart ? 'btn-primary add-to-cart-btn added' : 'btn-primary add-to-cart-btn';
+            const orderBtnText = isInCart ? 'Ditambahkan ✓' : 'Order';
+            const orderBtnDisabled = isInCart ? 'disabled' : '';
+            const orderBtnSvg = isInCart ? '' : '<svg viewBox="0 0 24 24"><path d="M17,18C15.89,18 15,18.89 15,20A2,2 0 0,0 17,22A2,2 0 0,0 19,20C19,18.89 18.1,18 17,18M1,2V4H3L6.6,11.59L5.24,14.04C5.09,14.32 5,14.65 5,15A2,2 0 0,0 7,17H19V15H7.42A0.25,0.25 0 0,1 7.17,14.75L7.2,14.64L8.1,13H15.55C16.3,13 16.96,12.58 17.3,11.97L20.88,5.5C20.95,5.34 21,5.17 21,5A1,1 0 0,0 20,4H5.21L4.27,2H1Z" /></svg>';
 
             let ratingHtml = '';
             if (theme.rating) {
@@ -443,6 +569,7 @@ document.addEventListener('DOMContentLoaded', function() {
             item.className = 'catalog-item';
             item.style.animationDelay = `${index * 0.1}s`;
             item.style.opacity = '0';
+            item.dataset.itemId = id; // [BARU] Tambahkan ID ke elemen untuk referensi
 
             item.innerHTML = `
                 <div class="catalog-image-wrapper">
@@ -453,7 +580,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="catalog-item-details">
                     <div class="catalog-item-header">
                         <h4 class="catalog-item-title">
-                            <svg viewBox="0 0 24 24"><path d="M17,18C15.89,18 15,18.89 15,20A2,2 0 0,0 17,22A2,2 0 0,0 19,20C19,18.89 18.1,18 17,18M1,2V4H3L6.6,11.59L5.24,14.04C5.09,14.32 5,14.65 5,15A2,2 0 0,0 7,17H19V15H7.42A0.25,0.25 0 0,1 7.17,14.75L7.2,14.64L8.1,13H15.55C16.3,13 16.96,12.58 17.3,11.97L20.88,5.5C20.95,5.34 21,5.17 21,5A1,1 0 0,0 20,4H5.21L4.27,2H1Z" /></svg>
                             <span>${themeName}</span>
                         </h4>
                     </div>
@@ -467,22 +593,18 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                     <div class="catalog-item-actions">
                         ${viewButtonHtml}
-                        <button class="btn-primary add-to-cart-btn" data-item-id="${id}"><svg viewBox="0 0 24 24"><path d="M17,18C15.89,18 15,18.89 15,20A2,2 0 0,0 17,22A2,2 0 0,0 19,20C19,18.89 18.1,18 17,18M1,2V4H3L6.6,11.59L5.24,14.04C5.09,14.32 5,14.65 5,15A2,2 0 0,0 7,17H19V15H7.42A0.25,0.25 0 0,1 7.17,14.75L7.2,14.64L8.1,13H15.55C16.3,13 16.96,12.58 17.3,11.97L20.88,5.5C20.95,5.34 21,5.17 21,5A1,1 0 0,0 20,4H5.21L4.27,2H1Z" /></svg>Order</button>
+                        <button class="${orderBtnClass}" data-item-id="${id}" ${orderBtnDisabled}>${orderBtnSvg}${orderBtnText}</button>
                     </div>
                 </div>
             `;
-            if (index < skeletonItems.length) {
-                catalogGrid.replaceChild(item, skeletonItems[index]);
-            } else {
-                catalogGrid.appendChild(item);
-            }
+            catalogGrid.appendChild(item);
+            
+            // [BARU] Tambahkan ke observer
+            window.observeElements([item]);
+            
             setTimeout(() => item.style.opacity = '1', 50);
 
             const priceElement = item.querySelector('.catalog-item-price');
-            const originalPriceNum = parseInt(originalPriceDisplay.replace(/[^0-9]/g, ''));
-            const finalPriceNum = parseInt(price.replace(/[^0-9]/g, ''));
-            priceElement.textContent = originalPriceDisplay;
-            animatePrice(priceElement, originalPriceNum, finalPriceNum, 800);
         });
 
         document.querySelectorAll('.view-theme-btn').forEach(button => {
@@ -493,10 +615,12 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
 
+        // [DIUBAH] Pindahkan event listener ke parent agar dinamis
+        catalogGrid.removeEventListener('click', handleCatalogAction);
+        catalogGrid.addEventListener('click', handleCatalogAction);
+
         document.querySelectorAll('.add-to-cart-btn').forEach(button => {
             button.addEventListener('click', function() {
-                const itemId = this.dataset.itemId;
-                const itemToAdd = filteredItems.find(item => item.id === itemId);
                 const orderButton = this;
                 
                 const existingItem = shoppingCart.find(cartItem => cartItem.id === itemToAdd.id);
@@ -508,6 +632,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     );
                     return;
                 }
+
+                const itemId = this.dataset.itemId;
+                const itemToAdd = currentCatalogItems.find(item => item.id === itemId);
 
                 if (orderButton) {
                     const buttonRect = orderButton.getBoundingClientRect();
@@ -537,6 +664,18 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
+
+    // [BARU] Event delegation untuk tombol di katalog
+    function handleCatalogAction(event) {
+        const target = event.target;
+        const addToCartBtn = target.closest('.add-to-cart-btn');
+
+        if (addToCartBtn && !addToCartBtn.classList.contains('added')) {
+            const itemId = addToCartBtn.dataset.itemId;
+            const itemToAdd = currentCatalogItems.find(item => item.id === itemId);
+            addToCart(itemToAdd);
+        }
+    }
     
     function addToCart(item) {
         if (!item) return;
@@ -546,14 +685,18 @@ document.addEventListener('DOMContentLoaded', function() {
         if (navigator.vibrate) {
             navigator.vibrate(50);
         }
-        const existingItem = shoppingCart.find(cartItem => cartItem.id === item.id);
-        if (existingItem) {
-            showNotification('Sudah di Keranjang', 'Tema ini sudah ada di dalam keranjang belanja Anda.');
-            return;
-        }
+
         shoppingCart.push(item);
         updateCartUI();
         saveCart();
+
+        // [BARU] Update tampilan tombol setelah ditambahkan
+        const button = document.querySelector(`.add-to-cart-btn[data-item-id="${item.id}"]`);
+        if (button) {
+            button.classList.add('added');
+            button.innerHTML = 'Ditambahkan ✓';
+            button.disabled = true;
+        }
 
         cartIcon.classList.add('shake');
         setTimeout(() => {
@@ -563,6 +706,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function removeFromCart(itemId) {
         shoppingCart = shoppingCart.filter(item => item.id !== itemId);
+
+        // [BARU] Update tampilan tombol setelah dihapus dari keranjang
+        const button = document.querySelector(`.add-to-cart-btn[data-item-id="${itemId}"]`);
+        if (button) {
+            button.classList.remove('added');
+            button.innerHTML = '<svg viewBox="0 0 24 24"><path d="M17,18C15.89,18 15,18.89 15,20A2,2 0 0,0 17,22A2,2 0 0,0 19,20C19,18.89 18.1,18 17,18M1,2V4H3L6.6,11.59L5.24,14.04C5.09,14.32 5,14.65 5,15A2,2 0 0,0 7,17H19V15H7.42A0.25,0.25 0 0,1 7.17,14.75L7.2,14.64L8.1,13H15.55C16.3,13 16.96,12.58 17.3,11.97L20.88,5.5C20.95,5.34 21,5.17 21,5A1,1 0 0,0 20,4H5.21L4.27,2H1Z" /></svg>Order';
+            button.disabled = false;
+        }
+
         updateCartUI();
         renderCartModal();
         saveCart();
@@ -1096,6 +1248,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // [BARU] Event listener untuk tombol Load More
+    loadMoreBtn.addEventListener('click', function() {
+        currentCatalogPage++;
+        generateCatalog();
+    });
+
     window.addEventListener('popstate', function(event) {
         if (!themePage.classList.contains('hidden')) {
             switchPage(themePage, mainMenu);
@@ -1202,6 +1360,10 @@ document.addEventListener('DOMContentLoaded', function() {
     loadStaticTestimonials();
     loadPaymentMethods();
     updateCartUI();
+    
+    // [BARU] Observe elemen statis yang sudah ada di HTML
+    const staticElements = document.querySelectorAll('.flash-sale-section, .shopee-vouchers-scroll, .service-menu-section');
+    window.observeElements(staticElements);
     
     const cachedData = localStorage.getItem('catalogCache');
     if (cachedData) {
@@ -1571,6 +1733,28 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     flyFrameId = requestAnimationFrame(animateFlying);
+
+    // [BARU] Inisialisasi Efek Ripple pada Tombol
+    function createRipple(event) {
+        const button = event.currentTarget;
+        const circle = document.createElement("span");
+        const diameter = Math.max(button.clientWidth, button.clientHeight);
+        const radius = diameter / 2;
+
+        circle.style.width = circle.style.height = `${diameter}px`;
+        circle.style.left = `${event.clientX - button.getBoundingClientRect().left - radius}px`;
+        circle.style.top = `${event.clientY - button.getBoundingClientRect().top - radius}px`;
+        circle.classList.add("ripple-effect");
+
+        const ripple = button.getElementsByClassName("ripple-effect")[0];
+        if (ripple) ripple.remove();
+
+        button.appendChild(circle);
+    }
+
+    // Pasang event listener ke semua tombol utama
+    const buttons = document.querySelectorAll(".btn-primary, .btn-secondary, .voucher-btn, .category-button");
+    buttons.forEach((btn) => btn.addEventListener("click", createRipple));
 });
 
 // Timer Flash Sale
