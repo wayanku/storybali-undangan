@@ -3,7 +3,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Editor Undangan Canggih</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -30,7 +30,7 @@
             --font-display: 'Manrope', var(--font-sans);
         }
         * { box-sizing: border-box; }
-        body, html { margin: 0; padding: 0; height: 100%; font-family: var(--font-sans); background-color: var(--bg-color); color: var(--text-color); overflow: hidden; font-size: 16px; }
+        body, html { margin: 0; padding: 0; height: 100%; font-family: var(--font-sans); background-color: var(--bg-color); color: var(--text-color); overflow: hidden; font-size: 16px; touch-action: pan-x pan-y; }
         
         /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -770,6 +770,15 @@
             resetBtn.addEventListener('click', resetEditor);
 
             loadState();
+            
+            // [BARU] Mencegah Zoom di iOS (iPhone/iPad)
+            document.addEventListener('gesturestart', function (e) {
+                e.preventDefault();
+            });
+            // Mencegah zoom saat double tap
+            document.addEventListener('dblclick', function(e) {
+                e.preventDefault(); 
+            }, { passive: false });
         });
     </script>
 </body>
