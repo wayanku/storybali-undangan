@@ -13,10 +13,11 @@
             --bg-color: #f8fafc;
             --panel-bg: #ffffff;
             --border-color: #e2e8f0;
-            --primary-color: #5A6B59; /* Green from storybali */
+            --primary-color: #5A6B59; /* Green */
             --primary-color-dark: #435042;
+            --accent-color: #B59A75; /* Gold */
             --secondary-color: #B59A75; /* Gold from storybali */
-            --header-bg: #ffffff;
+            --header-bg: #ffffff; 
             --header-text: #111827;
             --text-color: #1f2937;
             --text-secondary: #64748b;
@@ -37,42 +38,77 @@
         ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
 
-        header { background-color: var(--header-bg); color: var(--header-text); padding: 12px 30px; font-size: 1.2rem; font-weight: 700; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); box-shadow: var(--shadow-sm); z-index: 10; }
+        header { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(8px); color: var(--header-text); padding: 12px 30px; font-size: 1.2rem; font-weight: 700; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); box-shadow: 0 4px 20px -10px rgba(0,0,0,0.05); z-index: 10; position: sticky; top: 0; }
         .main-container { display: flex; height: calc(100vh - 61px); width: 100%; }
         .panel { display: flex; flex-direction: column; overflow: hidden; }
-        #editor-panel { flex: 0 0 400px; background-color: var(--panel-bg); border-right: 1px solid var(--border-color); }
+        #editor-panel { flex: 0 0 420px; background-color: #ffffff; border-right: 1px solid var(--border-color); box-shadow: 4px 0 24px rgba(0,0,0,0.02); z-index: 5; }
         #preview-panel { flex: 1 1 auto; padding: 20px; background-color: var(--bg-color); display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        .panel-header { padding: 15px 20px; border-bottom: 1px solid var(--border-color); background-color: var(--panel-bg); }
-        .panel-header h2 { margin: 0; font-size: 1.05rem; font-weight: 600; color: var(--header-text); }
-        .panel-content { padding: 20px; overflow-y: auto; flex-grow: 1; }
-        #preview-iframe { width: 100%; max-width: 375px; height: 90%; max-height: 812px; border: 12px solid #1f2937; border-radius: 40px; background-color: white; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); }
+        .panel-header { padding: 20px 24px; border-bottom: 1px solid var(--border-color); background-color: #ffffff; position: sticky; top: 0; z-index: 5; }
+        .panel-header h2 { margin: 0; font-size: 1.1rem; font-weight: 700; color: var(--primary-color); display: flex; align-items: center; gap: 8px; font-family: var(--font-display); }
+        .panel-content { padding: 24px; overflow-y: auto; flex-grow: 1; }
+        
+        /* Phone Mockup Styles */
+        .phone-mockup {
+            position: relative;
+            width: 340px;
+            height: 680px;
+            max-width: 90%;
+            max-height: 80vh;
+            border: 12px solid #2d3748;
+            border-radius: 32px;
+            background-color: #1a202c;
+            box-shadow: 0 0 0 3px #4a5568, 0 25px 50px -12px rgba(0,0,0,0.5);
+            margin: 10px auto;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        /* Notch (Poni HP) */
+        .phone-mockup::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 120px; height: 24px; background-color: #2d3748; border-bottom-left-radius: 14px; border-bottom-right-radius: 14px; z-index: 10; }
+        /* Home Indicator (Garis Bawah) */
+        .phone-mockup::after { content: ''; position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); width: 100px; height: 4px; background-color: rgba(255,255,255,0.3); border-radius: 2px; z-index: 10; pointer-events: none; }
 
+        #preview-iframe { width: 100%; height: 100%; border: none; background-color: white; border-radius: 20px; display: block; }
         #input-container { display: flex; flex-direction: column; }
         #input-html { width: 100%; height: 150px; border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; font-family: 'SF Mono', 'Courier New', monospace; font-size: 0.9rem; resize: vertical; background-color: var(--input-bg); transition: border-color 0.2s, box-shadow 0.2s; }
         #input-html:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(90, 107, 89, 0.2); }
         #dynamic-form-container { flex: 1 1 auto; overflow-y: auto; padding-top: 15px;}
         .button-group { display: flex; gap: 10px; margin-top: 10px; }
-        button { padding: 10px 18px; border: 1px solid transparent; border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
-        button.primary { background-color: var(--primary-color); color: white; }
-        button.primary:hover { background-color: var(--primary-color-dark); }
+        button { padding: 10px 18px; border: 1px solid transparent; border-radius: 10px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        button.primary { background: linear-gradient(135deg, var(--primary-color), var(--primary-color-dark)); color: white; box-shadow: 0 4px 10px rgba(90, 107, 89, 0.3); }
+        button.primary:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(90, 107, 89, 0.4); }
         #reset-btn { background-color: #fef2f2; color: var(--danger-color); border-color: #fecaca; }
         #reset-btn:hover { background-color: #fee2e2; }
-        details { border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 15px; overflow: hidden; background-color: var(--panel-bg); transition: box-shadow 0.2s; }
-        details[open] { box-shadow: var(--shadow-sm); }
-        summary { font-weight: 600; padding: 12px 15px; cursor: pointer; background-color: #f8fafc; user-select: none; position: relative; list-style: none; }
+        
+        /* Modern Accordion Styles */
+        details { border: 1px solid #f1f5f9; border-radius: 16px; margin-bottom: 16px; overflow: hidden; background-color: white; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
+        details[open] { box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.08); border-color: rgba(90, 107, 89, 0.3); transform: translateY(-2px); }
+        summary { font-weight: 600; padding: 16px 20px; cursor: pointer; background-color: white; user-select: none; position: relative; list-style: none; color: var(--text-color); transition: background-color 0.2s; }
+        summary:hover { background-color: #f8fafc; }
+        details[open] > summary { background-color: #f8fafc; color: var(--primary-color); border-bottom: 1px solid #f1f5f9; }
         summary::-webkit-details-marker { display: none; }
-        summary::after { content: '›'; position: absolute; right: 15px; top: 50%; transform: translateY(-50%) rotate(90deg); font-size: 1.4rem; color: var(--text-secondary); transition: transform 0.2s; }
-        details[open] > summary::after { transform: translateY(-50%) rotate(-90deg); } /* [FIX] Rotasi dibalik */
-        .fieldset-content { padding: 15px; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 8px; font-size: 0.85rem; color: var(--text-secondary); text-transform: capitalize; font-weight: 600;}
-        .form-group input[type="text"], .form-group input[type="datetime-local"], .form-group textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.95rem; background-color: var(--input-bg); transition: border-color 0.2s, box-shadow 0.2s; font-family: inherit; }
-        .form-group input[type="text"]:focus, .form-group input[type="datetime-local"]:focus, .form-group textarea:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(90, 107, 89, 0.2); }
+        summary::after { content: '›'; position: absolute; right: 20px; top: 50%; transform: translateY(-50%) rotate(90deg); font-size: 1.4rem; color: #cbd5e1; transition: all 0.3s; }
+        details[open] > summary::after { transform: translateY(-50%) rotate(-90deg); color: var(--primary-color); }
+        
+        .fieldset-content { padding: 20px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-size: 0.8rem; color: #64748b; font-weight: 600; letter-spacing: 0.02em; }
+        .form-group input[type="text"], .form-group input[type="datetime-local"], .form-group textarea { width: 100%; padding: 12px 16px; border: 1px solid var(--border-color); border-radius: 10px; font-size: 0.95rem; background-color: #f8fafc; transition: all 0.2s ease; font-family: inherit; color: var(--text-color); }
+        .form-group input[type="text"]:focus, .form-group input[type="datetime-local"]:focus, .form-group textarea:focus { outline: none; border-color: var(--primary-color); background-color: white; box-shadow: 0 0 0 4px rgba(90, 107, 89, 0.15); transform: translateY(-1px); }
         .form-group input[type="color"] { padding: 0; height: 38px; border: none; background: none; }
+        
+        /* File Input Styling */
+        .file-input-wrapper { display: flex; align-items: center; gap: 12px; background: #f8fafc; padding: 12px; border: 2px dashed #cbd5e1; border-radius: 12px; transition: all 0.2s; }
+        .file-input-wrapper:hover { border-color: var(--primary-color); background-color: #f0fdf4; box-shadow: 0 4px 12px rgba(90, 107, 89, 0.1); }
+        .file-input-wrapper input[type="file"] { display: none; }
+        .custom-file-btn { background-color: var(--primary-color); color: white; border: none; border-radius: 6px; padding: 8px 16px; font-weight: 600; cursor: pointer; transition: background 0.2s; font-size: 0.9rem; }
+        .custom-file-btn:hover { background-color: var(--primary-color-dark); }
+        .image-preview-thumb { width: 48px; height: 48px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border-color); flex-shrink: 0; background-color: #f1f5f9; }
+
         .gallery-editor ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
-        .gallery-editor li { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 6px; background-color: #f8f9fa; margin-bottom: 8px; border: 1px solid var(--border-color); }
+        .gallery-editor li { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 8px; background-color: white; margin-bottom: 8px; border: 1px solid var(--border-color); box-shadow: 0 1px 2px rgba(0,0,0,0.03); }
         .gallery-editor img { width: 40px; height: 40px; object-fit: cover; border-radius: 4px; border: 1px solid var(--border-color); }
-        .gallery-editor input { flex-grow: 1; }
+        .gallery-editor input { flex-grow: 1; border: none; background: transparent; font-size: 0.9rem; color: var(--text-color); }
+        .gallery-editor input:focus { outline: none; }
         .gallery-editor .remove-btn { background-color: var(--danger-color); color: white; border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-weight: bold; flex-shrink: 0; }
         .gallery-editor .remove-btn:hover { background-color: #c82333; }
         .gallery-editor .add-btn { width: 100%; margin-top: 10px; background-color: var(--primary-color); color: white; }
@@ -80,13 +116,13 @@
         .status-message { text-align: center; padding: 30px 20px; color: var(--text-secondary); background-color: #f8fafc; border-radius: 8px; border: 1px dashed var(--border-color); }
         
         /* Template Selection Styles */
-        .template-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; margin-bottom: 20px; }
-        .template-card { background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; cursor: pointer; transition: all 0.2s; }
-        .template-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-sm); border-color: var(--primary-color); }
-        .template-card.active { border: 2px solid var(--primary-color); box-shadow: 0 0 0 3px rgba(90, 107, 89, 0.15); }
-        .template-img-box { width: 100%; height: 80px; background-color: #f8f9fa; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .template-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 16px; margin-bottom: 20px; }
+        .template-card { background: var(--panel-bg); border: 2px solid transparent; border-radius: 16px; overflow: hidden; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); position: relative; }
+        .template-card:hover { transform: translateY(-5px); box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.15); }
+        .template-card.active { border-color: var(--primary-color); box-shadow: 0 0 0 4px rgba(90, 107, 89, 0.2); }
+        .template-img-box { width: 100%; height: 100px; background-color: #f8f9fa; display: flex; align-items: center; justify-content: center; overflow: hidden; }
         .template-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
-        .template-card:hover .template-img { transform: scale(1.05); }
+        .template-card:hover .template-img { transform: scale(1.1); }
         .template-info { padding: 8px 5px; text-align: center; border-top: 1px solid var(--border-color); }
         .template-name { font-size: 0.8rem; font-weight: 600; color: var(--text-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         
@@ -96,16 +132,70 @@
             .main-container { flex-direction: column; height: auto; }
             #editor-panel, #preview-panel { flex: 1 1 auto; border: none; }
             #preview-panel { order: -1; padding: 20px 0; }
-            #preview-iframe { height: 667px; /* Ukuran tinggi iPhone 8 */ }
+            .phone-mockup { height: 600px; width: 300px; }
         }
         
         /* Mobile Layout */
         @media (max-width: 768px) {
-            header { flex-direction: column; gap: 15px; padding: 15px; align-items: stretch; }
-            .main-container { height: auto; }
-            #editor-panel { flex: 1 1 auto; }
-            .button-group { justify-content: center; }
+            body, html { overflow: auto; position: static; width: 100%; height: auto; }
+            
+            header { 
+                padding: 12px 20px; 
+                height: auto;
+                flex-wrap: wrap;
+            }
+            
+            /* Hide Title on Mobile to save space */
+            header h1 { display: block; font-size: 1rem; }
+            
+            .main-container { 
+                height: auto;
+                margin-bottom: 0;
+                flex-direction: column;
+                display: flex;
+            }
+            
+            .panel {
+                display: flex !important;
+                height: auto;
+                width: 100%;
+                overflow: visible;
+            }
+            
+            #preview-panel { 
+                order: 1;
+                padding: 30px 15px; 
+                background-color: #f1f5f9; 
+                align-items: center; 
+                justify-content: center;
+            }
+
+            #editor-panel {
+                order: 2;
+                border-top: 1px solid var(--border-color);
+                box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+            }
+            
+            .phone-mockup {
+                width: 100%;
+                max-width: 340px;
+                height: 680px;
+                max-height: 80vh;
+                border: 8px solid #2d3748;
+                border-radius: 30px;
+                box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+                margin: 0 auto;
+            }
+            .phone-mockup::before { display: block; width: 100px; height: 20px; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; }
+            .phone-mockup::after { display: block; bottom: 6px; width: 80px; height: 3px; }
+            #preview-iframe { border-radius: 20px; }
+            
+            /* Adjust Editor Content Padding */
+            .panel-content { padding: 20px; }
         }
+
+        /* Mobile Navigation (Hidden on Desktop) */
+        .mobile-nav { display: none; }
     </style>
 </head>
 <body>
@@ -114,16 +204,9 @@
             <a href="../index.html" style="text-decoration: none; color: var(--text-secondary); font-size: 1.2rem; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 8px; background: #f1f5f9; transition: background 0.2s;" title="Kembali ke Beranda" onmouseover="this.style.background='#e2e8f0'" onmouseout="this.style.background='#f1f5f9'">&#8592;</a>
             <h1 style="font-size: 1.1rem; font-family: var(--font-display);">Editor Undangan</h1>
         </div>
-        <div class="button-group">
-            <button id="preview-fullscreen-btn" class="primary">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-                Lihat Hasil Akhir
-            </button>
-            <button id="reset-btn">Reset & Mulai Ulang</button>
-        </div>
     </header>
     <div class="main-container">
-        <div id="editor-panel" class="panel">
+        <div id="editor-panel" class="panel active">
             <div class="panel-content">
                 <div id="input-container">
                     <div id="template-loader" class="fieldset-content" style="padding:0 0 20px 0;">
@@ -159,7 +242,16 @@
         </div>
         <div id="preview-panel" class="panel">
             <div class="panel-header"><h2>3. Pratinjau</h2></div>
-            <iframe id="preview-iframe" title="Pratinjau Undangan"></iframe>
+            <div class="phone-mockup">
+                <iframe id="preview-iframe" title="Pratinjau Undangan"></iframe>
+            </div>
+            <div class="button-group" style="margin-top: 20px;">
+                <button id="preview-fullscreen-btn" class="primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                    Lihat Hasil Akhir
+                </button>
+                <button id="reset-btn">Reset & Mulai Ulang</button>
+            </div>
         </div>
     </div>
 
@@ -181,7 +273,7 @@
                     timeoutId = setTimeout(() => func.apply(this, args), delay);
                 };
             };
-
+            
             // [BARU] Fungsi Load Template via Card
             window.loadTemplate = async (fileName, cardElement) => {
                 if (!fileName) return;
@@ -313,17 +405,26 @@
                 const content = document.createElement('div');
                 content.className = 'fieldset-content';
 
-                const inputs = [
-                    { label: 'Foto Mempelai Pria', key: 'groom' },
-                    { label: 'Foto Mempelai Wanita', key: 'bride' },
-                    { label: 'Foto Utama 1 (Sampul & Galeri)', key: 'photo1' },
-                    { label: 'Foto Utama 2 (Sampul & Galeri)', key: 'photo2' },
-                ];
+                const inputs = [];
+                if (imagesObj.groom !== undefined) inputs.push({ label: 'Foto Mempelai Pria', key: 'groom' });
+                if (imagesObj.bride !== undefined) inputs.push({ label: 'Foto Mempelai Wanita', key: 'bride' });
+                if (imagesObj.profile !== undefined) {
+                    inputs.push({ label: 'Foto Profil (Khusus Metatah)', key: 'profile' });
+                    inputs.push({ label: 'Foto Kartu Undangan', key: 'card' });
+                } else if (imagesObj.card !== undefined) {
+                    inputs.push({ label: 'Foto Kartu Undangan', key: 'card' });
+                }
+                inputs.push({ label: 'Foto Utama 1 (Sampul & Galeri)', key: 'photo1' });
+                inputs.push({ label: 'Foto Utama 2 (Sampul & Galeri)', key: 'photo2' });
 
                 inputs.forEach(item => {
                     const group = document.createElement('div');
                     group.className = 'form-group';
                     
+                    // Wrapper for custom styling
+                    const inputWrapper = document.createElement('div');
+                    inputWrapper.className = 'file-input-wrapper';
+
                     const label = document.createElement('label');
                     label.textContent = item.label;
                     
@@ -331,20 +432,24 @@
                     fileInput.type = 'file';
                     fileInput.accept = 'image/*';
                     
+                    // Custom button to trigger file input
+                    const customBtn = document.createElement('button');
+                    customBtn.type = 'button';
+                    customBtn.className = 'custom-file-btn';
+                    customBtn.textContent = 'Pilih File';
+                    customBtn.onclick = () => fileInput.click();
+                    
                     // [DIUBAH] Logika ambil gambar preview lebih canggih
                     let previewImg = null;
                     if (item.key === 'groom' && imagesObj.groom) previewImg = imagesObj.groom;
                     if (item.key === 'bride' && imagesObj.bride) previewImg = imagesObj.bride;
+                    if (item.key === 'profile' && imagesObj.profile) previewImg = imagesObj.profile;
+                    if (item.key === 'card' && imagesObj.card) previewImg = imagesObj.card;
                     if (item.key === 'photo1' && imagesObj.coverSlides && imagesObj.coverSlides[0]) previewImg = imagesObj.coverSlides[0];
                     if (item.key === 'photo2' && imagesObj.coverSlides && imagesObj.coverSlides[1]) previewImg = imagesObj.coverSlides[1];
-                    if (item.key === 'photo1' && imagesObj.profile) previewImg = imagesObj.profile; // Untuk template metatah
                     
                     const imgPreview = document.createElement('img');
-                    imgPreview.style.width = '60px';
-                    imgPreview.style.height = '60px';
-                    imgPreview.style.objectFit = 'cover';
-                    imgPreview.style.marginTop = '5px';
-                    imgPreview.style.borderRadius = '4px';
+                    imgPreview.className = 'image-preview-thumb';
                     imgPreview.style.display = previewImg ? 'block' : 'none';
                     if (previewImg) imgPreview.src = previewImg;
 
@@ -362,7 +467,8 @@
                         }
                     });
 
-                    group.append(label, fileInput, imgPreview);
+                    inputWrapper.append(fileInput, customBtn, imgPreview);
+                    group.append(label, inputWrapper);
                     content.appendChild(group);
                 });
 
@@ -511,6 +617,10 @@
                     invitationData.images.groom = base64Data;
                 } else if (key === 'bride') {
                     invitationData.images.bride = base64Data;
+                } else if (key === 'profile') {
+                    invitationData.images.profile = base64Data;
+                } else if (key === 'card') {
+                    invitationData.images.card = base64Data;
                 } else if (key === 'photo1' || key === 'photo2') {
                     // Simpan sementara di properti temp jika belum ada
                     if (!invitationData.images.temp) invitationData.images.temp = {};
