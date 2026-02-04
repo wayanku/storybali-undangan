@@ -1,22 +1,18 @@
-const CACHE_NAME = 'storybali-cache-v4.0'; // [UPDATE] Naikkan ke 4.0 agar cache lama terhapus
+const CACHE_NAME = 'storybali-cache-v5.0'; // Naikkan versi lagi
 const urlsToCache = [
     '/',
     '/index.html',
-    '/admin.html',
     '/style.css',
     '/main.js',
     '/catalog.js',
-    '/manifest.json',
-    '/edit-tamu.html'
-    // Hapus path yang menggunakan spasi atau folder aneh dulu untuk testing
+    '/manifest.json'
+    // JANGAN masukkan admin.html di sini
 ];
 
 self.addEventListener('install', event => {
-    self.skipWaiting(); 
+    self.skipWaiting();
     event.waitUntil(
-        caches.open(CACHE_NAME).then(cache => {
-            return cache.addAll(urlsToCache);
-        })
+        caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
     );
 });
 
@@ -35,6 +31,11 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('fetch', event => {
+    // PROTEKSI UNTUK ADMIN: Jika URL mengandung kata 'admin', paksa ambil dari Network (Internet)
+    if (event.request.url.includes('admin.html') || event.request.url.includes('/admin')) {
+        return; // Biarkan browser menangani secara normal tanpa Service Worker
+    }
+
     event.respondWith(
         caches.match(event.request).then(response => {
             return response || fetch(event.request);
