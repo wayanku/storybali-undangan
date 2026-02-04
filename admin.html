@@ -11,6 +11,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- [BARU] Menambahkan Library Chart.js untuk grafik yang lebih bagus -->
+    <!-- [FIX] Menambahkan link ke manifest untuk PWA -->
+    <link rel="manifest" href="manifest.json">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- [BARU] Library untuk Export PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -269,12 +271,17 @@
             .header h1 { font-size: 1.4rem; }
             
             /* Grid Mobile: 3 Kolom agar sangat kecil (seperti notifikasi) */
-            .theme-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+            .theme-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; }
             .theme-card-img { height: 70px; }
             .theme-card-body { padding: 8px; }
             .theme-card-title { font-size: 0.75rem; line-height: 1.2; margin-bottom: 2px; }
             .theme-card-price { font-size: 0.7rem; }
             .add-new-card { min-height: 100px; }
+            
+            /* [BARU] Style untuk input yang dikunci (Read Only) */
+            .input-disabled {
+                background-color: #f1f5f9; color: #94a3b8; cursor: not-allowed; border-color: #e2e8f0;
+            }
             
             /* Modal Edit: Tampilan Fullscreen App-like */
             .modal-content { width: 100%; height: 100%; border-radius: 0; max-height: 100vh; display: flex; flex-direction: column; }
@@ -304,20 +311,41 @@
         /* Stats Cards */
         .stats-container {
             display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px;
+            gap: 20px;
         }
         .stat-card {
-            background: var(--card-bg); padding: 20px; border-radius: 16px; border: 1px solid transparent;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            background: var(--card-bg); padding: 20px; border-radius: 16px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
             box-shadow: var(--shadow-sm); transition: all 0.3s; position: relative; overflow: hidden;
+            border: 1px solid #f1f5f9;
         }
-        .stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
-        .stat-value { font-size: 2rem; font-weight: 800; color: var(--primary-text); line-height: 1.2; margin-bottom: 5px; }
-        .stat-label { font-size: 0.9rem; color: var(--secondary-text); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        .stat-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: var(--accent-color); }
+        .stat-icon-wrapper {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .stat-icon-wrapper svg {
+            width: 26px;
+            height: 26px;
+            fill: currentColor;
+        }
+        .stat-content { min-width: 0; }
+        .stat-value { font-size: 1.75rem; font-weight: 800; color: var(--primary-text); line-height: 1.2; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .stat-label { font-size: 0.85rem; color: var(--secondary-text); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin: 0; }
         
         @media (max-width: 768px) {
             .stats-container { grid-template-columns: 1fr; gap: 10px; }
-            .stat-card { flex-direction: row; justify-content: space-between; padding: 15px 20px; }
+            .stat-card { padding: 15px 20px; }
             .stat-value { font-size: 1.4rem; }
+            .stat-icon-wrapper { width: 40px; height: 40px; }
+            .stat-icon-wrapper svg { width: 22px; height: 22px; }
         }
 
         /* --- NEW: App Layout (Sidebar & Main Content) --- */
@@ -356,16 +384,20 @@
             .sidebar { 
                 position: fixed !important; bottom: 0 !important; top: auto !important;
                 left: 0; width: 100%; height: auto !important; 
-                flex-direction: row; justify-content: space-around; padding: 12px; 
+                flex-direction: row; justify-content: flex-start; padding: 12px 0; 
                 border-right: none; border-top: 1px solid #e5e7eb; 
                 box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
                 z-index: 9999; /* Pastikan menu bawah selalu di atas konten */
                 background-color: var(--card-bg);
-                padding-bottom: calc(12px + env(safe-area-inset-bottom)); /* Support iPhone X+ */
+                padding-bottom: calc(12px + env(safe-area-inset-bottom));
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
             }
+            .sidebar::-webkit-scrollbar { display: none; }
             .sidebar-header { display: none; }
-            .nav-menu { flex-direction: row; width: 100%; justify-content: space-around; gap: 0; }
-            .nav-item { flex-direction: column; font-size: 0.75rem; gap: 5px; padding: 8px 12px; border-radius: 8px; text-align: center; flex: 1; }
+            .nav-menu { flex-direction: row; width: auto; min-width: 100%; justify-content: flex-start; gap: 5px; padding: 0 10px; }
+            .nav-item { flex-direction: column; font-size: 0.75rem; gap: 5px; padding: 8px 10px; border-radius: 8px; text-align: center; flex: 0 0 auto; min-width: 70px; }
             .nav-item svg { width: 24px; height: 24px; }
             .nav-text { display: block; }
             .main-content { padding: 20px 15px 100px 15px !important; width: 100%; } /* Extra padding bottom for nav bar */
@@ -502,6 +534,10 @@
                 <li class="nav-item" onclick="switchTab('orders', this)">
                     <svg viewBox="0 0 24 24"><path fill="currentColor" d="M19,3H14.82C14.4,1.84 13.3,1 12,1C10.7,1 9.6,1.84 9.18,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3M12,3A1,1 0 0,1 13,4A1,1 0 0,1 12,5A1,1 0 0,1 11,4A1,1 0 0,1 12,3M7,7H17V5H19V19H5V5H7V7M12,17L7,12L8.41,10.59L12,14.17L17.59,8.58L19,10L12,17Z" /></svg>
                     <span class="nav-text">Lacak Pesanan</span>
+                </li>
+                <li class="nav-item" onclick="switchTab('finance', this)">
+                    <svg viewBox="0 0 24 24"><path fill="currentColor" d="M20 4H4C2.89 4 2 4.89 2 6V18C2 19.11 2.9 20 4 20H20C21.11 20 22 19.11 22 18V6C22 4.89 21.11 4 20 4M20 18H4V8H20V18M4 6H20V6H4M16 14H18V16H16V14M12 14H14V16H12V14M8 14H10V16H8V14Z" /></svg>
+                    <span class="nav-text">Keuangan</span>
                 </li>
                 <li class="nav-item" onclick="switchTab('services', this)">
                     <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6A6,6 0 0,0 6,12A6,6 0 0,0 12,18A6,6 0 0,0 18,12A6,6 0 0,0 12,6M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8Z" /></svg>
@@ -685,6 +721,63 @@
                 </div>
             </div>
 
+            <!-- VIEW: FINANCE (KEUANGAN) -->
+            <div id="view-finance" class="view-section">
+                <div class="header" style="text-align: left; margin-bottom: 25px;">
+                    <h1 style="font-size: 1.8rem;">Dashboard Keuangan</h1>
+                    <p>Analisis pendapatan dari pesanan yang sudah lunas.</p>
+                </div>
+
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <div class="stat-icon-wrapper" style="background-color: #e0f2fe; color: #0284c7;">
+                            <svg viewBox="0 0 24 24"><path d="M21 18V19C21 20.1 20.1 21 19 21H5C3.9 21 3 20.1 3 19V5C3 3.9 3.9 3 5 3H19C20.1 3 21 3.9 21 5V6H12L10 8H21V10H12L10 12H21V14H12L10 16H21V18M15 8C15 9.1 14.1 10 13 10C11.9 10 11 9.1 11 8C11 6.9 11.9 6 13 6C14.1 6 15 6.9 15 8Z"></path></svg>
+                        </div>
+                        <div class="stat-content">
+                            <span class="stat-label">Total Pendapatan</span>
+                            <span id="stat-total-revenue" class="stat-value">Rp 0</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon-wrapper" style="background-color: #dcfce7; color: #166534;">
+                            <svg viewBox="0 0 24 24"><path d="M14 2H6C4.89 2 4 2.9 4 4V20C4 21.1 4.89 22 6 22H18C19.1 22 20 21.1 20 20V8L14 2M10.94 18L7.4 14.46L8.81 13.05L10.94 15.18L15.18 10.94L16.59 12.35L10.94 18Z"></path></svg>
+                        </div>
+                        <div class="stat-content">
+                            <span class="stat-label">Pesanan Lunas</span>
+                            <span id="stat-paid-orders" class="stat-value">0</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon-wrapper" style="background-color: #fef9c3; color: #854d0e;">
+                            <svg viewBox="0 0 24 24"><path d="M7 2H17A2 2 0 0 1 19 4V20A2 2 0 0 1 17 22H7A2 2 0 0 1 5 20V4A2 2 0 0 1 7 2M7 4V8H17V4H7M7 10V12H11V10H7M7 14V16H11V14H7M13 10V16H17V10H13Z"></path></svg>
+                        </div>
+                        <div class="stat-content">
+                            <span class="stat-label">Rata-rata/Pesanan</span>
+                            <span id="stat-avg-revenue" class="stat-value">Rp 0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chart-section">
+                    <div class="chart-header">
+                        <h3>Pendapatan Bulanan (Tahun Ini)</h3>
+                    </div>
+                    <div class="simple-bar-chart" style="height: 350px;">
+                        <canvas id="revenueCanvas"></canvas>
+                    </div>
+                </div>
+
+                <!-- [BARU] Daftar Transaksi Terakhir -->
+                <div class="header" style="text-align: left; margin-bottom: 15px; margin-top: 30px;">
+                    <h3 style="font-size: 1.2rem; margin: 0;">Transaksi Terakhir (Lunas)</h3>
+                </div>
+                <div class="activity-list">
+                    <div id="finance-transaction-list">
+                        <!-- Transaksi akan di-generate oleh JS -->
+                    </div>
+                </div>
+            </div>
+
             <!-- VIEW: SERVICES (KELOLA LAYANAN) -->
             <div id="view-services" class="view-section">
                 <div class="header" style="text-align: left; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
@@ -825,7 +918,7 @@
 
     <!-- Order Modal (Lacak Pesanan) -->
     <div id="order-modal" class="modal-overlay">
-        <div class="modal-content" style="height: auto; max-width: 500px;">
+        <div class="modal-content" style="max-height: 85vh; height: auto; max-width: 500px;">
             <div class="modal-header">
                 <h2 id="order-modal-title">Update Pesanan</h2>
                 <button class="close-btn" onclick="closeOrderModal()">&times;</button>
@@ -840,9 +933,36 @@
                     <label>Nama Klien</label>
                     <input type="text" id="order-client" placeholder="Nama Mempelai / Klien">
                 </div>
+                <!-- [BARU] Dropdown Pilih Tema untuk Auto-isi Harga -->
+                <div class="form-group">
+                    <label>Pilih Tema (Isi Harga Otomatis)</label>
+                    <select id="order-theme-select" onchange="autoFillOrderPrice()" style="background-color: var(--bg-color);">
+                        <option value="">-- Pilih Tema (Manual) --</option>
+                    </select>
+                </div>
                 <div class="form-group">
                     <label>Status Pengerjaan</label>
                     <input type="text" id="order-status-text" placeholder="Contoh: Sedang Revisi Desain">
+                </div>
+                <div class="row">
+                    <div class="form-group">
+                        <label>Harga Pesanan (Rp)</label>
+                        <input type="number" id="order-price" placeholder="50000">
+                    </div>
+                    <div class="form-group">
+                        <label>Status Pembayaran</label>
+                        <select id="order-payment-status">
+                            <option value="false">Belum Lunas</option>
+                            <option value="true">Lunas</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Link Undangan (Jika Selesai)</label>
+                    <div style="display: flex; gap: 8px;">
+                        <input type="text" id="order-link" placeholder="https://..." style="flex: 1;">
+                        <button onclick="generateLink()" class="btn btn-secondary btn-sm" style="width: auto; margin: 0; padding: 0 12px;" title="Buat Link Otomatis">Auto</button>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label>Progres (%) <span id="progress-val" style="color:var(--accent-color); font-weight:800;">0%</span></label>
@@ -971,6 +1091,7 @@
         let browserChart = null;
         let userTypeChart = null;
         let countryChart = null;
+        let revenueChart = null;
 
         // Variabel Global
         let currentEditingOriginalName = null;
@@ -1065,18 +1186,23 @@
         }
 
         function handleLogin() {
-            const password = document.getElementById('admin-password').value;
-            if (password === ADMIN_PASSWORD) { 
-                document.getElementById('login-section').classList.add('hidden');
-                document.getElementById('app-layout').classList.remove('hidden');
-                updateStats(); // Hitung statistik saat login
-                renderServicesAdmin(); // [BARU] Render list layanan
-                renderOrderList(); // [BARU] Render list pesanan
-                updateCategoryDropdown();
-                renderThemeGrid();
-                loadAnalyticsData(); // Load chart data
-            } else {
-                showToast('Password salah!', 'error');
+            try {
+                const password = document.getElementById('admin-password').value;
+                if (password === ADMIN_PASSWORD) { 
+                    document.getElementById('login-section').classList.add('hidden');
+                    document.getElementById('app-layout').classList.remove('hidden');
+                    updateStats(); // Hitung statistik saat login
+                    renderServicesAdmin(); // [BARU] Render list layanan
+                    renderOrderList(); // [BARU] Render list pesanan
+                    updateCategoryDropdown();
+                    renderThemeGrid();
+                    loadAnalyticsData(); // Load chart data
+                } else {
+                    showToast('Password salah!', 'error');
+                }
+            } catch (e) {
+                console.error("Login Error:", e);
+                alert("Terjadi kesalahan saat memuat dashboard: " + e.message);
             }
         }
 
@@ -1148,6 +1274,9 @@
             if (targetView) {
                 targetView.classList.add('active');
                 window.scrollTo({top: 0, behavior: 'smooth'}); // Scroll ke atas saat pindah tab di HP
+                if (tabName === 'finance') {
+                    updateFinanceDashboard();
+                }
             }
         }
 
@@ -1182,6 +1311,11 @@
 
                 // [BARU] Pisahkan data pesanan (ORDERS)
                 if (row.category === 'ORDERS') {
+                    // [PERBAIKAN] Cek apakah kolom visible terbaca. Jika tidak, cek apakah ada data 'tersembunyi' di properti lain atau default ke false
+                    if (row.visible === undefined) {
+                        // Jika kolom visible tidak ada header-nya di Sheet, data mungkin hilang. Default ke false agar tidak error.
+                        row.visible = 'false'; 
+                    }
                     ordersData.push(row);
                     return;
                 } else if (row.category === 'ADMIN_SERVICES') {
@@ -1201,6 +1335,7 @@
             catalogData = newCatalogData;
             updateStats();
             updateCategoryDropdown(); // Update dropdown saat data berubah
+            updateFinanceDashboard(); // [BARU] Update data keuangan
             renderServicesAdmin(); // Update tampilan layanan
             renderOrderList(); // Update tampilan pesanan
             renderThemeGrid();
@@ -1241,8 +1376,7 @@
             const type = document.getElementById('admin-type').value;
             const searchTerm = document.getElementById('admin-search').value.toLowerCase();
             const grid = document.getElementById('theme-grid');
-            
-            grid.innerHTML = '';
+            const fragment = document.createDocumentFragment(); // [OPTIMASI] Gunakan fragment
             
             // Add "New Theme" Card
             const addCard = document.createElement('div');
@@ -1252,7 +1386,7 @@
                 <svg class="add-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"/></svg>
                 <span style="font-weight:600;">Tambah Tema Baru</span>
             `;
-            grid.appendChild(addCard);
+            fragment.appendChild(addCard);
             
             if (catalogData[category]) {
                 const typeData = catalogData[category].find(t => t.type === type);
@@ -1285,10 +1419,13 @@
                                 </div>
                             </div>
                         `;
-                        grid.appendChild(card);
+                        fragment.appendChild(card);
                     });
                 }
             }
+
+            grid.innerHTML = ''; // [OPTIMASI] Hapus konten lama sekali saja
+            grid.appendChild(fragment); // [OPTIMASI] Tambahkan semua elemen baru sekali saja
         }
 
         // Modal Functions
@@ -1365,7 +1502,7 @@
             // tapi untuk sekarang re-render aman karena DOM order list ringan.
             
             const grid = document.getElementById('order-list');
-            grid.innerHTML = '';
+            const fragment = document.createDocumentFragment(); // [OPTIMASI]
 
             if (ordersData.length === 0) {
                 grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--secondary-text);">Belum ada pesanan yang dilacak.</div>';
@@ -1380,6 +1517,10 @@
                 // price -> Progress (Number)
                 
                 const progress = parseInt(order.price) || 0;
+                const revenue = parseInt(String(order.originalPrice).replace(/[^0-9]/g, '')) || 0; // [BARU] Ambil revenue untuk display
+                // [BARU] Cek apakah sudah ada link undangan yang valid
+                const hasLink = order.discount && (order.discount.startsWith('http://') || order.discount.startsWith('https://'));
+                const isPaid = String(order.visible).toLowerCase() === 'true' || order.visible === true;
                 
                 const card = document.createElement('div');
                 card.className = 'order-card';
@@ -1389,12 +1530,14 @@
                 card.innerHTML = `
                     <div class="order-header">
                         <span class="order-id">${order.themeName}</span>
+                        ${isPaid ? '<span style="font-size:0.7em; background:#dcfce7; color:#166534; padding:2px 6px; border-radius:4px; font-weight:bold;">LUNAS</span>' : '<span style="font-size:0.7em; background:#fee2e2; color:#991b1b; padding:2px 6px; border-radius:4px;">BELUM LUNAS</span>'}
+                        ${hasLink ? '<span style="font-size:0.7em; background:#d1fae5; color:#065f46; padding:2px 6px; border-radius:4px;">Link Aktif</span>' : ''}
                         <span style="font-size:0.8em; color:var(--secondary-text); cursor:pointer;">Edit ✎</span>
                     </div>
                     <h3 class="order-client">${order.image}</h3>
                     <div>
                         <div class="order-status">
-                            <span>${order.previewUrl}</span>
+                            <span>${order.previewUrl} <small style="color:var(--accent-color);">(${revenue > 0 ? 'Rp ' + (revenue/1000) + 'k' : '-'})</small></span>
                             <span style="font-weight:700; color:var(--accent-color);">${progress}%</span>
                         </div>
                         <div class="progress-container">
@@ -1402,8 +1545,11 @@
                         </div>
                     </div>
                 `;
-                grid.appendChild(card);
+                fragment.appendChild(card);
             });
+
+            grid.innerHTML = ''; // [OPTIMASI]
+            grid.appendChild(fragment); // [OPTIMASI]
         }
 
         function openOrderModal(index = null) {
@@ -1411,30 +1557,74 @@
             const title = document.getElementById('order-modal-title');
             const deleteBtn = document.getElementById('delete-order-btn');
             
+            // [BARU] Populate Dropdown Tema dari Data Katalog
+            const themeSelect = document.getElementById('order-theme-select');
+            themeSelect.innerHTML = '<option value="">-- Pilih Tema (Manual) --</option>';
+            
+            if (typeof catalogData !== 'undefined') {
+                for (const cat in catalogData) {
+                    catalogData[cat].forEach(type => {
+                        type.themes.forEach((theme, i) => {
+                            const price = parseInt(theme.price) || 0;
+                            const name = theme.themeName || `Tema ${i+1}`;
+                            const option = document.createElement('option');
+                            option.value = price;
+                            option.textContent = `${name} (${cat}) - Rp ${price.toLocaleString('id-ID')}`;
+                            themeSelect.appendChild(option);
+                        });
+                    });
+                }
+            }
+
             if (index === null) {
                 title.textContent = "Tambah Pesanan Baru";
                 document.getElementById('order-edit-index').value = "";
                 document.getElementById('order-id').value = "ORD-" + Math.floor(Math.random() * 10000); // Auto generate ID simpel
                 document.getElementById('order-client').value = "";
                 document.getElementById('order-status-text').value = "Pesanan Diterima";
+                // [PERBAIKAN] Buka kunci ID untuk pesanan baru
+                document.getElementById('order-id').readOnly = false;
+                document.getElementById('order-id').classList.remove('input-disabled');
+                document.getElementById('order-link').value = "";
                 document.getElementById('order-progress').value = 0;
                 document.getElementById('progress-val').textContent = "0%";
+                document.getElementById('order-price').value = ""; // Reset harga
+                document.getElementById('order-payment-status').value = "false"; // Default Belum Lunas
+                document.getElementById('order-theme-select').value = ""; // Reset dropdown
                 deleteBtn.style.display = 'none';
                 editingOrderOriginalName = null; // Reset ID asli untuk pesanan baru
             } else {
                 title.textContent = "Update Progres Pesanan";
                 const order = ordersData[index];
                 document.getElementById('order-edit-index').value = index;
+                // [PERBAIKAN] Kunci ID agar tidak bisa diubah saat edit (Mencegah data tertukar)
+                document.getElementById('order-id').readOnly = true;
+                document.getElementById('order-id').classList.add('input-disabled');
                 document.getElementById('order-id').value = order.themeName;
                 document.getElementById('order-client').value = order.image;
                 document.getElementById('order-status-text').value = order.previewUrl;
+                document.getElementById('order-link').value = (order.discount && order.discount !== '-') ? order.discount : '';
                 document.getElementById('order-progress').value = order.price;
                 document.getElementById('progress-val').textContent = order.price + "%";
+                // [PERBAIKAN] Pastikan hanya angka yang masuk ke input number
+                document.getElementById('order-price').value = parseInt(String(order.originalPrice).replace(/[^0-9]/g, '')) || 0;
+                const isPaid = String(order.visible).toLowerCase() === 'true' || order.visible === true;
+                document.getElementById('order-payment-status').value = isPaid.toString();
+                document.getElementById('order-theme-select').value = ""; // Reset dropdown saat edit
                 editingOrderOriginalName = order.themeName; // Simpan ID asli agar server tahu baris mana yang diupdate
                 deleteBtn.style.display = 'block';
                 deleteBtn.onclick = () => deleteOrder(index);
             }
             modal.classList.add('active');
+        }
+
+        // [BARU] Fungsi Auto Fill Harga saat Tema Dipilih
+        function autoFillOrderPrice() {
+            const select = document.getElementById('order-theme-select');
+            const priceInput = document.getElementById('order-price');
+            if (select.value) {
+                priceInput.value = select.value;
+            }
         }
 
         function closeOrderModal() {
@@ -1447,15 +1637,21 @@
             const client = document.getElementById('order-client').value;
             const status = document.getElementById('order-status-text').value;
             const progress = document.getElementById('order-progress').value;
+            const link = document.getElementById('order-link').value.trim() || '-';
+            const price = document.getElementById('order-price').value;
+            const isPaid = document.getElementById('order-payment-status').value;
 
             if (!id || !client) return showToast('ID dan Nama Klien wajib diisi!', 'error');
 
-            // [PERBAIKAN] Cek duplikasi ID jika menambah pesanan baru
-            if (index === "") {
-                const exists = ordersData.some(o => o.themeName === id);
-                if (exists) {
-                    return showToast('ID Pesanan sudah ada! Gunakan ID yang berbeda.', 'error');
-                }
+            // [PERBAIKAN] Validasi ID Unik yang Lebih Ketat (Cek semua data)
+            // Pastikan ID tidak sama dengan order lain (kecuali diri sendiri saat edit)
+            const isDuplicate = ordersData.some((o, i) => 
+                String(o.themeName).toLowerCase() === id.toLowerCase() && 
+                String(i) !== String(index)
+            );
+            
+            if (isDuplicate) {
+                return showToast('ID Pesanan sudah digunakan! Harap gunakan ID unik.', 'error');
             }
 
             // [PERBAIKAN] Tambahkan indikator loading agar admin tahu proses sedang berjalan
@@ -1466,10 +1662,19 @@
 
             // [PERBAIKAN] Gunakan ID asli yang disimpan saat modal dibuka
             // Ini memastikan jika ID diubah, sistem tetap tahu baris lama yang harus diupdate
-            const originalName = index !== "" ? editingOrderOriginalName : null;
+            let originalName = null;
+            if (index !== "") {
+                originalName = editingOrderOriginalName;
+                // Fallback: Jika editingOrderOriginalName hilang, gunakan ID dari data saat ini
+                if (!originalName && ordersData[index]) {
+                    originalName = ordersData[index].themeName;
+                }
+            }
+
+            const currentOrder = index !== "" ? ordersData[index] : null;
+            const orderDate = currentOrder ? (currentOrder.label || new Date().toLocaleString('id-ID')) : new Date().toLocaleString('id-ID');
 
             // [PERBAIKAN] Gunakan type dari data asli jika sedang edit, agar backend bisa menemukan baris yang tepat
-            const currentOrder = index !== "" ? ordersData[index] : null;
             const orderType = currentOrder ? (currentOrder.type || 'active') : 'active';
 
             const formData = {
@@ -1481,22 +1686,36 @@
                 image: client,
                 previewUrl: status,
                 price: progress,
-                originalPrice: 0, discount: '-', label: '-', visible: true
+                originalPrice: price, // [PERBAIKAN] Kirim sebagai string/raw agar sesuai dengan format sheet
+                discount: link, 
+                label: orderDate, 
+                visible: isPaid === 'true'
             };
 
             // [PERBAIKAN] Tunggu respon server sebelum update UI
             fetch(GOOGLE_SHEET_API_URL, { method: 'POST', body: JSON.stringify(formData) })
                 .then(res => res.json())
                 .then(data => {
-                    // Update data lokal hanya jika sukses
-                    const newOrder = { category: 'ORDERS', type: orderType, themeName: id, image: client, previewUrl: status, price: progress };
+                    const newOrder = { 
+                        category: 'ORDERS', 
+                        type: orderType, 
+                        themeName: id, 
+                        image: client, 
+                        previewUrl: status, 
+                        price: progress, 
+                        discount: link,
+                        originalPrice: parseInt(price) || 0, // Simpan lokal sebagai angka untuk perhitungan
+                        label: orderDate,
+                        visible: isPaid === 'true'
+                    };
                     if (index !== "") ordersData[index] = newOrder;
                     else ordersData.push(newOrder);
                     
                     renderOrderList();
                     closeOrderModal();
-                    loadData(true); // Refresh data dari server untuk memastikan sinkron
+                    // loadData(true); // [PERBAIKAN] Jangan reload langsung agar data lokal tidak tertimpa data lama server (race condition)
                     showToast('Pesanan berhasil disimpan ke server!', 'success');
+                    updateFinanceDashboard();
                 })
                 .catch(err => {
                     console.error(err);
@@ -1966,9 +2185,18 @@
                     // [BARU] Cek error dari backend (misal Service belum aktif)
                     if (data && data.error) {
                         console.error("Analytics Error:", data.error);
-                        chartContainer.innerHTML = `<div style="height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; color:var(--danger-color); text-align:center; padding:20px;">
-                            <div style="font-weight:bold; margin-bottom:5px;">Gagal Memuat Grafik</div>
-                            <div style="font-size:0.85em;">${data.error}</div>
+                        
+                        let displayError = data.error;
+                        if (String(data.error).includes('429')) {
+                            displayError = "Terlalu banyak permintaan (Limit Kuota). Coba lagi nanti.";
+                        } else if (String(data.error).includes('<html')) {
+                            displayError = "Terjadi kesalahan server internal.";
+                        }
+
+                        chartContainer.innerHTML = `<div style="height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; color:var(--secondary-text); text-align:center; padding:20px;">
+                            <div style="font-weight:bold; margin-bottom:5px; color:var(--danger-color);">Gagal Memuat Grafik</div>
+                            <div style="font-size:0.85em; margin-bottom:10px;">${displayError}</div>
+                            <button onclick="loadAnalyticsData()" class="btn btn-secondary btn-sm" style="width:auto;">Coba Lagi</button>
                         </div>`;
                         return;
                     }
@@ -2251,6 +2479,119 @@
             });
         }
 
+        // [BARU] Fungsi untuk Dashboard Keuangan
+        function updateFinanceDashboard() {
+            if (!ordersData) return; // [PERBAIKAN] Hapus cek active agar data selalu terupdate di background
+
+            const paidOrders = ordersData.filter(o => {
+                // [PERBAIKAN] Handle berbagai format boolean/string (true, "true", "TRUE")
+                return String(o.visible).toLowerCase() === 'true' || o.visible === true;
+            });
+            
+            const totalRevenue = paidOrders.reduce((sum, order) => {
+                // [PERBAIKAN] Bersihkan string harga dari karakter non-digit sebelum parsing
+                const val = parseInt(String(order.originalPrice).replace(/[^0-9]/g, '')) || 0;
+                return sum + val;
+            }, 0);
+
+            const paidOrdersCount = paidOrders.length;
+            const avgRevenue = paidOrdersCount > 0 ? totalRevenue / paidOrdersCount : 0;
+
+            document.getElementById('stat-total-revenue').textContent = 'Rp ' + totalRevenue.toLocaleString('id-ID');
+            document.getElementById('stat-paid-orders').textContent = paidOrdersCount;
+            document.getElementById('stat-avg-revenue').textContent = 'Rp ' + Math.round(avgRevenue).toLocaleString('id-ID');
+
+            // Persiapan Data Grafik
+            // [BARU] Render Transaksi Terakhir
+            const transactionList = document.getElementById('finance-transaction-list');
+            if (transactionList) {
+                if (paidOrders.length > 0) {
+                    transactionList.innerHTML = '';
+                    // Ambil 5 transaksi terakhir
+                    const recentTransactions = paidOrders.slice(-5).reverse();
+                    recentTransactions.forEach(order => {
+                        const amount = parseInt(String(order.originalPrice).replace(/[^0-9]/g, '')) || 0;
+                        // Coba ambil tanggal dari format "DD Mmm YYYY, HH:mm:ss"
+                        const dateParts = (order.label || '').split(',');
+                        const date = dateParts[0] || '-';
+
+                        const item = document.createElement('div');
+                        item.className = 'activity-item';
+                        item.innerHTML = `
+                            <div class="activity-icon" style="background-color: #dcfce7; color: #166534;">
+                                <svg style="width:20px;height:20px;fill:currentColor;" viewBox="0 0 24 24"><path d="M5,6H23V18H5V6M14,9A3,3 0 0,1 17,12A3,3 0 0,1 14,15A3,3 0 0,1 11,12A3,3 0 0,1 14,9M9,8A2,2 0 0,1 7,10V14A2,2 0 0,1 5,16V20A2,2 0 0,1 3,22H21A2,2 0 0,1 23,20V16A2,2 0 0,1 21,14V10A2,2 0 0,1 19,8H9M3,10H1V14H3V10Z" /></svg>
+                            </div>
+                            <div class="activity-details">
+                                <h4>${order.image || 'Nama Klien'}</h4>
+                                <p style="font-size: 0.8rem; color: var(--secondary-text);">ID: ${order.themeName}</p>
+                            </div>
+                            <div class="activity-time" style="text-align: right; flex-shrink: 0;">
+                                <strong style="color: var(--success-color); font-size: 0.95rem;">+Rp ${amount.toLocaleString('id-ID')}</strong>
+                                <p style="margin: 2px 0 0 0; font-size: 0.8rem;">${date}</p>
+                            </div>
+                        `;
+                        transactionList.appendChild(item);
+                    });
+                } else {
+                    transactionList.innerHTML = `
+                        <div class="activity-item" style="justify-content: center; padding: 40px; color: var(--secondary-text); font-style: italic;">
+                            Belum ada transaksi lunas yang tercatat.
+                        </div>
+                    `;
+                }
+            }
+            const monthlyRevenue = Array(12).fill(0);
+            const monthMap = { 'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'Mei': 4, 'Jun': 5, 'Jul': 6, 'Ags': 7, 'Sep': 8, 'Okt': 9, 'Nov': 10, 'Des': 11 };
+            const currentYear = new Date().getFullYear();
+
+            paidOrders.forEach(order => {
+                const dateStr = order.label || '';
+                const parts = dateStr.split(' ');
+                if (parts.length >= 3) {
+                    const year = parseInt(parts[2]);
+                    if (year === currentYear) {
+                        const monthName = parts[1];
+                        const monthIndex = monthMap[monthName];
+                        if (monthIndex !== undefined) {
+                            monthlyRevenue[monthIndex] += (parseInt(order.originalPrice) || 0);
+                        }
+                    }
+                }
+            });
+
+            renderRevenueChart(monthlyRevenue);
+        }
+
+        function renderRevenueChart(monthlyData) {
+            const ctx = document.getElementById('revenueCanvas').getContext('2d');
+            if (revenueChart) revenueChart.destroy();
+
+            const gradient = ctx.createLinearGradient(0, 0, 0, 350);
+            gradient.addColorStop(0, 'rgba(90, 107, 89, 0.7)');
+            gradient.addColorStop(1, 'rgba(90, 107, 89, 0.1)');
+
+            revenueChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'],
+                    datasets: [{
+                        label: 'Pendapatan',
+                        data: monthlyData,
+                        backgroundColor: gradient,
+                        borderColor: '#5A6B59',
+                        borderWidth: 2,
+                        borderRadius: 5,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true, ticks: { callback: (value) => 'Rp ' + (value / 1000) + 'k' } } }
+                }
+            });
+        }
+
         // [BARU] Fungsi untuk Menghasilkan Analisis Cerdas (Smart Insights)
         function generateSmartInsights(data) {
             const container = document.getElementById('smart-insights-container');
@@ -2336,6 +2677,20 @@
             html2pdf().set(opt).from(element).save().then(() => {
                 showToast('Laporan berhasil diunduh!', 'success');
             });
+        }
+
+        // [BARU] Fungsi Generate Link Otomatis
+        function generateLink() {
+            const clientName = document.getElementById('order-client').value.trim();
+            if (!clientName) return showToast('Isi Nama Klien dulu!', 'error');
+            
+            // Buat link otomatis berdasarkan URL website saat ini + parameter nama
+            // Contoh: https://website-anda.com/index.html?to=Nama+Klien
+            const currentUrl = window.location.href;
+            const baseUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/')) + '/index.html';
+            const link = `${baseUrl}?to=${encodeURIComponent(clientName)}`;
+            
+            document.getElementById('order-link').value = link;
         }
     </script>
 </body>
