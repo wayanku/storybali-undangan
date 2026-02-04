@@ -1,3 +1,11 @@
+// [OPTIMASI] Fungsi Debounce untuk menunda eksekusi fungsi hingga user berhenti mengetik
+function debounce(func, delay) {
+    let timeout;
+    return function(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), delay);
+    };
+}
 // Fungsi untuk Animasi Angka (Harga) dibuat global
 function animatePrice(element, start, end, duration) {
     let startTimestamp = null;
@@ -25,7 +33,7 @@ if (savedCart && savedCart !== '[]') {
 }
 
 // --- KONFIGURASI GLOBAL & DATA ---
-const APP_VERSION = '2.1'; // [BARU] Versi Aplikasi (Ubah ini jika ada update besar)
+const APP_VERSION = '2.4'; // [BARU] Versi Aplikasi (Ubah ini jika ada update besar)
 // Cek apakah versi berubah, jika ya hapus cache lama
 if (localStorage.getItem('app_version') !== APP_VERSION) {
     console.log('Versi baru terdeteksi. Membersihkan cache...');
@@ -139,6 +147,7 @@ function renderServices(adminConfig) {
         if (isVisible) {
             const item = document.createElement('div');
             item.className = 'service-item';
+            item.setAttribute('data-id', service.id);
             item.onclick = () => handleServiceClick(service.id);
             item.innerHTML = `
                 <div class="service-icon-box" style="color: ${service.color}; background-color: ${service.bg};">
@@ -178,12 +187,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const btnWithoutPhoto = document.getElementById('btn-without-photo');
     const themeToggleButtons = document.querySelectorAll('.theme-toggle button');
     const catalogGrid = document.getElementById('catalog-grid');
+    const categoryGrid = document.getElementById('category-grid');
     const socialFloat = document.querySelector('.social-float');
     const socialToggleBtn = document.getElementById('social-toggle-btn');
     const customModal = document.getElementById('custom-modal');
     const notificationModal = document.getElementById('notification-modal');
     const modalCloseBtn = document.getElementById('modal-close-btn');
     const cartCloseBtn = document.getElementById('cart-close-btn');
+    const cartModal = document.getElementById('cart-modal');
     const checkoutFormPage = document.getElementById('checkout-form-page');
     const floatingNav = document.querySelector('.floating-nav');
     const cartPage = document.getElementById('cart-page');
@@ -205,6 +216,11 @@ document.addEventListener('DOMContentLoaded', function() {
     let activeFormType = '';
     
     // [BARU] Setup Intersection Observer untuk Scroll Reveal
+    // [OPTIMASI] Pasang event listener untuk aksi katalog & kategori sekali saja di parent
+    categoryGrid.addEventListener('click', handleCategoryClick);
+    // [OPTIMASI] Pasang event listener untuk aksi katalog sekali saja di parent
+    catalogGrid.addEventListener('click', handleCatalogAction);
+
     const revealObserverOptions = {
         threshold: 0.1,
         rootMargin: "0px 0px -30px 0px"
@@ -230,7 +246,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const orderSound = new Audio('https://github.com/wayanku/storybali-undangan/raw/main/apple-pay-sound-effect_43nu5Zaa.mp3');
     orderSound.load();
 
-    const categoryGrid = document.getElementById('category-grid');
     let lastFocusedElement;
     const navCartBadge = document.getElementById('nav-cart-badge');
     
@@ -267,10 +282,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 window.observeElements([card]);
             });
 
-            document.querySelectorAll('.category-button').forEach(button => {
-                button.addEventListener('click', handleCategoryClick);
-            });
-
+            // [OPTIMASI] Event listener dipindahkan ke parent (categoryGrid)
         }, 500);
     }
 
@@ -603,77 +615,53 @@ document.addEventListener('DOMContentLoaded', function() {
             window.observeElements([item]);
             
             setTimeout(() => item.style.opacity = '1', 50);
-
-            const priceElement = item.querySelector('.catalog-item-price');
         });
 
-        document.querySelectorAll('.view-theme-btn').forEach(button => {
-            button.addEventListener('click', function(event) {
-                event.preventDefault();
-                lastFocusedElement = this;
-                showModal();
-            });
-        });
-
-        // [DIUBAH] Pindahkan event listener ke parent agar dinamis
-        catalogGrid.removeEventListener('click', handleCatalogAction);
-        catalogGrid.addEventListener('click', handleCatalogAction);
-
-        document.querySelectorAll('.add-to-cart-btn').forEach(button => {
-            button.addEventListener('click', function() {
-                const orderButton = this;
-                
-                const existingItem = shoppingCart.find(cartItem => cartItem.id === itemToAdd.id);
-                if (existingItem) {
-                    showNotification(
-                        'Sudah di Keranjang', 
-                        'Tema ini sudah ada di dalam keranjang belanja Anda.',
-                        { text: 'Lihat Keranjang', action: 'openCart' }
-                    );
-                    return;
-                }
-
-                const itemId = this.dataset.itemId;
-                const itemToAdd = currentCatalogItems.find(item => item.id === itemId);
-
-                if (orderButton) {
-                    const buttonRect = orderButton.getBoundingClientRect();
-                    const cartRect = (window.innerWidth < 768 && navCartIcon) ? navCartIcon.getBoundingClientRect() : headerCartIcon.getBoundingClientRect();
-
-                    const clone = document.createElement('div');
-                    clone.innerText = '1';
-                    clone.classList.add('fly-to-cart-clone');
-                    document.body.appendChild(clone);
-
-                    clone.style.left = `${buttonRect.left + (buttonRect.width / 2) - 12}px`;
-                    clone.style.top = `${buttonRect.top + (buttonRect.height / 2) - 12}px`;
-
-                    requestAnimationFrame(() => {
-                        clone.style.left = `${cartRect.left + (cartRect.width / 2) - 12}px`;
-                        clone.style.top = `${cartRect.top + (cartRect.height / 2) - 12}px`;
-                        clone.style.transform = 'scale(0.5)';
-                        clone.style.opacity = '0.5';
-                    });
-
-                    setTimeout(() => {
-                        clone.remove();
-                    }, 900);
-                }
-
-                addToCart(itemToAdd);
-            });
-        });
+        // [OPTIMASI] Event listener untuk .view-theme-btn dipindahkan ke handleCatalogAction
     }
 
     // [BARU] Event delegation untuk tombol di katalog
+    // [DIUBAH] Event delegation untuk tombol di katalog, sekarang dengan animasi
     function handleCatalogAction(event) {
         const target = event.target;
         const addToCartBtn = target.closest('.add-to-cart-btn');
+        const viewThemeBtn = target.closest('.view-theme-btn'); // [OPTIMASI]
 
         if (addToCartBtn && !addToCartBtn.classList.contains('added')) {
             const itemId = addToCartBtn.dataset.itemId;
             const itemToAdd = currentCatalogItems.find(item => item.id === itemId);
-            addToCart(itemToAdd);
+            
+            if (itemToAdd) {
+                // [PINDAH] Logika animasi "fly to cart" dipindahkan ke sini agar lebih efisien
+                const buttonRect = addToCartBtn.getBoundingClientRect();
+                const cartRect = (window.innerWidth < 768 && navCartIcon) ? navCartIcon.getBoundingClientRect() : headerCartIcon.getBoundingClientRect();
+
+                const clone = document.createElement('div');
+                clone.innerText = '1';
+                clone.classList.add('fly-to-cart-clone');
+                document.body.appendChild(clone);
+
+                clone.style.left = `${buttonRect.left + (buttonRect.width / 2) - 12}px`;
+                clone.style.top = `${buttonRect.top + (buttonRect.height / 2) - 12}px`;
+
+                requestAnimationFrame(() => {
+                    clone.style.left = `${cartRect.left + (cartRect.width / 2) - 12}px`;
+                    clone.style.top = `${cartRect.top + (cartRect.height / 2) - 12}px`;
+                    clone.style.transform = 'scale(0.5)';
+                    clone.style.opacity = '0.5';
+                });
+
+                setTimeout(() => {
+                    clone.remove();
+                }, 900);
+                
+                addToCart(itemToAdd);
+            }
+        } else if (viewThemeBtn && !viewThemeBtn.href.includes('http')) { // [OPTIMASI]
+            // Hanya jalankan jika href BUKAN link eksternal
+            event.preventDefault();
+            lastFocusedElement = viewThemeBtn;
+            showModal();
         }
     }
     
@@ -698,10 +686,15 @@ document.addEventListener('DOMContentLoaded', function() {
             button.disabled = true;
         }
 
-        cartIcon.classList.add('shake');
-        setTimeout(() => {
-            cartIcon.classList.remove('shake');
-        }, 400);
+        // Shake animation for cart icons, using the correctly defined variables
+        if (headerCartIcon) {
+            headerCartIcon.classList.add('shake');
+            setTimeout(() => headerCartIcon.classList.remove('shake'), 400);
+        }
+        if (navCartIcon && window.getComputedStyle(navCartIcon).display !== 'none') {
+            navCartIcon.classList.add('shake');
+            setTimeout(() => navCartIcon.classList.remove('shake'), 400);
+        }
     }
 
     function removeFromCart(itemId) {
@@ -914,7 +907,14 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        history.pushState({page: 'form'}, `Formulir Pesanan`, '#form');
+        // [BARU] Update URL dengan parameter tipe form agar bisa dibagikan langsung
+        let urlType = 'general';
+        if (activeFormType === 'wedding') urlType = 'pernikahan';
+        else if (activeFormType === 'metatah') urlType = 'metatah';
+        else if (activeFormType === 'birthday') urlType = 'ulangtahun';
+        else if (activeFormType === '3 bulanan') urlType = '3bulanan';
+
+        history.pushState({page: 'form'}, `Formulir Pesanan`, `#form?type=${urlType}`);
         switchPage(cartPage, checkoutFormPage);
     });
 
@@ -990,6 +990,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const orderTimestamp = new Date().toLocaleString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 
+            // [BARU] Ambil harga dari tema yang sedang dipilih di keranjang
+            const selectedEl = document.querySelector('.cart-item-full.selected');
+            const selectedId = selectedEl ? selectedEl.dataset.itemId : (shoppingCart.length > 0 ? shoppingCart[0].id : null);
+            const selectedItem = selectedId ? shoppingCart.find(item => item.id === selectedId) : null;
+            // Bersihkan format harga (misal "Rp 50.000" -> 50000)
+            const orderPrice = (selectedItem && selectedItem.price) ? (parseInt(selectedItem.price.replace(/[^0-9]/g, '')) || 0) : 0;
+
             const sheetPayload = {
                 action: 'save',
                 category: 'ORDERS',
@@ -998,17 +1005,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 image: clientName,
                 previewUrl: 'Menunggu Konfirmasi',
                 price: 0, 
-                originalPrice: 0, discount: '-', label: orderTimestamp, visible: true
+                originalPrice: orderPrice, // [PERBAIKAN] Kirim harga asli tema
+                discount: '-', 
+                label: orderTimestamp, 
+                visible: false // [PERBAIKAN] Default 'false' (Belum Lunas) untuk pesanan baru
             };
 
             saveOrderToSheet(sheetPayload)
                 .then(() => {
                     waMessage = `*ID PESANAN: ${orderID}*\n(Simpan ID ini untuk cek status)\n\n` + waMessage;
-                    document.getElementById('generated-order-id').textContent = orderID;
-                    document.getElementById('continue-to-wa-btn').href = `https://wa.me/6285738517248?text=${encodeURIComponent(waMessage)}`;
-                    document.getElementById('order-success-modal').classList.add('active');
+                    // [DIUBAH] Langsung arahkan ke WhatsApp tanpa menampilkan modal sukses
                     btn.textContent = originalText;
                     btn.disabled = false;
+                    window.location.href = `https://wa.me/6285738517248?text=${encodeURIComponent(waMessage)}`;
                 })
                 .catch(err => {
                     alert("Gagal menyimpan pesanan. Silakan coba lagi.");
@@ -1033,32 +1042,56 @@ document.addEventListener('DOMContentLoaded', function() {
         history.back();
     });
 
-    trackOrderBtn.addEventListener('click', function() {
-        if (trackInterval) clearInterval(trackInterval);
-        document.getElementById('track-order-modal').classList.add('active');
-        document.getElementById('track-result').classList.add('hidden');
-        document.getElementById('track-order-id-input').value = '';
-    });
+    if (trackOrderBtn) {
+        trackOrderBtn.addEventListener('click', function() {
+            if (trackInterval) clearInterval(trackInterval);
+            const modal = document.getElementById('track-order-modal');
+            if (modal) {
+                modal.classList.add('active');
+                const result = document.getElementById('track-result');
+                if (result) result.classList.add('hidden');
+                const linkSection = document.getElementById('track-link-section');
+                if (linkSection) linkSection.classList.add('hidden'); // Reset link section
+                const input = document.getElementById('track-order-id-input');
+                if (input) input.value = '';
+            }
+        });
+    }
 
-    document.querySelector('#track-order-modal .btn-secondary').addEventListener('click', () => {
-        if (trackInterval) clearInterval(trackInterval);
-    });
+    const trackModalCloseBtn = document.querySelector('#track-order-modal .btn-secondary');
+    if (trackModalCloseBtn) {
+        trackModalCloseBtn.addEventListener('click', () => {
+            if (trackInterval) clearInterval(trackInterval);
+        });
+    }
 
-    checkOrderBtn.addEventListener('click', function() {
-        const inputID = document.getElementById('track-order-id-input').value.trim();
+    if (checkOrderBtn) {
+        checkOrderBtn.addEventListener('click', function() {
+            const inputEl = document.getElementById('track-order-id-input');
+            const inputID = inputEl ? inputEl.value.trim() : '';
         if (!inputID) { alert("Masukkan ID Pesanan!"); return; }
 
+        // [PERBAIKAN] Reset tampilan sebelum loading agar tidak muncul data lama
+        document.getElementById('track-result').classList.add('hidden');
+        document.getElementById('track-link-section').classList.add('hidden');
+        document.getElementById('track-link-display').value = ''; 
+        document.getElementById('track-open-link').href = '#';
+
         const btn = this;
-        btn.textContent = "Mengecek...";
+        const originalContent = btn.innerHTML;
+        btn.innerHTML = '<div class="loading-spinner" style="position:static; transform:none;"><div class="dot" style="background:white; width:6px; height:6px;"></div><div class="dot" style="background:white; width:6px; height:6px;"></div><div class="dot" style="background:white; width:6px; height:6px;"></div></div>';
         btn.disabled = true;
 
         if (trackInterval) clearInterval(trackInterval);
 
         function fetchAndUpdateStatus(orderID) {
             fetch(`${GOOGLE_SHEET_API_URL}?v=${new Date().getTime()}`)
-                .then(res => res.json())
+                .then(res => {
+                    if (!res.ok) throw new Error('Respon jaringan bermasalah.');
+                    return res.json();
+                })
                 .then(data => {
-                    const order = data.find(row => 
+                    const order = data.find(row =>
                         row.category === 'ORDERS' && 
                         String(row.themeName).trim().toLowerCase() === orderID.toLowerCase()
                     );
@@ -1070,18 +1103,70 @@ document.addEventListener('DOMContentLoaded', function() {
                         if (progress > 100) progress = 100;
                         document.getElementById('track-progress-bar').style.width = progress + "%";
                         document.getElementById('track-progress-text').textContent = progress + "%";
+                        
+                        // [BARU] Update Warna Badge Status
+                        const badge = document.getElementById('track-status-badge');
+                        if (progress === 100) {
+                            badge.textContent = "Selesai";
+                            badge.style.background = "#dcfce7";
+                            badge.style.color = "#166534";
+                        } else if (progress > 50) {
+                            badge.textContent = "Hampir Jadi";
+                            badge.style.background = "#fef9c3";
+                            badge.style.color = "#854d0e";
+                        } else {
+                            badge.textContent = "Diproses";
+                            badge.style.background = "#e0f2fe";
+                            badge.style.color = "#0369a1";
+                        }
+                        
+                        // [BARU] Tampilkan Link Undangan jika ada
+                        // [PERBAIKAN] Validasi ketat: Hanya tampilkan jika formatnya benar-benar LINK (http/https)
+                        const linkSection = document.getElementById('track-link-section');
+                        const linkUrl = order.discount ? order.discount.trim() : '';
+                        
+                        if (linkUrl && (linkUrl.startsWith('http://') || linkUrl.startsWith('https://'))) {
+                            linkSection.classList.remove('hidden');
+                            document.getElementById('track-link-display').value = linkUrl;
+                            document.getElementById('track-open-link').href = linkUrl;
+                        } else {
+                            linkSection.classList.add('hidden');
+                        }
+                        
                     } else {
                         alert("ID Pesanan tidak ditemukan!");
                         resultDiv.classList.add('hidden');
                         if (trackInterval) clearInterval(trackInterval);
                     }
                 })
-                .finally(() => { if(btn) { btn.textContent = "Cek Sekarang"; btn.disabled = false; } });
+                .catch(error => {
+                    console.error("Gagal melacak pesanan:", error);
+                    alert("Gagal terhubung ke server. Periksa koneksi internet Anda dan coba lagi.");
+                    if (trackInterval) clearInterval(trackInterval); // Hentikan percobaan berulang
+                    document.getElementById('track-result').classList.add('hidden');
+                })
+                .finally(() => { if(btn) { btn.innerHTML = originalContent; btn.disabled = false; } });
         }
 
         fetchAndUpdateStatus(inputID);
         trackInterval = setInterval(() => fetchAndUpdateStatus(inputID), 7000);
-    });
+        });
+    }
+    
+    // [BARU] Event Listener untuk tombol Salin Link di Lacak Pesanan
+    const trackCopyLinkBtn = document.getElementById('track-copy-link');
+    if (trackCopyLinkBtn) {
+        trackCopyLinkBtn.addEventListener('click', function() {
+            const linkText = document.getElementById('track-link-display').value;
+            if(linkText) {
+                navigator.clipboard.writeText(linkText).then(() => {
+                    const originalHTML = this.innerHTML;
+                    this.innerHTML = '<svg style="width:16px;height:16px;fill:#10b981" viewBox="0 0 24 24"><path d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z" /></svg>';
+                    setTimeout(() => { this.innerHTML = originalHTML; }, 2000);
+                });
+            }
+        });
+    }
 
     function showModal() {
         customModal.classList.add('active');
@@ -1167,7 +1252,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Ambil icon dari elemen yang diklik (mencari elemen SVG yang sesuai di DOM)
         // Kita cari elemen service-item yang memiliki onclick berisi serviceName
-        const clickedItem = document.querySelector(`.service-item[onclick*="${serviceName}"] .service-icon-box`);
+        const clickedItem = document.querySelector(`.service-item[data-id="${serviceName}"] .service-icon-box`);
         if (clickedItem) {
             iconContainer.innerHTML = clickedItem.innerHTML;
         }
@@ -1204,13 +1289,18 @@ document.addEventListener('DOMContentLoaded', function() {
         message += `*DETAIL ACARA*\n`;
         message += `Tanggal & Lokasi: ${data.eventDetails}\n\n`;
 
-        const selectedId = (shoppingCart.length > 1)
+        // [PERBAIKAN] Handle jika keranjang kosong (akses langsung via link)
+        const selectedId = (shoppingCart.length > 1) 
             ? document.querySelector('.cart-item-full.selected').dataset.itemId
-            : shoppingCart[0].id;
+            : (shoppingCart.length > 0 ? shoppingCart[0].id : null);
         
-        const selectedItem = shoppingCart.find(item => item.id === selectedId);
+        const selectedItem = selectedId ? shoppingCart.find(item => item.id === selectedId) : null;
         message += `*TEMA YANG DIPESAN*\n`;
-        message += `- ${selectedItem.themeName} (${selectedItem.categoryName}) - ${selectedItem.price}`;
+        if (selectedItem) {
+            message += `- ${selectedItem.themeName} (${selectedItem.categoryName}) - ${selectedItem.price}`;
+        } else {
+            message += `- (Tema dipilih via Link/Admin)`;
+        }
         return message;
     }
 
@@ -1228,26 +1318,33 @@ document.addEventListener('DOMContentLoaded', function() {
             message += `*Lokasi:* ${data.location}\n\n`;
         }
 
+        // [PERBAIKAN] Handle jika keranjang kosong (akses langsung via link)
         const selectedId = (shoppingCart.length > 1)
             ? document.querySelector('.cart-item-full.selected').dataset.itemId
-            : shoppingCart[0].id;
+            : (shoppingCart.length > 0 ? shoppingCart[0].id : null);
         
-        const selectedItem = shoppingCart.find(item => item.id === selectedId);
+        const selectedItem = selectedId ? shoppingCart.find(item => item.id === selectedId) : null;
         message += `*TEMA YANG DIPESAN*\n`;
-        message += `- ${selectedItem.themeName} (${selectedItem.categoryName}) - ${selectedItem.price}`;
+        if (selectedItem) {
+            message += `- ${selectedItem.themeName} (${selectedItem.categoryName}) - ${selectedItem.price}`;
+        } else {
+            message += `- (Tema dipilih via Link/Admin)`;
+        }
         return message;
     }
 
     function handleCategoryClick(event) {
-        const categoryCard = this.closest('.category-card');
+        // [OPTIMASI] Event delegation, 'this' sekarang adalah grid, jadi kita cari dari event.target
+        const button = event.target.closest('.category-button');
+        if (!button) return;
+
+        const categoryCard = button.closest('.category-card');
         const categoryName = categoryCard.querySelector('h4.category-card-title').textContent;
         themeTitle.textContent = `Pilihan Tema ${categoryName}`;
         updateActiveNav(categoryName);
         history.pushState({page: 'catalog'}, `Katalog - ${categoryName}`, '#katalog');
         switchPage(mainMenu, themePage); 
     }
-
-    document.querySelectorAll('.category-button').forEach(button => button.addEventListener('click', handleCategoryClick));
 
     backButton.addEventListener('click', function() {
         const currentPage = this.closest('.page');
@@ -1297,7 +1394,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     cartCloseBtn.addEventListener('click', function(e) {
         e.preventDefault();
-        cartModal.classList.remove('active');
+        if (cartModal) {
+            cartModal.classList.remove('active');
+        }
     });
 
     function openCartPage(e) {
@@ -1313,9 +1412,14 @@ document.addEventListener('DOMContentLoaded', function() {
     if(headerCartIcon) headerCartIcon.addEventListener('click', openCartPage);
     if(navCartIcon) navCartIcon.addEventListener('click', openCartPage);
 
-    searchInput.addEventListener('input', () => {
-        if (!themePage.classList.contains('hidden')) generateCatalog();
-    });
+    // [OPTIMASI] Debounce search input untuk mencegah pemanggilan fungsi yang berlebihan saat mengetik cepat
+    const debouncedSearch = debounce(() => {
+        if (!themePage.classList.contains('hidden')) {
+            currentCatalogPage = 1; // Reset halaman ke 1 setiap kali ada pencarian baru
+            generateCatalog();
+        }
+    }, 300); // Jeda 300ms setelah user berhenti mengetik
+    searchInput.addEventListener('input', debouncedSearch);
 
     headerLogoLink.addEventListener('click', function(e) {
         e.preventDefault();
@@ -1372,7 +1476,7 @@ document.addEventListener('DOMContentLoaded', function() {
     updateCartUI();
     
     // [BARU] Observe elemen statis yang sudah ada di HTML
-    const staticElements = document.querySelectorAll('.flash-sale-section, .shopee-vouchers-scroll, .service-menu-section');
+    const staticElements = document.querySelectorAll('.flash-sale-section, .shopee-vouchers-scroll, .service-menu-section, .order-guide-section');
     window.observeElements(staticElements);
     
     const cachedData = localStorage.getItem('catalogCache');
@@ -1386,6 +1490,88 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     fetchCatalogFromGoogleSheet();
+
+    // [BARU] Fungsi Buka Form Langsung (untuk handleInitialRouting)
+    function openFormDirectly(type) {
+        // Sembunyikan semua form dulu
+        weddingForm.classList.add('hidden');
+        metatahForm.classList.add('hidden');
+        birthdayForm.classList.add('hidden');
+
+        // Reset activeFormType
+        activeFormType = '';
+
+        if (type === 'pernikahan') {
+            weddingForm.classList.remove('hidden');
+            activeFormType = 'wedding';
+            document.getElementById('checkout-form-title').textContent = 'Lengkapi Data Pernikahan';
+        } else if (type === 'metatah') {
+            metatahForm.classList.remove('hidden');
+            activeFormType = 'metatah';
+            document.getElementById('checkout-form-title').textContent = 'Lengkapi Data Metatah';
+        } else if (type === 'ulangtahun') {
+            birthdayForm.classList.remove('hidden');
+            activeFormType = 'birthday';
+            document.getElementById('checkout-form-title').textContent = 'Lengkapi Data Ulang Tahun';
+            document.querySelector('#birthday-data-form label[for="birthday-name"]').textContent = 'Nama (Yang Berulang Tahun)';
+        } else if (type === '3bulanan') {
+            birthdayForm.classList.remove('hidden');
+            activeFormType = '3 bulanan';
+            document.getElementById('checkout-form-title').textContent = 'Lengkapi Data 3 Bulanan';
+            document.querySelector('#birthday-data-form label[for="birthday-name"]').textContent = 'Nama Bayi';
+        }
+
+        if (activeFormType) {
+            // Buka halaman form langsung
+            const currentPage = document.querySelector('.page:not(.hidden)') || mainMenu;
+            switchPage(currentPage, checkoutFormPage);
+        }
+    }
+
+    // [BARU] Fungsi untuk menangani routing berdasarkan hash URL saat halaman dimuat
+    function handleInitialRouting() {
+        const hash = window.location.hash;
+        
+        // Jika tidak ada hash, tidak melakukan apa-apa
+        if (!hash) return;
+
+        // Menunggu sebentar agar halaman utama selesai di-setup
+        setTimeout(() => {
+            if (hash === '#keranjang') {
+                openCartPage();
+            } else if (hash.startsWith('#form')) {
+                // [BARU] Cek apakah ada parameter type di URL (misal: #form?type=metatah)
+                const parts = hash.split('?');
+                if (parts.length > 1) {
+                    const params = new URLSearchParams(parts[1]);
+                    const type = params.get('type');
+                    if (type) {
+                        openFormDirectly(type);
+                        return; // Stop di sini, jangan cek keranjang
+                    }
+                }
+
+                // Cek kondisi keranjang sebelum ke halaman form
+                if (shoppingCart.length === 0) {
+                    // Jika keranjang kosong, arahkan ke halaman keranjang dan beri notifikasi
+                    openCartPage(); // Ini akan menampilkan 'Keranjang Kosong'
+                    showNotification('Keranjang Kosong', 'Silakan tambahkan tema ke keranjang terlebih dahulu sebelum mengisi form.');
+                } else {
+                    // Jika ada item, buka halaman keranjang dulu
+                    openCartPage();
+                    
+                    // Beri jeda agar halaman keranjang selesai render
+                    setTimeout(() => {
+                        const checkoutBtn = document.getElementById('checkout-full-btn');
+                        if (checkoutBtn && !checkoutBtn.disabled) {
+                            // Jika tombol checkout aktif (biasanya jika hanya 1 item), klik otomatis
+                            checkoutBtn.click();
+                        }
+                    }, 400); // Jeda 400ms
+                }
+            }
+        }, 500); // Jeda 500ms untuk memastikan semua data awal (termasuk dari cache) sudah dimuat
+    }
 
     // --- Social Proof Notification ---
     const toast = document.getElementById('social-proof-toast');
@@ -1408,6 +1594,9 @@ document.addEventListener('DOMContentLoaded', function() {
         setInterval(showSocialProof, Math.floor(Math.random() * (150000 - 90000 + 1)) + 90000); // Interval diperlama jadi 1.5 - 2.5 menit
     }
     startNotificationLoop();
+
+    // [BARU] Panggil fungsi routing setelah semua setup selesai
+    handleInitialRouting();
 
     // --- Popup Diskon ---
     const popupOverlay = document.getElementById('discountPopup');
@@ -1778,3 +1967,12 @@ setInterval(() => {
         boxes[2].innerText = s < 10 ? '0'+s : s;
     }
 }, 1000);
+
+// [BARU] Pendaftaran Service Worker untuk PWA
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+            .then(registration => console.log('ServiceWorker registration successful with scope: ', registration.scope))
+            .catch(err => console.log('ServiceWorker registration failed: ', err));
+    });
+}
