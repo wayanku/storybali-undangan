@@ -1,0 +1,22 @@
+{
+    "name": "Storybali Undangan",
+    "short_name": "Storybali",
+    "description": "Undangan digital premium untuk pernikahan, metatah, ulang tahun, dan acara lainnya di Bali.",
+    "start_url": "/storybali-undangan-2/index.html",
+    "scope": "/storybali-undangan-2/",
+    "display": "standalone",
+    "background_color": "#f8fafc",
+    "theme_color": "#5A6B59",
+    "icons": [
+        {
+            "src": "https://wayanku.github.io/storybali-undangan/IMG_6302%20(2).JPG",
+            "sizes": "192x192",
+            "type": "image/jpeg"
+        },
+        {
+            "src": "https://wayanku.github.io/storybali-undangan/IMG_6302%20(2).JPG",
+            "sizes": "512x512",
+            "type": "image/jpeg"
+        }
+    ]
+}
