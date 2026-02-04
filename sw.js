@@ -1,4 +1,4 @@
-const CACHE_NAME = 'storybali-cache-v3.0'; // [UPDATE] Versi baru untuk reset cache
+const CACHE_NAME = 'storybali-cache-v3.1'; // [UPDATE] Versi baru untuk reset cache
 const urlsToCache = [
     './',
     './index.html',
@@ -9,13 +9,11 @@ const urlsToCache = [
     './manifest.json',
     './edit-tamu.html',
     './buat%20undangan/metatah.html',
-    './buat%20undangan/pernikahan.html', // [BARU] Tambahkan file ini
     'https://wayanku.github.io/storybali-undangan/IMG_6302%20(2).JPG',
     'https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:wght@900&family=Poppins:wght@400;700;900&display=swap',
-    'https://fonts.gstatic.com/s/manrope/v15/xn7gYHE41ni1AdIRggexSg.woff2'
+    'https://fonts.gstatic.com/s/manrope/v15/xn7gYHE41ni1AdIRggexSg.woff2' // Contoh file font
 ];
 
-// Install Service Worker
 self.addEventListener('install', event => {
     // [PENTING] Paksa SW baru untuk segera aktif menggantikan yang rusak
     self.skipWaiting(); 
