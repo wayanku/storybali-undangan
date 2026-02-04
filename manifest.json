@@ -2,7 +2,7 @@
     "name": "Storybali Undangan",
     "short_name": "Storybali",
     "description": "Undangan digital premium untuk pernikahan, metatah, ulang tahun, dan acara lainnya di Bali.",
-    "start_url": "/index.html",
+    "start_url": "storybali-undangan.vercel.app/ ",
     "scope": "/storybali-undangan-2/",
     "display": "standalone",
     "background_color": "#f8fafc",
