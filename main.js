@@ -995,7 +995,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const selectedId = selectedEl ? selectedEl.dataset.itemId : (shoppingCart.length > 0 ? shoppingCart[0].id : null);
             const selectedItem = selectedId ? shoppingCart.find(item => item.id === selectedId) : null;
             // Bersihkan format harga (misal "Rp 50.000" -> 50000)
-            const orderPrice = (selectedItem && selectedItem.price) ? (parseInt(selectedItem.price.replace(/[^0-9]/g, '')) || 0) : 0;
+            const orderPrice = (selectedItem && selectedItem.price) ? (parseInt(String(selectedItem.price).replace(/[^0-9]/g, '')) || 0) : 0;
 
             const sheetPayload = {
                 action: 'save',
