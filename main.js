@@ -33,7 +33,7 @@ if (savedCart && savedCart !== '[]') {
 }
 
 // --- KONFIGURASI GLOBAL & DATA ---
-const APP_VERSION = '2.4'; // [BARU] Versi Aplikasi (Ubah ini jika ada update besar)
+const APP_VERSION = '3.0'; // [UPDATE] Naikkan ke 3.0 untuk memicu pembersihan cache
 // Cek apakah versi berubah, jika ya hapus cache lama
 if (localStorage.getItem('app_version') !== APP_VERSION) {
     console.log('Versi baru terdeteksi. Membersihkan cache...');
