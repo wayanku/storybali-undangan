@@ -2327,6 +2327,10 @@
         function loadAnalyticsData() {
             const days = document.getElementById('chart-filter').value;
             const chartContainer = document.getElementById('visitor-chart');
+            
+            // [BARU] Visual feedback saat loading (transparan)
+            chartContainer.style.opacity = '0.5';
+            chartContainer.style.pointerEvents = 'none';
 
             // Panggil Google Apps Script (pastikan backend sudah diupdate untuk handle action=getAnalytics)
             fetch(`${GOOGLE_SHEET_API_URL}?action=getAnalytics&days=${days}`)
@@ -2350,6 +2354,10 @@
                         </div>`;
                         return;
                     }
+                    
+                    // [BARU] Kembalikan tampilan normal setelah data diterima
+                    chartContainer.style.opacity = '1';
+                    chartContainer.style.pointerEvents = 'auto';
 
                     // Pastikan canvas ada (jika sebelumnya tertimpa error)
                     if (!document.getElementById('analyticsCanvas')) {
@@ -2362,11 +2370,56 @@
                     } else {
                         // Fallback jika backend belum siap (Demo Data)
                         console.warn("Backend belum support analytics atau data kosong, menggunakan data demo.", data);
-                        // Render demo data jika perlu (disederhanakan untuk brevity)
+                        
+                        // [BARU] Generate Data Demo agar Dashboard tidak kosong
+                        const demoData = {
+                            trend: {
+                                labels: ['H-6', 'H-5', 'H-4', 'H-3', 'H-2', 'Kemarin', 'Hari Ini'],
+                                users: [15, 25, 20, 35, 28, 45, 60],
+                                views: [40, 65, 50, 90, 75, 110, 150]
+                            },
+                            pages: {
+                                labels: ['Beranda', 'Katalog Pernikahan', 'Form Order', 'Katalog Metatah', 'Keranjang'],
+                                data: [350, 200, 120, 90, 80]
+                            },
+                            cities: {
+                                labels: ['Denpasar', 'Badung', 'Gianyar', 'Tabanan', 'Jakarta'],
+                                data: [150, 120, 80, 50, 30]
+                            },
+                            devices: {
+                                labels: ['Mobile', 'Desktop', 'Tablet'],
+                                data: [85, 10, 5]
+                            },
+                            sources: {
+                                labels: ['WhatsApp', 'Instagram', 'Direct', 'Google'],
+                                data: [120, 100, 80, 50]
+                            },
+                            os: {
+                                labels: ['Android', 'iOS', 'Windows', 'Mac'],
+                                data: [200, 150, 30, 10]
+                            },
+                            browser: {
+                                labels: ['Chrome', 'Safari', 'Samsung Internet', 'Edge'],
+                                data: [210, 140, 30, 10]
+                            },
+                            userType: {
+                                labels: ['new', 'returning'],
+                                data: [70, 30]
+                            },
+                            country: {
+                                labels: ['Indonesia', 'Unknown'],
+                                data: [380, 20]
+                            }
+                        };
+                        renderDashboardCharts(demoData);
+                        showToast('Menampilkan Data Demo (Analytics Belum Aktif)', 'info');
                     }
                 })
                 .catch(err => {
                     console.error("Gagal load analytics:", err);
+                    // Kembalikan tampilan jika error
+                    chartContainer.style.opacity = '1';
+                    chartContainer.style.pointerEvents = 'auto';
                     chartContainer.innerHTML = '<div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:var(--danger-color);">Gagal memuat data</div>';
                 });
         }
