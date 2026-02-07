@@ -32,8 +32,11 @@ if (savedCart && savedCart !== '[]') {
     window.shoppingCart = JSON.parse(savedCart);
 }
 
+// [BARU] Muat Wishlist dari localStorage
+let wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+
 // --- KONFIGURASI GLOBAL & DATA ---
-const APP_VERSION = '3.1'; // [UPDATE] Naikkan ke 3.1 untuk memicu pembersihan cache
+const APP_VERSION = '3.4'; // [UPDATE] Naikkan versi untuk memaksa reset
 // Cek apakah versi berubah, jika ya hapus cache lama
 if (localStorage.getItem('app_version') !== APP_VERSION) {
     console.log('Versi baru terdeteksi. Membersihkan cache...');
@@ -46,7 +49,7 @@ const CATALOG_PAGE_SIZE = 6;
 let currentCatalogPage = 1;
 let currentCatalogItems = [];
 
-const GOOGLE_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbyPrxzjrltCuipal05wcAJbfUMOvg3sMn31m6IOBG8FFGpUdf2D2SJWF9bdlsmqpU9Y6Q/exec';
+const GOOGLE_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbxBsI7q7aIS2VlqBNXIdLrNGhPfdkxY2BsfP_Z65_1ogFaG-dQoP5wiZ-Qc8NTA-MjWmA/exec';
 let allOrdersCache = []; // Cache untuk data pesanan
 
 // [BARU] Data Master Layanan (Default)
@@ -68,7 +71,16 @@ function fetchCatalogFromGoogleSheet() {
     fetch(`${GOOGLE_SHEET_API_URL}?v=${new Date().getTime()}`)
         .then(response => response.json())
         .then(data => {
-            if (!data || data.length === 0) return;
+            if (!data || (Array.isArray(data) && data.length === 0) || data.status === 'error') {
+                console.log("Data kosong atau error dari Sheet:", data);
+                return;
+            }
+            console.log("Data berhasil dimuat dari Sheet:", data.length, "baris");
+            
+            // [DEBUG] Log kategori yang ditemukan untuk memastikan semua sheet terbaca
+            const categoriesFound = [...new Set(data.map(item => item.category))];
+            console.log("Kategori ditemukan:", categoriesFound);
+
             localStorage.setItem('catalogCache', JSON.stringify(data));
             processCatalogData(data);
         })
@@ -77,6 +89,12 @@ function fetchCatalogFromGoogleSheet() {
 
 // Fungsi helper untuk memproses data katalog
 function processCatalogData(data) {
+    // [PERBAIKAN] Validasi ketat: Data harus Array dan tidak kosong
+    if (!Array.isArray(data) || data.length === 0) {
+        console.log("Database online kosong atau format salah. Menggunakan data katalog bawaan.");
+        return;
+    }
+
     const newCatalogData = {};
     let visitorMessageData = null;
     let servicesConfig = []; // [BARU] Konfigurasi layanan dari admin
@@ -96,6 +114,9 @@ function processCatalogData(data) {
             return;
         }
 
+        // [PERBAIKAN] Skip jika data tidak memiliki kategori (baris kosong/rusak)
+        if (!row.category) return;
+
         if (!newCatalogData[row.category]) {
             newCatalogData[row.category] = [
                 { type: 'withPhoto', themes: [] },
@@ -104,7 +125,14 @@ function processCatalogData(data) {
         }
 
         const typeIndex = row.type === 'withoutPhoto' ? 1 : 0;
-        newCatalogData[row.category][typeIndex].themes.push(row);
+        // Pastikan array themes ada sebelum push (safety check)
+        if (newCatalogData[row.category][typeIndex]) {
+            // [PERBAIKAN] Cek duplikasi tema agar tidak muncul ganda di katalog
+            const existingThemes = newCatalogData[row.category][typeIndex].themes;
+            if (!existingThemes.some(t => t.themeName === row.themeName)) {
+                existingThemes.push(row);
+            }
+        }
     });
 
     catalogData = newCatalogData;
@@ -185,6 +213,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const themeTitle = document.getElementById('theme-title'); 
     const backButton = document.querySelector('.back-button');
     const btnWithoutPhoto = document.getElementById('btn-without-photo');
+    const btnFavorites = document.getElementById('btn-favorites'); // [BARU]
     const themeToggleButtons = document.querySelectorAll('.theme-toggle button');
     const catalogGrid = document.getElementById('catalog-grid');
     const categoryGrid = document.getElementById('category-grid');
@@ -464,6 +493,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function generateCatalog() {
         const isWithoutPhoto = btnWithoutPhoto.classList.contains('active');
+        const isFavorites = btnFavorites && btnFavorites.classList.contains('active'); // [BARU]
         
         // [DIUBAH] Hanya tampilkan skeleton saat halaman pertama
         if (currentCatalogPage === 1) {
@@ -471,7 +501,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         setTimeout(() => {
-            generateItems(isWithoutPhoto);
+            generateItems(isWithoutPhoto, isFavorites);
         }, 500);
     }
     
@@ -500,7 +530,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    function generateItems(isWithoutPhoto) {
+    function generateItems(isWithoutPhoto, isFavorites) {
         const categoryName = themeTitle.textContent.replace('Pilihan Tema ', '');
         const categoryThemeData = catalogData[categoryName] || [];
         const themeType = isWithoutPhoto ? 'withoutPhoto' : 'withPhoto';
@@ -519,7 +549,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const searchTerm = searchInput.value.toLowerCase();
         currentCatalogItems = itemsWithId.filter(item => {
             const isHidden = item.visible === false || String(item.visible).trim().toLowerCase() === 'false';
-            return item.themeName.toLowerCase().includes(searchTerm) && !isHidden;
+            const matchesSearch = item.themeName.toLowerCase().includes(searchTerm);
+            
+            // [BARU] Filter Favorit
+            if (isFavorites) {
+                return matchesSearch && !isHidden && wishlist.includes(item.id);
+            }
+            return matchesSearch && !isHidden;
         });
 
         // [DIUBAH] Logika paginasi
@@ -527,6 +563,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (currentCatalogPage === 1) {
             catalogGrid.innerHTML = ''; // Bersihkan hanya di halaman pertama
+            
+            // [BARU] Tampilan jika tidak ada hasil pencarian
+            if (currentCatalogItems.length === 0) {
+                catalogGrid.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 60px 20px; color: var(--secondary-text);">
+                        <div style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;">🔍</div>
+                        <h3 style="margin: 0 0 10px 0; color: var(--primary-text);">Tidak ada tema ditemukan</h3>
+                        <p style="margin: 0;">Coba kata kunci lain atau ubah filter kategori.</p>
+                    </div>
+                `;
+                loadMoreBtn.classList.add('hidden');
+                return;
+            }
         }
 
         // Tampilkan/sembunyikan tombol "Load More"
@@ -548,6 +597,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const labelHtml = theme.label ? `<span class="catalog-item-label">${theme.label}</span>` : '';
             const previewTagHtml = theme.previewUrl ? `<span class="catalog-item-preview-tag">Tersedia</span>` : `<span class="catalog-item-preview-tag coming-soon-tag">Coming Soon</span>`;
+
+            // [BARU] Cek status Wishlist
+            const isWishlisted = wishlist.includes(id);
+            const heartClass = isWishlisted ? 'wishlist-btn active' : 'wishlist-btn';
+            const heartIcon = isWishlisted ? '<path d="M12,21.35L10.55,20.03C5.4,15.36 2,12.28 2,8.5C2,5.42 4.42,3 7.5,3C9.24,3 10.91,3.81 12,5.09C13.09,3.81 14.76,3 16.5,3C19.58,3 22,5.42 22,8.5C22,12.28 18.6,15.36 13.45,20.04L12,21.35Z" />' : '<path d="M12.1,18.55L12,18.65L11.89,18.55C7.14,14.24 4,11.39 4,8.5C4,6.5 5.5,5 7.5,5C9.04,5 10.54,6 11.07,7.36H12.93C13.46,6 14.96,5 16.5,5C18.5,5 20,6.5 20,8.5C20,11.39 16.86,14.24 12.1,18.55M16.5,3C14.76,3 13.09,3.81 12,5.09C10.91,3.81 9.24,3 7.5,3C4.42,3 2,5.42 2,8.5C2,12.28 5.4,15.36 10.55,20.04L12,21.35L13.45,20.03C18.6,15.36 22,12.28 22,8.5C22,5.42 19.58,3 16.5,3Z" />';
 
             // [BARU] Cek status di keranjang
             const isInCart = shoppingCart.some(cartItem => cartItem.id === id);
@@ -588,6 +642,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     ${labelHtml}
                     <img src="${theme.image}" alt="${themeName}" class="catalog-item-image" loading="lazy" decoding="async">
                     ${previewTagHtml}
+                    <button class="${heartClass}" data-id="${id}" onclick="toggleWishlist('${id}', this)" style="position:absolute; top:10px; right:10px; background:rgba(255,255,255,0.9); border-radius:50%; width:30px; height:30px; border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:5; box-shadow:0 2px 5px rgba(0,0,0,0.1);">
+                        <svg viewBox="0 0 24 24" style="width:18px; height:18px; fill:${isWishlisted ? '#e53e3e' : '#94a3b8'}; transition:fill 0.3s;">${heartIcon}</svg>
+                    </button>
+                    <button onclick="shareTheme('${themeName}', '${theme.previewUrl || window.location.href}')" style="position:absolute; top:50px; right:10px; background:rgba(255,255,255,0.9); border-radius:50%; width:30px; height:30px; border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:5; box-shadow:0 2px 5px rgba(0,0,0,0.1);" title="Bagikan">
+                        <svg viewBox="0 0 24 24" style="width:16px; height:16px; fill:#4a5568;"><path d="M18,16.08C17.24,16.08 16.56,16.38 16.04,16.85L8.91,12.7C8.96,12.47 9,12.24 9,12C9,11.76 8.96,11.53 8.91,11.3L16.04,7.15C16.56,7.62 17.24,7.92 18,7.92C19.66,7.92 21,6.58 21,5C21,3.42 19.66,2 18,2C16.34,2 15,3.42 15,5C15,5.24 15.04,5.47 15.09,5.7L7.96,9.85C7.44,9.38 6.76,9.08 6,9.08C4.34,9.08 3,10.42 3,12C3,13.58 4.34,14.92 6,14.92C6.76,14.92 7.44,14.62 7.96,14.15L15.09,18.3C15.04,18.53 15,18.76 15,19C15,20.58 16.34,22 18,22C19.66,22 21,20.58 21,19C21,17.42 19.66,16.08 18,16.08Z" /></svg>
+                    </button>
                 </div>
                 <div class="catalog-item-details">
                     <div class="catalog-item-header">
@@ -619,6 +679,48 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // [OPTIMASI] Event listener untuk .view-theme-btn dipindahkan ke handleCatalogAction
     }
+
+    // [BARU] Fungsi Toggle Wishlist Global
+    window.toggleWishlist = function(id, btn) {
+        const index = wishlist.indexOf(id);
+        const svg = btn.querySelector('svg');
+        
+        if (index === -1) {
+            wishlist.push(id);
+            btn.classList.add('active');
+            svg.style.fill = '#e53e3e';
+            svg.innerHTML = '<path d="M12,21.35L10.55,20.03C5.4,15.36 2,12.28 2,8.5C2,5.42 4.42,3 7.5,3C9.24,3 10.91,3.81 12,5.09C13.09,3.81 14.76,3 16.5,3C19.58,3 22,5.42 22,8.5C22,12.28 18.6,15.36 13.45,20.04L12,21.35Z" />';
+            showToast('Ditambahkan ke Favorit');
+        } else {
+            wishlist.splice(index, 1);
+            btn.classList.remove('active');
+            svg.style.fill = '#94a3b8';
+            svg.innerHTML = '<path d="M12.1,18.55L12,18.65L11.89,18.55C7.14,14.24 4,11.39 4,8.5C4,6.5 5.5,5 7.5,5C9.04,5 10.54,6 11.07,7.36H12.93C13.46,6 14.96,5 16.5,5C18.5,5 20,6.5 20,8.5C20,11.39 16.86,14.24 12.1,18.55M16.5,3C14.76,3 13.09,3.81 12,5.09C10.91,3.81 9.24,3 7.5,3C4.42,3 2,5.42 2,8.5C2,12.28 5.4,15.36 10.55,20.04L12,21.35L13.45,20.03C18.6,15.36 22,12.28 22,8.5C22,5.42 19.58,3 16.5,3Z" />';
+        }
+        localStorage.setItem('wishlist', JSON.stringify(wishlist));
+    };
+
+    let isSharing = false;
+    // [BARU] Fungsi Share Theme
+    window.shareTheme = function(title, url) {
+        if (navigator.share) {
+            if (isSharing) return;
+            isSharing = true;
+            navigator.share({
+                title: 'Storybali Undangan',
+                text: `Cek tema undangan keren ini: ${title}`,
+                url: url
+            }).catch(err => {
+                if (err.name !== 'AbortError') console.error(err);
+            }).finally(() => {
+                isSharing = false;
+            });
+        } else {
+            navigator.clipboard.writeText(`${title} - ${url}`).then(() => {
+                showToast('Link berhasil disalin!');
+            });
+        }
+    };
 
     // [BARU] Event delegation untuk tombol di katalog
     // [DIUBAH] Event delegation untuk tombol di katalog, sekarang dengan animasi
@@ -731,6 +833,21 @@ document.addEventListener('DOMContentLoaded', function() {
         const cartItemsList = document.getElementById('cart-items-list');
         const cartEmptyMsg = document.getElementById('cart-empty-msg');
         const checkoutBtn = document.getElementById('cart-checkout-btn');
+        
+        // [BARU] Tambahkan tombol Hapus Semua jika belum ada
+        let clearBtn = document.getElementById('cart-clear-all-btn');
+        if (!clearBtn && shoppingCart.length > 0) {
+            clearBtn = document.createElement('button');
+            clearBtn.id = 'cart-clear-all-btn';
+            clearBtn.className = 'btn-secondary';
+            clearBtn.style.cssText = 'width:100%; margin-top:10px; color:var(--danger-color); border-color:var(--danger-color); font-size:0.85em; padding:8px;';
+            clearBtn.textContent = 'Hapus Semua Item';
+            clearBtn.onclick = () => { if(confirm('Kosongkan keranjang?')) { shoppingCart = []; updateCartUI(); renderCartModal(); saveCart(); } };
+            // Sisipkan sebelum tombol tutup
+            document.getElementById('cart-close-btn').parentNode.insertBefore(clearBtn, document.getElementById('cart-close-btn'));
+        } else if (shoppingCart.length === 0 && clearBtn) {
+            clearBtn.remove();
+        }
 
         cartItemsList.innerHTML = '';
 
@@ -1479,14 +1596,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const staticElements = document.querySelectorAll('.flash-sale-section, .shopee-vouchers-scroll, .service-menu-section, .order-guide-section');
     window.observeElements(staticElements);
     
-    const cachedData = localStorage.getItem('catalogCache');
-    if (cachedData) {
-        try {
-            processCatalogData(JSON.parse(cachedData));
-            console.log("Data dimuat dari cache lokal.");
-        } catch (e) {
-            console.error("Gagal membaca cache:", e);
-        }
+    // [PERBAIKAN] Hapus logika load dari cache agar selalu ambil data fresh dari server
+    // Dan kosongkan catalogData bawaan agar tidak muncul "data sampah" (Sheet1/Default)
+    if (typeof catalogData !== 'undefined') {
+        catalogData = {}; 
     }
     
     fetchCatalogFromGoogleSheet();
@@ -1588,6 +1701,13 @@ document.addEventListener('DOMContentLoaded', function() {
             toast.classList.remove('show');
         }, 5000);
     }
+    
+    // [BARU] Fungsi Toast Global (bisa dipanggil dari mana saja)
+    window.showToast = function(msg) {
+        toastMessage.textContent = msg;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3000);
+    };
 
     function startNotificationLoop() {
         setTimeout(showSocialProof, 45000); // Delay awal diperlama jadi 45 detik
@@ -1974,5 +2094,24 @@ if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('sw.js')
             .then(registration => console.log('ServiceWorker registration successful with scope: ', registration.scope))
             .catch(err => console.log('ServiceWorker registration failed: ', err));
+    });
+}
+
+// [BARU] Logic Scroll to Top
+const scrollTopBtn = document.getElementById('scroll-to-top-btn');
+if (scrollTopBtn) {
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 300) {
+            scrollTopBtn.style.opacity = '1';
+            scrollTopBtn.style.visibility = 'visible';
+            scrollTopBtn.style.transform = 'translateY(0)';
+        } else {
+            scrollTopBtn.style.opacity = '0';
+            scrollTopBtn.style.visibility = 'hidden';
+            scrollTopBtn.style.transform = 'translateY(20px)';
+        }
+    });
+    scrollTopBtn.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 }
