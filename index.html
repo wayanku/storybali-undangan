@@ -396,6 +396,7 @@
                 <div class="theme-toggle">
                     <button id="btn-with-photo" class="active">Dengan Foto</button>
                     <button id="btn-without-photo">Tanpa Foto</button>
+                    <button id="btn-favorites" style="flex: 0 0 auto; width: auto;">❤ Favorit</button>
                 </div>
                 
                 <div id="catalog-grid" class="catalog-grid-class">
@@ -916,6 +917,16 @@
         </div>
     </div>
 
+    <!-- [BARU] Scroll to Top Button -->
+    <button id="scroll-to-top-btn" title="Kembali ke Atas" style="
+        position: fixed; bottom: 95px; left: 20px; width: 45px; height: 45px;
+        background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 50%;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15); cursor: pointer; z-index: 990;
+        display: flex; align-items: center; justify-content: center;
+        opacity: 0; visibility: hidden; transition: all 0.3s ease; transform: translateY(20px);
+    ">
+        <svg viewBox="0 0 24 24" style="width: 24px; height: 24px; fill: var(--primary-text);"><path d="M7.41,15.41L12,10.83L16.59,15.41L18,14L12,8L6,14L7.41,15.41Z" /></svg>
+    </button>
 
     <!-- JavaScript untuk Fungsionalitas Ajaib -->
     <script>
