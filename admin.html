@@ -410,6 +410,15 @@
             #view-themes .header { flex-direction: column !important; align-items: flex-start !important; }
             #view-themes .header > div { width: 100%; }
             #view-themes .header button { width: 100% !important; margin: 10px 0 0 0 !important; }
+            
+            /* [PERBAIKAN] Header Lacak Pesanan di HP agar tombol tidak keluar layar */
+            #view-orders .header { flex-direction: column !important; align-items: flex-start !important; }
+            #view-orders .header > div { width: 100%; }
+            #view-orders .header > div:last-child { 
+                margin-top: 15px; flex-direction: column !important; align-items: stretch !important; 
+            }
+            #search-order-input { width: 100% !important; }
+            #view-orders .header button { width: 100% !important; margin: 0 !important; }
         }
 
         /* --- NEW: Chart & Activity Styles --- */
@@ -482,6 +491,7 @@
             box-shadow: var(--shadow-sm); border: 1px solid transparent;
             display: flex; flex-direction: column; gap: 15px; position: relative;
             transition: transform 0.2s; animation: fadeInUp 0.5s ease-out forwards;
+            overflow: hidden; /* Mencegah konten keluar dari kartu */
         }
         .order-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
         .order-header { display: flex; justify-content: space-between; align-items: flex-start; }
@@ -490,6 +500,23 @@
         .progress-container { width: 100%; background: #e5e7eb; height: 8px; border-radius: 4px; overflow: hidden; margin-top: 5px; }
         .progress-bar { height: 100%; background: var(--accent-color); transition: width 0.5s ease; border-radius: 4px; }
         .order-status { font-size: 0.9rem; color: var(--secondary-text); display: flex; justify-content: space-between; align-items: center; }
+
+        /* [PERBAIKAN] Responsivitas Grid Pesanan di HP */
+        #order-list {
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        }
+        @media (max-width: 768px) {
+            #order-list {
+                grid-template-columns: 1fr !important; /* Satu kolom penuh di HP agar tidak melebar */
+            }
+            .order-header {
+                flex-wrap: wrap; /* Izinkan header wrap jika konten panjang */
+                gap: 8px;
+            }
+            .order-client {
+                word-break: break-word; /* Pecah kata panjang */
+            }
+        }
     </style>
 </head>
 <body>
@@ -712,11 +739,40 @@
                         <h2 style="margin: 0; font-size: 1.5rem;">Lacak Pesanan</h2>
                         <p style="margin: 5px 0 0;">Pantau progres pengerjaan undangan klien.</p>
                     </div>
-                    <button onclick="openOrderModal()" class="btn btn-primary btn-sm" style="width: auto; margin: 0;">
-                        + Pesanan Baru
-                    </button>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <select id="sort-order-select" style="padding: 8px 12px; border-radius: 12px; border: 1px solid #e2e8f0; font-size: 0.9rem; width: auto; background: var(--card-bg); cursor: pointer;">
+                            <option value="newest">Terbaru</option>
+                            <option value="oldest">Terlama</option>
+                            <option value="price-high">Harga Tertinggi</option>
+                            <option value="price-low">Harga Terendah</option>
+                        </select>
+                        <select id="filter-order-status" style="padding: 8px 12px; border-radius: 12px; border: 1px solid #e2e8f0; font-size: 0.9rem; width: auto; background: var(--card-bg); cursor: pointer;">
+                            <option value="all">Semua Status</option>
+                            <option value="paid">Lunas</option>
+                            <option value="unpaid">Belum Lunas</option>
+                        </select>
+                        <input type="text" id="search-order-input" placeholder="Cari ID / Nama..." style="padding: 8px 12px; border-radius: 12px; border: 1px solid #e2e8f0; font-size: 0.9rem; width: 200px; background: var(--card-bg);">
+                        <button onclick="exportOrdersToCSV()" class="btn btn-secondary btn-sm" style="width: auto; margin: 0;" title="Download Data Excel/CSV">
+                            <svg style="width:18px;height:18px;" viewBox="0 0 24 24"><path fill="currentColor" d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20M16,11V18.1L13.9,16L11.1,18.8L8.3,16L6.2,18.1L3.4,15.3L2,16.7L4.8,19.5L2,22.3L3.4,23.7L6.2,20.9L9,23.7L11.8,20.9L14.6,23.7L16,22.3L13.2,19.5L16,16.7L17.4,18.1V11H16Z" /></svg>
+                        </button>
+                        <button onclick="openOrderModal()" class="btn btn-primary btn-sm" style="width: auto; margin: 0;">
+                            + Pesanan Baru
+                        </button>
+                    </div>
                 </div>
-                <div id="order-list" class="theme-grid" style="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));">
+                <!-- [BARU] Statistik Ringkas Pesanan -->
+                <div class="stats-container" style="margin-bottom: 25px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+                    <div class="stat-card" style="padding: 15px; border-left: 4px solid var(--accent-color);">
+                        <div class="stat-content"><span class="stat-label">Total Pesanan</span><span id="order-stat-total" class="stat-value">0</span></div>
+                    </div>
+                    <div class="stat-card" style="padding: 15px; border-left: 4px solid #eab308;">
+                        <div class="stat-content"><span class="stat-label">Perlu Diproses</span><span id="order-stat-pending" class="stat-value" style="color:#ca8a04">0</span></div>
+                    </div>
+                    <div class="stat-card" style="padding: 15px; border-left: 4px solid var(--success-color);">
+                        <div class="stat-content"><span class="stat-label">Selesai (Lunas)</span><span id="order-stat-completed" class="stat-value" style="color:var(--success-color)">0</span></div>
+                    </div>
+                </div>
+                <div id="order-list" class="theme-grid">
                     <!-- Order cards will be populated here -->
                 </div>
             </div>
@@ -832,6 +888,7 @@
                     <div style="margin-top: 30px;">
                         <button id="sync-btn" class="btn btn-primary" style="margin-bottom: 15px;">Sync Data ke Google Sheet</button>
                         <button onclick="location.reload()" class="btn btn-secondary" style="color: var(--danger-color); border-color: #fee2e2; background: #fef2f2;">Keluar Aplikasi</button>
+                        <button onclick="resetLocalData()" class="btn btn-secondary btn-sm" style="margin-top: 10px; width: 100%;">⚠ Reset Cache & Data Lokal</button>
                     </div>
                 </div>
             </div>
@@ -962,6 +1019,9 @@
                     <div style="display: flex; gap: 8px;">
                         <input type="text" id="order-link" placeholder="https://..." style="flex: 1;">
                         <button onclick="generateLink()" class="btn btn-secondary btn-sm" style="width: auto; margin: 0; padding: 0 12px;" title="Buat Link Otomatis">Auto</button>
+                        <button onclick="copyOrderLink()" class="btn btn-secondary btn-sm" style="width: auto; margin: 0; padding: 0 12px;" title="Salin Link">
+                            <svg style="width:16px;height:16px;" viewBox="0 0 24 24"><path fill="currentColor" d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z" /></svg>
+                        </button>
                     </div>
                 </div>
                 <div class="form-group">
@@ -1054,7 +1114,7 @@
     <script src="catalog.js"></script>
     <script>
         // KONFIGURASI
-        const GOOGLE_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbyPrxzjrltCuipal05wcAJbfUMOvg3sMn31m6IOBG8FFGpUdf2D2SJWF9bdlsmqpU9Y6Q/exec';
+        const GOOGLE_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbxBsI7q7aIS2VlqBNXIdLrNGhPfdkxY2BsfP_Z65_1ogFaG-dQoP5wiZ-Qc8NTA-MjWmA/exec';
         // [BARU] API Key ImgBB telah dimasukkan
         const IMGBB_API_KEY = '7e6f3ce63649d305ccaceea00c28266d'; 
         
@@ -1066,10 +1126,10 @@
         let ordersData = []; // [BARU] Menyimpan data pesanan
         // [BARU] Data Layanan Default (Sama seperti di main.js)
         const SERVICES_DATA = [
-            { id: 'Wedding Organizer', label: 'Jasa WO', icon: '<path d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14M12,2A6,6 0 0,0 6,8A6,6 0 0,0 12,14A6,6 0 0,0 18,8A6,6 0 0,0 12,2M12,16C9.97,16 7.14,16.91 6.34,18H17.66C16.86,16.91 14.03,16 12,16Z" />', color: '#FF5722', bg: '#FFF3E0' },
+            { id: 'Buat Undangan Mandiri', label: 'Buat Undangan', icon: '<path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />', color: '#FF5722', bg: '#FFF3E0' },
             { id: 'Fotografer', label: 'Fotografer', icon: '<path d="M4,4H7L9,2H15L17,4H20A2,2 0 0,1 22,6V18A2,2 0 0,1 20,20H4A2,2 0 0,1 2,18V6A2,2 0 0,1 4,4M12,7A5,5 0 0,0 7,12A5,5 0 0,0 12,17A5,5 0 0,0 17,12A5,5 0 0,0 12,7M12,9A3,3 0 0,1 15,12A3,3 0 0,1 12,15A3,3 0 0,1 9,12A3,3 0 0,1 12,9Z" />', color: '#2196F3', bg: '#E3F2FD' },
             { id: 'MUA & Busana', label: 'MUA & Rias', icon: '<path d="M12,2C13.11,2 14,2.89 14,4V8H10V4C10,2.89 10.89,2 12,2M13.53,10H10.47C8.5,10 6.79,11.37 6.34,13.29L6.12,14.23C5.89,15.21 6.63,16.13 7.63,16.13H16.37C17.37,16.13 18.11,15.21 17.88,14.23L17.66,13.29C17.21,11.37 15.5,10 13.53,10M19,18H5V22H19V18Z" />', color: '#E91E63', bg: '#FCE4EC' },
-            { id: 'Sewa Tenda', label: 'Sewa Tenda', icon: '<path d="M12,3L2,12H5V20H19V12H22L12,3M12,7.7C14.1,7.7 15.8,9.4 15.8,11.5C15.8,14.1 12,17.5 12,17.5C12,17.5 8.2,14.1 8.2,11.5C8.2,9.4 9.9,7.7 12,7.7Z" />', color: '#4CAF50', bg: '#E8F5E9' },
+            { id: 'Edit Tamu', label: 'Edit Tamu', icon: '<path d="M21.7,13.35L20.7,14.35L18.65,12.3L19.65,11.3C19.86,11.09 20.21,11.09 20.42,11.3L21.7,12.58C21.91,12.79 21.91,13.14 21.7,13.35M12,18.94L18.06,12.88L20.11,14.93L14.06,21H12V18.94M12,14C7.58,14 4,15.79 4,18V20H10V18.1L12,16.12V14M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,6A2,2 0 0,0 10,8A2,2 0 0,0 12,10A2,2 0 0,0 14,8A2,2 0 0,0 12,6Z" />', color: '#4CAF50', bg: '#E8F5E9' },
             { id: 'Dekorasi', label: 'Dekorasi', icon: '<path d="M12,2L14.5,8.5L21,9.8L16.5,14.5L17.3,21L12,17.8L6.7,21L7.5,14.5L3,9.8L9.5,8.5L12,2M12,5.8L10.4,10L6.1,10.6L9.3,13.6L8.4,17.8L12,15.7L15.6,17.8L14.7,13.6L17.9,10.6L13.6,10L12,5.8Z" />', color: '#9C27B0', bg: '#F3E5F5' },
             { id: 'Catering', label: 'Catering', icon: '<path d="M11,9H9V2H7V9H5V2H3V9C3,11.12 4.66,12.84 6.75,12.97V22H9.25V12.97C11.34,12.84 13,11.12 13,9V2H11V9M16,6V14H18.5V22H21V2C18.24,2 16,4.24 16,6Z" />', color: '#FF9800', bg: '#FFF3E0' },
             { id: 'Sewa Mobil', label: 'Sewa Mobil', icon: '<path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5H6.5C5.84 5 5.28 5.42 5.08 6.01L3 12V20C3 20.55 3.45 21 4 21H5C5.55 21 6 20.55 6 20V19H18V20C18 20.55 18.45 21 19 21H20C20.55 21 21 20.55 21 20V12L18.92 6.01M6.5 16C5.67 16 5 15.33 5 14.5C5 13.67 5.67 13 6.5 13C7.33 13 8 13.67 8 14.5C8 15.33 7.33 16 6.5 16M17.5 16C16.67 16 16 15.33 16 14.5C16 13.67 16.67 13 17.5 13C18.33 13 19 13.67 19 14.5C19 15.33 18.33 16 17.5 16M5 11L6.5 6.5H17.5L19 11H5Z" />', color: '#607D8B', bg: '#ECEFF1' },
@@ -1098,13 +1158,7 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             // Cek cache lokal
-            const cachedData = localStorage.getItem('catalogCache');
-            if (cachedData) {
-                try {
-                    processCatalogData(JSON.parse(cachedData));
-                } catch (e) { console.error(e); }
-            }
-            
+            // [PERBAIKAN] Cache lokal dinonaktifkan agar admin selalu melihat data real-time
             // Fetch data terbaru
             // Cek preferensi dark mode
             if (localStorage.getItem('darkMode') === 'true') {
@@ -1134,6 +1188,12 @@
             document.getElementById('save-visitor-msg-btn').addEventListener('click', saveVisitorMessage);
             // [BARU] Event listener untuk upload gambar
             document.getElementById('upload-image-btn').addEventListener('change', handleImageUpload);
+            // [BARU] Event listener untuk pencarian pesanan
+            document.getElementById('search-order-input').addEventListener('input', () => renderOrderList());
+            // [BARU] Event listener untuk filter status pesanan
+            document.getElementById('filter-order-status').addEventListener('change', () => renderOrderList());
+            // [BARU] Event listener untuk sortir pesanan
+            document.getElementById('sort-order-select').addEventListener('change', () => renderOrderList());
             
             // Inisialisasi dropdown awal
             // renderThemeGrid(); // Called after login
@@ -1144,7 +1204,13 @@
             fetch(`${GOOGLE_SHEET_API_URL}?v=${new Date().getTime()}`)
                 .then(response => response.json())
                 .then(data => {
-                    if (data && data.length > 0) {
+                    // [PERBAIKAN] Handle jika response adalah object error dari Apps Script
+                    if (data && data.status === 'error') {
+                        if (!isBackground) showToast("Gagal memuat data: " + data.message, "error");
+                        return;
+                    }
+
+                    if (Array.isArray(data) && data.length > 0) {
                         // [OPTIMASI] Cek apakah data berubah sebelum memproses ulang
                         const currentCache = localStorage.getItem('catalogCache');
                         const newDataString = JSON.stringify(data);
@@ -1167,6 +1233,11 @@
                         
                         if (!isBackground) {
                             console.log("Data berhasil dimuat.");
+                        }
+                    } else {
+                        if (!isBackground) {
+                            // [UPDATE] Pesan lebih informatif untuk pengguna baru
+                            showToast("Database kosong atau format salah. Pastikan Sheet memiliki Header.", "info");
                         }
                     }
                 })
@@ -1294,6 +1365,15 @@
         }
 
         function processCatalogData(data) {
+            // [PERBAIKAN] Validasi ketat: Data harus Array dan tidak kosong
+            if (!Array.isArray(data) || data.length === 0) {
+                console.warn("Menerima data kosong atau invalid dari server. Mengabaikan pembaruan.");
+                if (!Array.isArray(data) && data.status === 'error') {
+                     showToast("Error dari server: " + data.message, "error");
+                }
+                return;
+            }
+
             const newCatalogData = {};
             ordersData = []; // Reset orders
             data.forEach(row => {
@@ -1316,7 +1396,11 @@
                         // Jika kolom visible tidak ada header-nya di Sheet, data mungkin hilang. Default ke false agar tidak error.
                         row.visible = 'false'; 
                     }
-                    ordersData.push(row);
+                    
+                    // [PERBAIKAN] Cek duplikasi ID Pesanan sebelum push (Anti-Duplikat)
+                    if (!ordersData.some(o => o.themeName === row.themeName)) {
+                        ordersData.push(row);
+                    }
                     return;
                 } else if (row.category === 'ADMIN_SERVICES') {
                     servicesConfig.push(row);
@@ -1330,7 +1414,12 @@
                     ];
                 }
                 const typeIndex = row.type === 'withoutPhoto' ? 1 : 0;
-                newCatalogData[row.category][typeIndex].themes.push(row);
+                
+                // [PERBAIKAN] Cek duplikasi Tema sebelum push (Anti-Duplikat)
+                const existingThemes = newCatalogData[row.category][typeIndex].themes;
+                if (!existingThemes.some(t => t.themeName === row.themeName)) {
+                    existingThemes.push(row);
+                }
             });
             catalogData = newCatalogData;
             updateStats();
@@ -1415,7 +1504,10 @@
                                 <div class="theme-card-title">${name}</div>
                                 <div class="theme-card-price">${price}</div>
                                 <div style="margin-top:auto; display:flex; gap:5px;">
-                                    <span style="font-size:0.8em; background:#f3f4f6; padding:2px 6px; border-radius:4px;">Edit</span>
+                                    <button onclick="event.stopPropagation(); openModal(${index})" style="flex:1; border:none; background:#f3f4f6; padding:4px; border-radius:6px; font-size:0.8em; cursor:pointer; color:var(--primary-text);">Edit</button>
+                                    <button onclick="event.stopPropagation(); duplicateTheme(${index})" style="border:none; background:#e0f2fe; padding:4px 8px; border-radius:6px; font-size:0.8em; cursor:pointer; color:#0284c7;" title="Duplikat">
+                                        <svg style="width:14px;height:14px;vertical-align:middle;" viewBox="0 0 24 24"><path fill="currentColor" d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z" /></svg>
+                                    </button>
                                 </div>
                             </div>
                         `;
@@ -1501,15 +1593,52 @@
             // Kita bisa tambahkan pengecekan sederhana agar tidak flicker jika data persis sama,
             // tapi untuk sekarang re-render aman karena DOM order list ringan.
             
+            const filterText = document.getElementById('search-order-input').value.toLowerCase();
+            const filterStatus = document.getElementById('filter-order-status').value;
+            const sortType = document.getElementById('sort-order-select').value;
+
             const grid = document.getElementById('order-list');
             const fragment = document.createDocumentFragment(); // [OPTIMASI]
+
+            // [BARU] Update Statistik Pesanan
+            const totalOrders = ordersData.length;
+            const completedOrders = ordersData.filter(o => String(o.visible).toLowerCase() === 'true' || o.visible === true).length;
+            const pendingOrders = totalOrders - completedOrders;
+            document.getElementById('order-stat-total').textContent = totalOrders;
+            document.getElementById('order-stat-pending').textContent = pendingOrders;
+            document.getElementById('order-stat-completed').textContent = completedOrders;
 
             if (ordersData.length === 0) {
                 grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--secondary-text);">Belum ada pesanan yang dilacak.</div>';
                 return;
             }
 
-            ordersData.forEach((order, index) => {
+            // [BARU] Buat salinan array untuk disortir agar tidak mengubah urutan asli data
+            let sortedOrders = [...ordersData];
+
+            // [BARU] Logika Sortir
+            sortedOrders.sort((a, b) => {
+                const priceA = parseInt(String(a.originalPrice).replace(/[^0-9]/g, '')) || 0;
+                const priceB = parseInt(String(b.originalPrice).replace(/[^0-9]/g, '')) || 0;
+                // Asumsi label berisi tanggal, jika tidak valid gunakan index (urutan masuk)
+                // Untuk simplifikasi, kita gunakan index array asli sebagai proxy waktu (index besar = data baru)
+                const indexA = ordersData.indexOf(a);
+                const indexB = ordersData.indexOf(b);
+
+                if (sortType === 'newest') return indexB - indexA;
+                if (sortType === 'oldest') return indexA - indexB;
+                if (sortType === 'price-high') return priceB - priceA;
+                if (sortType === 'price-low') return priceA - priceB;
+                return 0;
+            });
+
+            sortedOrders.forEach((order) => {
+                // [BARU] Filter Logic
+                if (filterText) {
+                    const searchStr = (order.themeName + ' ' + order.image).toLowerCase();
+                    if (!searchStr.includes(filterText.toLowerCase())) return;
+                }
+
                 // Mapping data sheet ke UI:
                 // themeName -> Order ID
                 // image -> Nama Klien (Text)
@@ -1522,15 +1651,28 @@
                 const hasLink = order.discount && (order.discount.startsWith('http://') || order.discount.startsWith('https://'));
                 const isPaid = String(order.visible).toLowerCase() === 'true' || order.visible === true;
                 
+                // [BARU] Warna Progress Bar Dinamis
+                let progressColor = '#ef4444'; // Merah (Awal)
+                if (progress >= 50) progressColor = '#eab308'; // Kuning (Setengah)
+                if (progress >= 100) progressColor = '#22c55e'; // Hijau (Selesai)
+
+                // [BARU] Tombol Reminder WA untuk yang belum lunas
+                const waReminderBtn = !isPaid ? `
+                    <button onclick="sendWaReminder('${order.image}', '${order.themeName}', '${order.originalPrice}')" title="Kirim Tagihan WA" style="background:#25D366; color:white; border:none; border-radius:8px; width:24px; height:24px; display:flex; align-items:center; justify-content:center; cursor:pointer; margin-left:5px;">
+                        <svg style="width:14px;height:14px;fill:currentColor" viewBox="0 0 24 24"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.76.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.81 3.07 1.24 4.74 1.24 5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2zm4.88 13.38c-.27.13-1.62.8-1.88.93-.25.13-.43.2-.62-.2-.18-.38-.75-1.23-.92-1.5-.17-.27-.33-.31-.62-.18-.28.13-1.25.48-1.52.58-.27.1-.54.15-.81.05-.27-.1-.58-.34-1.1-.83-.6-.55-1.15-1.23-1.32-1.61-.17-.38-.04-.58.11-.75.13-.15.28-.38.43-.51.13-.13.18-.23.28-.38.1-.15.05-.28-.02-.4-.08-.13-.75-1.8-1.02-2.46-.27-.66-.55-.57-.75-.57-.18 0-.38-.05-.58-.05s-.53.08-.81.38c-.27.3-.92.9-1.12 2.13s.23 2.3.26 2.45c.03.15.53 1.23 2.5 2.2.48.23.86.36 1.15.46.45.15.86.13 1.18.08.38-.05 1.18-.48 1.35-.93.17-.45.17-.83.12-.93-.05-.1-.18-.15-.43-.28z"/></svg>
+                    </button>
+                ` : '';
+
                 const card = document.createElement('div');
                 card.className = 'order-card';
-                card.style.animationDelay = `${index * 0.05}s`;
-                card.onclick = () => openOrderModal(index);
+                card.style.animationDelay = `0.05s`; // Reset delay agar tidak aneh saat sort
+                card.onclick = () => openOrderModal(originalIndex);
                 
                 card.innerHTML = `
                     <div class="order-header">
                         <span class="order-id">${order.themeName}</span>
                         ${isPaid ? '<span style="font-size:0.7em; background:#dcfce7; color:#166534; padding:2px 6px; border-radius:4px; font-weight:bold;">LUNAS</span>' : '<span style="font-size:0.7em; background:#fee2e2; color:#991b1b; padding:2px 6px; border-radius:4px;">BELUM LUNAS</span>'}
+                        ${waReminderBtn}
                         ${hasLink ? '<span style="font-size:0.7em; background:#d1fae5; color:#065f46; padding:2px 6px; border-radius:4px;">Link Aktif</span>' : ''}
                         <span style="font-size:0.8em; color:var(--secondary-text); cursor:pointer;">Edit ✎</span>
                     </div>
@@ -1541,7 +1683,7 @@
                             <span style="font-weight:700; color:var(--accent-color);">${progress}%</span>
                         </div>
                         <div class="progress-container">
-                            <div class="progress-bar" style="width: ${progress}%"></div>
+                            <div class="progress-bar" style="width: ${progress}%; background-color: ${progressColor};"></div>
                         </div>
                     </div>
                 `;
@@ -2173,6 +2315,14 @@
             btn.textContent = "Upload Semua Data Bawaan";
         }
 
+        // [BARU] Fungsi Reset Data Lokal jika tampilan error
+        function resetLocalData() {
+            if(!confirm("Ini akan menghapus data di browser dan memuat ulang dari awal. Lanjutkan?")) return;
+            localStorage.removeItem('catalogCache');
+            localStorage.removeItem('adminPassword');
+            location.reload();
+        }
+
         // --- Analytics Functions ---
         function loadAnalyticsData() {
             const days = document.getElementById('chart-filter').value;
@@ -2691,6 +2841,92 @@
             const link = `${baseUrl}?to=${encodeURIComponent(clientName)}`;
             
             document.getElementById('order-link').value = link;
+        }
+
+        // [BARU] Fungsi Salin Link di Modal Order
+        function copyOrderLink() {
+            const linkInput = document.getElementById('order-link');
+            if (!linkInput.value) return showToast('Link kosong!', 'error');
+            
+            linkInput.select();
+            document.execCommand('copy'); // Fallback support
+            navigator.clipboard.writeText(linkInput.value).then(() => showToast('Link disalin!', 'success'));
+        }
+
+        // [BARU] Fungsi Export CSV
+        function exportOrdersToCSV() {
+            if (!ordersData || ordersData.length === 0) {
+                showToast('Tidak ada data pesanan untuk diexport.', 'error');
+                return;
+            }
+
+            const headers = ['ID Pesanan', 'Nama Klien', 'Status', 'Harga', 'Lunas', 'Tanggal', 'Link'];
+            const rows = ordersData.map(order => {
+                const isPaid = String(order.visible).toLowerCase() === 'true' || order.visible === true;
+                // Bersihkan data dari koma agar CSV tidak rusak
+                const clean = (str) => `"${String(str || '').replace(/"/g, '""')}"`;
+                
+                return [
+                    clean(order.themeName),
+                    clean(order.image),
+                    clean(order.previewUrl),
+                    clean(order.originalPrice),
+                    isPaid ? 'Ya' : 'Tidak',
+                    clean(order.label),
+                    clean(order.discount)
+                ];
+            });
+
+            const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `Pesanan_Storybali_${new Date().toISOString().slice(0,10)}.csv`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // [BARU] Fungsi Kirim Reminder WA
+        function sendWaReminder(name, id, price) {
+            event.stopPropagation(); // Mencegah modal terbuka
+            const msg = `Halo Kak ${name}, mohon maaf mengganggu. Kami dari Storybali ingin menginfokan tagihan untuk pesanan undangan ID: ${id} sebesar Rp ${parseInt(price).toLocaleString('id-ID')} belum lunas. Mohon segera diselesaikan ya kak agar undangan bisa kami proses maksimal. Terima kasih 🙏`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+
+        // [BARU] Fungsi Duplikat Tema
+        function duplicateTheme(index) {
+            const category = document.getElementById('admin-category').value;
+            const type = document.getElementById('admin-type').value;
+            
+            if (catalogData[category]) {
+                const typeData = catalogData[category].find(t => t.type === type);
+                if (typeData && typeData.themes[index]) {
+                    const originalTheme = typeData.themes[index];
+                    // Buat salinan objek (Deep Copy sederhana)
+                    const newTheme = JSON.parse(JSON.stringify(originalTheme));
+                    
+                    // Modifikasi nama agar unik
+                    newTheme.themeName = (newTheme.themeName || 'Tema') + ' (Copy)';
+                    
+                    // Buka modal dengan data baru (index null menandakan item baru)
+                    // Kita perlu set data ke form manual karena openModal(null) mereset form
+                    openModal(null); 
+                    
+                    // Isi form dengan data duplikat
+                    document.getElementById('admin-theme-name').value = newTheme.themeName;
+                    document.getElementById('admin-image').value = newTheme.image;
+                    document.getElementById('admin-preview').value = newTheme.previewUrl;
+                    document.getElementById('admin-price').value = newTheme.price;
+                    document.getElementById('admin-original-price').value = newTheme.originalPrice;
+                    document.getElementById('admin-discount').value = newTheme.discount;
+                    document.getElementById('admin-label').value = newTheme.label;
+                    updateImagePreview.call(document.getElementById('admin-image'));
+                    
+                    showToast('Tema diduplikat! Silakan simpan.', 'success');
+                }
+            }
         }
     </script>
 </body>
