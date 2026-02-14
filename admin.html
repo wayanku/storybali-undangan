@@ -1674,6 +1674,9 @@
                 // previewUrl -> Status Text
                 // price -> Progress (Number)
                 
+                // [PERBAIKAN] Tentukan index asli dari data utama untuk fungsi edit
+                const originalIndex = ordersData.indexOf(order);
+                
                 const progress = parseInt(order.price) || 0;
                 const revenue = parseInt(String(order.originalPrice).replace(/[^0-9]/g, '')) || 0; // [BARU] Ambil revenue untuk display
                 // [BARU] Cek apakah sudah ada link undangan yang valid
