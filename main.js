@@ -36,13 +36,6 @@ if (savedCart && savedCart !== '[]') {
 let wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
 
 // --- KONFIGURASI GLOBAL & DATA ---
-const APP_VERSION = '3.6'; // [UPDATE] Naikkan versi untuk memaksa reset
-// Cek apakah versi berubah, jika ya hapus cache lama
-if (localStorage.getItem('app_version') !== APP_VERSION) {
-    console.log('Versi baru terdeteksi. Membersihkan cache...');
-    localStorage.removeItem('catalogCache'); 
-    localStorage.setItem('app_version', APP_VERSION);
-}
 
 // [BARU] Konfigurasi Paginasi Katalog
 const CATALOG_PAGE_SIZE = 6;
@@ -93,7 +86,8 @@ function fetchCatalogFromGoogleSheet() {
             const categoriesFound = [...new Set(data.map(item => item.category))];
             console.log("Kategori ditemukan:", categoriesFound);
 
-            localStorage.setItem('catalogCache', JSON.stringify(data));
+            // [PERBAIKAN] Hapus penyimpanan cache katalog agar selalu real-time
+            // localStorage.setItem('catalogCache', JSON.stringify(data));
             processCatalogData(data);
         })
         .catch(error => console.error("Gagal memuat data dari Google Sheets:", error));
@@ -1531,6 +1525,9 @@ document.addEventListener('DOMContentLoaded', function() {
         updateActiveNav(categoryName);
         history.pushState({page: 'catalog'}, `Katalog - ${categoryName}`, '#katalog');
         switchPage(mainMenu, themePage); 
+        
+        // [BARU] Refresh data dari server saat membuka kategori agar real-time
+        fetchCatalogFromGoogleSheet();
     }
 
     backButton.addEventListener('click', function() {
@@ -1651,6 +1648,9 @@ document.addEventListener('DOMContentLoaded', function() {
             updateActiveNav(categoryName);
             history.pushState({page: 'catalog'}, `Katalog - ${categoryName}`, '#katalog');
             switchPage(mainMenu, themePage);
+            
+            // [BARU] Refresh data dari server saat membuka kategori via nav
+            fetchCatalogFromGoogleSheet();
         });
     });
 
