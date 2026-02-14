@@ -1,5 +1,4 @@
-const CACHE_NAME = 'storybali-cache-v7.0'; // Naikkan versi lagi
-const urlsToCache = [
+const CACHE_NAME = 'storybali-cache-v7.
     '/',
     '/index.html',
     '/style.css',
