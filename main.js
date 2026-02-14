@@ -670,7 +670,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const { id, themeName } = theme;
             const price = theme.price ? `Rp ${parseInt(theme.price).toLocaleString('id-ID')}` : 'Rp 50.000';
             const originalPriceDisplay = theme.originalPrice ? `Rp ${parseInt(theme.originalPrice).toLocaleString('id-ID')}` : 'Rp 100.000';
-            const discount = theme.discount || '50%';
+            let discount = theme.discount || '50%';
+            // [PERBAIKAN] Konversi desimal (0.5) ke persen (50%)
+            if (!isNaN(discount) && Number(discount) <= 1 && Number(discount) > 0) {
+                discount = Math.round(Number(discount) * 100) + "%";
+            }
 
             const labelHtml = theme.label ? `<span class="catalog-item-label">${theme.label}</span>` : '';
             const previewTagHtml = theme.previewUrl ? `<span class="catalog-item-preview-tag">Tersedia</span>` : `<span class="catalog-item-preview-tag coming-soon-tag">Coming Soon</span>`;
