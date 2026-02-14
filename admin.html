@@ -1117,15 +1117,12 @@
     <script src="catalog.js"></script>
     <script>
         // KONFIGURASI
-        const GOOGLE_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbxb3dmmUNQx194aXNdhnw14tcPpbovfSzCoUGbuR2QHawRD8UbuRC5zr8cXA3lzdL2Mkg/exec';
+        const GOOGLE_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbw64pUlfOl1tblbAK_UCWXvWllKha3srv-FDl1V5J2hW3xRcObR9gehdqR-8Hd_H5P9Tg/exec';
         // [BARU] API Key ImgBB telah dimasukkan
         const IMGBB_API_KEY = '7e6f3ce63649d305ccaceea00c28266d'; 
         
         // [BARU] Simpan salinan data bawaan saat aplikasi mulai (sebelum tertimpa data sheet)
         const DEFAULT_CATALOG_DATA = JSON.parse(JSON.stringify(catalogData));
-        
-        // Load Password dari LocalStorage atau gunakan default 'admin123'
-        let ADMIN_PASSWORD = localStorage.getItem('adminPassword') || 'admin123';
         
         // [BARU] Variabel untuk Pesan Pengunjung
         let VISITOR_CONFIG = { text: '', active: false };
@@ -1237,13 +1234,6 @@
                             return; 
                         }
 
-                        // Sinkronisasi Password
-                        const configRow = data.find(row => row.category === 'ADMIN_CONFIG' && row.type === 'PASSWORD');
-                        if (configRow && configRow.themeName) {
-                            ADMIN_PASSWORD = configRow.themeName;
-                            localStorage.setItem('adminPassword', ADMIN_PASSWORD);
-                        }
-
                         // Simpan cache & proses data
                         localStorage.setItem('catalogCache', newDataString);
                         processCatalogData(data);
@@ -1285,10 +1275,28 @@
             }, 30000); // Update setiap 30 detik (diperlambat dari 5 detik)
         }
 
-        function handleLogin() {
+        async function handleLogin() {
+            const password = document.getElementById('admin-password').value;
+            const btn = document.getElementById('login-btn');
+            const originalText = btn.textContent;
+
+            if (!password) {
+                showToast('Masukkan password!', 'error');
+                return;
+            }
+
+            btn.textContent = 'Memverifikasi...';
+            btn.disabled = true;
+
             try {
-                const password = document.getElementById('admin-password').value;
-                if (password === ADMIN_PASSWORD) { 
+                // [KEAMANAN] Kirim password ke server untuk verifikasi
+                const response = await fetch(GOOGLE_SHEET_API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'login', password: password })
+                });
+                const result = await response.json();
+
+                if (result.status === 'success') { 
                     document.getElementById('login-section').classList.add('hidden');
                     document.getElementById('app-layout').classList.remove('hidden');
                     updateStats(); // Hitung statistik saat login
@@ -1302,7 +1310,10 @@
                 }
             } catch (e) {
                 console.error("Login Error:", e);
-                alert("Terjadi kesalahan saat memuat dashboard: " + e.message);
+                showToast("Gagal terhubung ke server.", 'error');
+            } finally {
+                btn.textContent = originalText;
+                btn.disabled = false;
             }
         }
 
@@ -2081,10 +2092,6 @@
             const newPass = document.getElementById('new-password').value;
             const confirmPass = document.getElementById('confirm-password').value;
 
-            if (oldPass !== ADMIN_PASSWORD) {
-                showToast('Password lama salah!', 'error');
-                return;
-            }
             if (newPass !== confirmPass) {
                 showToast('Konfirmasi password tidak cocok!', 'error');
                 return;
@@ -2101,27 +2108,23 @@
 
             // Kirim data ke Google Sheet untuk disimpan
             const formData = {
-                action: 'save',
-                category: 'ADMIN_CONFIG',
-                type: 'PASSWORD',
-                themeName: newPass, // Password baru
-                originalThemeName: ADMIN_PASSWORD, // Password lama untuk mencari baris
-                image: '-', previewUrl: '-', price: 0, originalPrice: 0, discount: '0%', label: '-'
+                action: 'changePassword', // [KEAMANAN] Gunakan action khusus
+                oldPassword: oldPass,
+                newPassword: newPass
             };
 
             fetch(GOOGLE_SHEET_API_URL, {
                 method: 'POST',
-                mode: 'no-cors',
-                headers: { 'Content-Type': 'text/plain' },
                 body: JSON.stringify(formData)
             })
-            .then(() => {
-                // Update state lokal HANYA jika berhasil
-                ADMIN_PASSWORD = newPass;
-                localStorage.setItem('adminPassword', newPass);
-                localStorage.removeItem('catalogCache'); // Hapus cache jika ada perubahan konfigurasi
-                showToast('Password berhasil disimpan di Cloud!', 'success');
-                closeChangePasswordModal();
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    showToast('Password berhasil diubah!', 'success');
+                    closeChangePasswordModal();
+                } else {
+                    showToast(data.message || 'Gagal mengubah password.', 'error');
+                }
             })
             .catch(err => {
                 console.error(err);
@@ -2377,7 +2380,6 @@
         function resetLocalData() {
             if(!confirm("Ini akan menghapus data di browser dan memuat ulang dari awal. Lanjutkan?")) return;
             localStorage.removeItem('catalogCache');
-            localStorage.removeItem('adminPassword');
             location.reload();
         }
         
