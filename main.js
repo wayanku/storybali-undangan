@@ -36,7 +36,7 @@ if (savedCart && savedCart !== '[]') {
 let wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
 
 // --- KONFIGURASI GLOBAL & DATA ---
-const APP_VERSION = '3.4'; // [UPDATE] Naikkan versi untuk memaksa reset
+const APP_VERSION = '3.6'; // [UPDATE] Naikkan versi untuk memaksa reset
 // Cek apakah versi berubah, jika ya hapus cache lama
 if (localStorage.getItem('app_version') !== APP_VERSION) {
     console.log('Versi baru terdeteksi. Membersihkan cache...');
@@ -49,7 +49,7 @@ const CATALOG_PAGE_SIZE = 6;
 let currentCatalogPage = 1;
 let currentCatalogItems = [];
 
-const GOOGLE_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbxBsI7q7aIS2VlqBNXIdLrNGhPfdkxY2BsfP_Z65_1ogFaG-dQoP5wiZ-Qc8NTA-MjWmA/exec';
+const GOOGLE_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbw2_llhQozzeTShLYSlMHIC9xT7RbCjL4YUHWjwcKMY9nbFv5o-ee1H2F9i6YGhJD4wcg/exec';
 let allOrdersCache = []; // Cache untuk data pesanan
 
 // [BARU] Data Master Layanan (Default)
@@ -68,11 +68,23 @@ const SERVICES_DATA = [
 function fetchCatalogFromGoogleSheet() {
     if (!GOOGLE_SHEET_API_URL) return;
 
-    fetch(`${GOOGLE_SHEET_API_URL}?v=${new Date().getTime()}`)
+    // [UPDATE] Tambahkan timestamp agar tidak dicache oleh browser
+    fetch(`${GOOGLE_SHEET_API_URL}?v=${new Date().getTime()}&action=read`)
         .then(response => response.json())
         .then(data => {
             if (!data || (Array.isArray(data) && data.length === 0) || data.status === 'error') {
-                console.log("Data kosong atau error dari Sheet:", data);
+                console.warn("Data kosong atau error dari Sheet:", data);
+                
+                // [PERBAIKAN] Fallback: Render layanan default jika sheet kosong agar menu tidak hilang
+                renderServices([]); 
+
+                // [PERBAIKAN] Beri notifikasi jika admin sedang login agar tahu masalahnya
+                if (localStorage.getItem('adminPassword')) {
+                    // Tunggu sebentar agar fungsi showToast siap
+                    setTimeout(() => {
+                        if (typeof showToast === 'function') showToast("Data Sheet Kosong. Silakan Sync dari Admin.");
+                    }, 2000);
+                }
                 return;
             }
             console.log("Data berhasil dimuat dari Sheet:", data.length, "baris");
@@ -95,27 +107,43 @@ function processCatalogData(data) {
         return;
     }
 
+    // [BARU] Deteksi Header Hilang di Halaman Depan
+    // Mencegah aplikasi crash atau blank jika sheet rusak
+    if (data.length > 0 && !data[0].hasOwnProperty('category') && !data[0].hasOwnProperty('themeName')) {
+        console.error("Header Sheet Hilang! Mengabaikan data sheet dan menggunakan data bawaan.");
+        if (typeof showToast === 'function') showToast("Gangguan Data Server (Header Hilang).");
+        return; // Keluar agar data bawaan tidak tertimpa data rusak
+    }
+
     const newCatalogData = {};
     let visitorMessageData = null;
     let servicesConfig = []; // [BARU] Konfigurasi layanan dari admin
     allOrdersCache = [];
+    
+    // [BARU] Set untuk melacak kategori yang ditemukan di Sheet
+    const sheetCategories = new Set();
 
     data.forEach(row => {
         if (row.category === 'ORDERS') {
             allOrdersCache.push(row);
         } else if (row.category === 'ADMIN_SERVICES') { // [BARU] Ambil config layanan
             servicesConfig.push(row);
+        } else if (row.category === 'ADMIN_CONFIG' && row.type === 'VISITOR_MESSAGE') {
+            visitorMessageData = row;
         }
     });
 
     data.forEach(row => {
-        if (row.category === 'ADMIN_CONFIG' && row.type === 'VISITOR_MESSAGE') {
-            visitorMessageData = row;
+        // [PERBAIKAN] Skip kategori internal agar tidak muncul di halaman depan
+        if (['ORDERS', 'ADMIN_CONFIG', 'ADMIN_SERVICES'].includes(row.category)) {
             return;
         }
 
         // [PERBAIKAN] Skip jika data tidak memiliki kategori (baris kosong/rusak)
         if (!row.category) return;
+
+        // [BARU] Catat kategori
+        sheetCategories.add(row.category);
 
         if (!newCatalogData[row.category]) {
             newCatalogData[row.category] = [
@@ -127,15 +155,57 @@ function processCatalogData(data) {
         const typeIndex = row.type === 'withoutPhoto' ? 1 : 0;
         // Pastikan array themes ada sebelum push (safety check)
         if (newCatalogData[row.category][typeIndex]) {
-            // [PERBAIKAN] Cek duplikasi tema agar tidak muncul ganda di katalog
-            const existingThemes = newCatalogData[row.category][typeIndex].themes;
-            if (!existingThemes.some(t => t.themeName === row.themeName)) {
-                existingThemes.push(row);
+            const themesList = newCatalogData[row.category][typeIndex].themes;
+            
+            // [PERBAIKAN] Logika Deduplikasi: Prioritaskan data terbaru (baris bawah di Sheet)
+            // Cari index tema yang sudah ada dengan nama yang sama
+            const existingIndex = themesList.findIndex(t => t.themeName === row.themeName);
+            
+            if (existingIndex !== -1) {
+                // Jika ada, TIMPA dengan data baru (karena data sheet dibaca top-to-bottom, yang bawah adalah update terbaru)
+                themesList[existingIndex] = row;
+            } else {
+                // Jika belum ada, tambahkan
+                themesList.push(row);
             }
         }
     });
 
-    catalogData = newCatalogData;
+    // [PERBAIKAN] Cek apakah data baru memiliki tema. Jika tidak (hanya config), jangan timpa data bawaan.
+    let hasThemes = false;
+    for (const cat in newCatalogData) {
+        if (newCatalogData[cat].some(type => type.themes.length > 0)) {
+            hasThemes = true;
+            break;
+        }
+    }
+
+    if (hasThemes) {
+        catalogData = newCatalogData;
+    } else {
+        console.log("Sheet tidak memiliki data tema. Mempertahankan data katalog bawaan.");
+    }
+    
+    // [BARU] Sinkronisasi Kategori Homepage dengan Data Sheet
+    let categoriesUpdated = false;
+    sheetCategories.forEach(catName => {
+        // Cek apakah kategori ini sudah ada di categoryData bawaan
+        const exists = categoryData.some(c => c.name === catName);
+        if (!exists) {
+            // Jika kategori baru, tambahkan ke categoryData
+            // Ambil gambar dari tema pertama di kategori tersebut sebagai cover
+            let catImage = 'https://via.placeholder.com/400x400?text=New+Category';
+            if (newCatalogData[catName]) {
+                const withPhoto = newCatalogData[catName][0].themes;
+                if (withPhoto.length > 0 && withPhoto[0].image) catImage = withPhoto[0].image;
+            }
+
+            categoryData.push({ name: catName, image: catImage });
+            categoriesUpdated = true;
+        }
+    });
+    // Jika ada kategori baru, render ulang grid kategori di homepage
+    if (categoriesUpdated) { loadCategories(); }
     
     // [BARU] Render Menu Layanan berdasarkan config
     renderServices(servicesConfig);
@@ -159,6 +229,31 @@ function processCatalogData(data) {
             window.generateCatalog();
         }
     }
+}
+
+// [PERBAIKAN] Fungsi loadCategories dipindahkan ke global scope agar bisa diakses processCatalogData
+function loadCategories() {
+    const categoryGrid = document.getElementById('category-grid');
+    if (!categoryGrid) return;
+
+    categoryGrid.innerHTML = '';
+    categoryData.forEach((cat, index) => {
+        const card = document.createElement('div');
+        card.className = 'category-card';
+        card.style.animationDelay = `${index * 0.1}s`;
+        card.innerHTML = `
+            <picture class="category-card-image-wrapper">
+                <img src="${cat.image}" class="category-card-image" loading="lazy" decoding="async" alt="Kategori ${cat.name}" width="200" height="200">
+            </picture>
+            <div class="category-card-content">
+                <h4 class="category-card-title">${cat.name}</h4>
+                <button class="category-button">Lihat Jenis Tema</button>
+            </div>
+        `;
+        categoryGrid.appendChild(card);
+        
+        if (window.observeElements) window.observeElements([card]);
+    });
 }
 
 // [BARU] Fungsi Render Menu Layanan
@@ -288,32 +383,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const animationDuration = 400;
 
-    function loadCategories() {
-        setTimeout(() => {
-            categoryGrid.innerHTML = '';
-            categoryData.forEach((cat, index) => {
-                const card = document.createElement('div');
-                card.className = 'category-card';
-                // Hapus delay animasi CSS bawaan agar dikontrol oleh Scroll Reveal
-                card.style.animationDelay = `${index * 0.1}s`;
-                card.innerHTML = `
-                    <picture class="category-card-image-wrapper">
-                        <img src="${cat.image}" class="category-card-image" loading="lazy" decoding="async" alt="Kategori ${cat.name}" width="200" height="200">
-                    </picture>
-                    <div class="category-card-content">
-                        <h4 class="category-card-title">${cat.name}</h4>
-                        <button class="category-button">Lihat Jenis Tema</button>
-                    </div>
-                `;
-                categoryGrid.appendChild(card);
-                
-                // [BARU] Tambahkan ke observer
-                window.observeElements([card]);
-            });
-
-            // [OPTIMASI] Event listener dipindahkan ke parent (categoryGrid)
-        }, 500);
-    }
+    // Fungsi loadCategories telah dipindahkan ke global scope
 
     function generateFeatureSkeletons() {
         const featuresGrid = document.querySelector('.features-grid');
@@ -1586,7 +1656,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     generateFeatureSkeletons();
     generateTestimonialSkeletons();
-    loadCategories();
+    
+    // [PERBAIKAN] Panggil loadCategories dengan sedikit delay awal untuk efek animasi
+    setTimeout(loadCategories, 500);
     loadFeatures();
     loadStaticTestimonials();
     loadPaymentMethods();
@@ -1596,14 +1668,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const staticElements = document.querySelectorAll('.flash-sale-section, .shopee-vouchers-scroll, .service-menu-section, .order-guide-section');
     window.observeElements(staticElements);
     
-    // [PERBAIKAN] Hapus logika load dari cache agar selalu ambil data fresh dari server
-    // Dan kosongkan catalogData bawaan agar tidak muncul "data sampah" (Sheet1/Default)
-    if (typeof catalogData !== 'undefined') {
-        catalogData = {}; 
-    }
-    
-    fetchCatalogFromGoogleSheet();
-
     // [BARU] Fungsi Buka Form Langsung (untuk handleInitialRouting)
     function openFormDirectly(type) {
         // Sembunyikan semua form dulu
@@ -1717,6 +1781,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // [BARU] Panggil fungsi routing setelah semua setup selesai
     handleInitialRouting();
+    
+    // [PERBAIKAN] Panggil fetch data DI DALAM DOMContentLoaded agar fungsi showToast sudah siap
+    // dan tidak terjadi race condition
+    fetchCatalogFromGoogleSheet();
 
     // --- Popup Diskon ---
     const popupOverlay = document.getElementById('discountPopup');
