@@ -265,19 +265,6 @@
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
                     Lihat Hasil Akhir
                 </button>
-                <div style="display:flex; gap:5px;">
-                    <button id="save-project-btn" style="background:#fff; border:1px solid #ccc; color:#333; padding:10px;" title="Simpan Data Mentah (JSON)">💾 Simpan Data</button>
-                    <button id="load-project-btn" style="background:#fff; border:1px solid #ccc; color:#333; padding:10px;" title="Muat Data Mentah (JSON)">📂 Buka Data</button>
-                    <input type="file" id="load-project-input" style="display:none" accept=".json">
-                </div>
-                <button id="copy-code-btn" style="background:#fff; border:1px solid #ccc; color:#333;" title="Salin Kode HTML">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                    Salin Kode
-                </button>
-                <button id="download-btn" class="primary" style="background: linear-gradient(135deg, var(--secondary-color), #8c7350);">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                    Download HTML
-                </button>
                 <button id="reset-btn">Reset & Mulai Ulang</button>
             </div>
         </div>
@@ -290,11 +277,6 @@
             const formContainer = document.getElementById('dynamic-form-container');
             const resetBtn = document.getElementById('reset-btn');
             const previewFullscreenBtn = document.getElementById('preview-fullscreen-btn');
-            const downloadBtn = document.getElementById('download-btn');
-            const copyCodeBtn = document.getElementById('copy-code-btn');
-            const saveProjectBtn = document.getElementById('save-project-btn');
-            const loadProjectBtn = document.getElementById('load-project-btn');
-            const loadProjectInput = document.getElementById('load-project-input');
 
             let originalHtml = '';
             let invitationData = {};
@@ -866,148 +848,12 @@
                 window.open(url, '_blank');
             };
 
-            // [BARU] Fungsi Download HTML
-            const downloadHtml = () => {
-                if (!originalHtml) {
-                    alert("Pilih template terlebih dahulu.");
-                    return;
-                }
-                const newObjectString = JSON.stringify(invitationData, null, 4);
-                const newScriptContent = `const invitationData = ${newObjectString};`;
-                let updatedHtml = originalHtml.replace(/const invitationData = ({[\s\S]*?});/, newScriptContent);
-                
-                // [PERBAIKAN] Inject CSS Variables (Warna & Font) ke file Download
-                const colorPrimary = document.getElementById('color-primary')?.value;
-                const colorSecondary = document.getElementById('color-secondary')?.value;
-                const fontStyle = document.getElementById('font-style')?.value;
-
-                if (colorPrimary || colorSecondary || fontStyle) {
-                    let styleInjection = '<style>:root {';
-                    if (colorPrimary) styleInjection += ` --color-green: ${colorPrimary} !important; --color-dark-green: ${colorPrimary} !important;`;
-                    if (colorSecondary) styleInjection += ` --color-gold: ${colorSecondary} !important;`;
-                    
-                    let fontImport = '';
-                    if (fontStyle === 'modern') {
-                        fontImport = '<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">';
-                        styleInjection += ` --font-display: 'Montserrat', sans-serif !important; --font-nama: 'Great Vibes', cursive !important;`;
-                    } else if (fontStyle === 'elegant') {
-                        fontImport = '<link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">';
-                        styleInjection += ` --font-display: 'Playfair Display', serif !important; --font-nama: 'Alex Brush', cursive !important;`;
-                    } else if (fontStyle === 'romantic') {
-                        fontImport = '<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Parisienne&display=swap" rel="stylesheet">';
-                        styleInjection += ` --font-display: 'Cinzel', serif !important; --font-nama: 'Parisienne', cursive !important;`;
-                    }
-                    styleInjection += '}</style>';
-                    
-                    if (fontImport) {
-                        updatedHtml = updatedHtml.replace('</head>', `${fontImport}</head>`);
-                    }
-                    updatedHtml = updatedHtml.replace('</head>', `${styleInjection}</head>`);
-                }
-
-                const blob = new Blob([updatedHtml], { type: 'text/html' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'undangan-digital-storybali.html';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-            };
-
-            // [BARU] Fungsi Salin Kode HTML
-            const copyHtmlCode = () => {
-                if (!originalHtml) {
-                    alert("Pilih template terlebih dahulu.");
-                    return;
-                }
-                const newObjectString = JSON.stringify(invitationData, null, 4);
-                const newScriptContent = `const invitationData = ${newObjectString};`;
-                let updatedHtml = originalHtml.replace(/const invitationData = ({[\s\S]*?});/, newScriptContent);
-                
-                // Inject CSS Variables jika ada
-                const colorPrimary = document.getElementById('color-primary')?.value;
-                const colorSecondary = document.getElementById('color-secondary')?.value;
-                const fontStyle = document.getElementById('font-style')?.value;
-
-                if (colorPrimary || colorSecondary || fontStyle) {
-                    let styleInjection = '<style>:root {';
-                    if (colorPrimary) styleInjection += ` --color-green: ${colorPrimary} !important; --color-dark-green: ${colorPrimary} !important;`;
-                    if (colorSecondary) styleInjection += ` --color-gold: ${colorSecondary} !important;`;
-                    
-                    let fontImport = '';
-                    if (fontStyle === 'modern') {
-                        fontImport = '<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">';
-                        styleInjection += ` --font-display: 'Montserrat', sans-serif !important; --font-nama: 'Great Vibes', cursive !important;`;
-                    } else if (fontStyle === 'elegant') {
-                        fontImport = '<link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">';
-                        styleInjection += ` --font-display: 'Playfair Display', serif !important; --font-nama: 'Alex Brush', cursive !important;`;
-                    } else if (fontStyle === 'romantic') {
-                        fontImport = '<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Parisienne&display=swap" rel="stylesheet">';
-                        styleInjection += ` --font-display: 'Cinzel', serif !important; --font-nama: 'Parisienne', cursive !important;`;
-                    }
-
-                    styleInjection += '}</style>';
-                    
-                    if (fontImport) {
-                        updatedHtml = updatedHtml.replace('</head>', `${fontImport}</head>`);
-                    }
-                    updatedHtml = updatedHtml.replace('</head>', `${styleInjection}</head>`);
-                }
-
-                navigator.clipboard.writeText(updatedHtml).then(() => alert("Kode HTML berhasil disalin!"));
-            };
-
-            // [BARU] Fungsi Simpan Project (JSON)
-            const saveProject = () => {
-                if (!invitationData || Object.keys(invitationData).length === 0) {
-                    alert("Tidak ada data untuk disimpan.");
-                    return;
-                }
-                const dataStr = JSON.stringify(invitationData, null, 2);
-                const blob = new Blob([dataStr], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'project-undangan.json';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-            };
-
-            // [BARU] Fungsi Muat Project (JSON)
-            loadProjectBtn.addEventListener('click', () => loadProjectInput.click());
-            loadProjectInput.addEventListener('change', (e) => {
-                const file = e.target.files[0];
-                if (!file) return;
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    try {
-                        invitationData = JSON.parse(event.target.result);
-                        generateForm(invitationData);
-                        addAppearanceSettings(formContainer);
-                        updatePreview();
-                        saveState();
-                        alert("Data proyek berhasil dimuat!");
-                    } catch (err) {
-                        alert("Gagal memuat file: " + err.message);
-                    }
-                };
-                reader.readAsText(file);
-                e.target.value = ''; // Reset input
-            });
-
             const updatePreviewAndSave = debounce(() => {
                 updatePreview();
                 saveState();
             }, 300);
 
             previewFullscreenBtn.addEventListener('click', openFullscreenPreview);
-            downloadBtn.addEventListener('click', downloadHtml);
-            copyCodeBtn.addEventListener('click', copyHtmlCode);
-            saveProjectBtn.addEventListener('click', saveProject);
             inputHtmlEl.addEventListener('paste', () => setTimeout(processHtmlInput, 50));
             inputHtmlEl.addEventListener('input', debounce(processHtmlInput, 500));
             resetBtn.addEventListener('click', resetEditor);
