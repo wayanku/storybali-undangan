@@ -42,7 +42,7 @@ const CATALOG_PAGE_SIZE = 6;
 let currentCatalogPage = 1;
 let currentCatalogItems = [];
 
-const GOOGLE_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbxb3dmmUNQx194aXNdhnw14tcPpbovfSzCoUGbuR2QHawRD8UbuRC5zr8cXA3lzdL2Mkg/exec';
+const GOOGLE_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbw64pUlfOl1tblbAK_UCWXvWllKha3srv-FDl1V5J2hW3xRcObR9gehdqR-8Hd_H5P9Tg/exec';
 let allOrdersCache = []; // Cache untuk data pesanan
 
 // [BARU] Data Master Layanan (Default)
