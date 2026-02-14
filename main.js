@@ -42,7 +42,7 @@ const CATALOG_PAGE_SIZE = 6;
 let currentCatalogPage = 1;
 let currentCatalogItems = [];
 
-const GOOGLE_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbw2_llhQozzeTShLYSlMHIC9xT7RbCjL4YUHWjwcKMY9nbFv5o-ee1H2F9i6YGhJD4wcg/exec';
+const GOOGLE_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbxb3dmmUNQx194aXNdhnw14tcPpbovfSzCoUGbuR2QHawRD8UbuRC5zr8cXA3lzdL2Mkg/exec';
 let allOrdersCache = []; // Cache untuk data pesanan
 
 // [BARU] Data Master Layanan (Default)
@@ -61,9 +61,16 @@ const SERVICES_DATA = [
 function fetchCatalogFromGoogleSheet() {
     if (!GOOGLE_SHEET_API_URL) return;
 
+    console.log("Fetching data from:", GOOGLE_SHEET_API_URL);
     // [UPDATE] Tambahkan timestamp agar tidak dicache oleh browser
     fetch(`${GOOGLE_SHEET_API_URL}?v=${new Date().getTime()}&action=read`)
-        .then(response => response.json())
+        .then(response => {
+            // [PERBAIKAN] Cek status HTTP terlebih dahulu
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
             if (!data || (Array.isArray(data) && data.length === 0) || data.status === 'error') {
                 console.warn("Data kosong atau error dari Sheet:", data);
@@ -90,7 +97,13 @@ function fetchCatalogFromGoogleSheet() {
             // localStorage.setItem('catalogCache', JSON.stringify(data));
             processCatalogData(data);
         })
-        .catch(error => console.error("Gagal memuat data dari Google Sheets:", error));
+        .catch(error => {
+            console.error("Gagal memuat data dari Google Sheets (Cek Deployment/CORS):", error);
+            // [PERBAIKAN] Beri notifikasi visual jika gagal fetch (biasanya masalah CORS atau Offline)
+            if (typeof window.showToast === 'function') {
+                window.showToast("Gagal koneksi ke server data (Cek Izin Script/CORS).");
+            }
+        });
 }
 
 // Fungsi helper untuk memproses data katalog
