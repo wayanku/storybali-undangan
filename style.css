@@ -453,7 +453,7 @@ h3:not(.flash-title):not(.centered-title)::before {
 .testimonial-skeleton-card { background-color: var(--card-bg); border-radius: 15px; padding: 25px; border: 1px solid var(--card-border); display: flex; flex-direction: column; gap: 15px; width: 300px; flex-shrink: 0; }
 .testimonials-grid { display: flex; gap: 20px; animation: scroll 40s linear infinite; }
 .testimonials-scroller:hover .testimonials-grid { animation-play-state: paused; }
-.testimonials-scroller { overflow-x: auto; cursor: grab; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+.testimonials-scroller { overflow-x: auto; cursor: grab; -webkit-overflow-scrolling: touch; scrollbar-width: none; touch-action: pan-x; }
 .testimonials-scroller::-webkit-scrollbar { display: none; }
 .testimonials-scroller.active { cursor: grabbing; }
 
@@ -507,7 +507,7 @@ h3:not(.flash-title):not(.centered-title)::before {
 @media (max-width: 480px) { .toast-notification.show { bottom: 90px; left: 15px; width: calc(100% - 30px); } }
 
 /* Voucher Section */
-.shopee-vouchers-scroll { display: flex; overflow-x: auto; gap: 12px; padding: 15px 15px; margin-bottom: 10px; scrollbar-width: none; -webkit-overflow-scrolling: touch; scroll-snap-type: x mandatory; }
+.shopee-vouchers-scroll { display: flex; overflow-x: auto; gap: 12px; padding: 15px 15px; margin-bottom: 10px; scrollbar-width: none; -webkit-overflow-scrolling: touch; scroll-snap-type: x mandatory; touch-action: pan-x; }
 .shopee-vouchers-scroll::-webkit-scrollbar { display: none; }
 .voucher-card { min-width: 220px; background: #fff; border-radius: 12px; display: flex; align-items: center; padding: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); position: relative; border-left: 4px solid var(--accent-color); overflow: hidden; border: 1px solid #f1f5f9; scroll-snap-align: start; transition: transform 0.2s; gap: 12px; }
 .voucher-card:active { transform: scale(0.98); }
@@ -527,7 +527,7 @@ h3:not(.flash-title):not(.centered-title)::before {
 .flash-timer { display: flex; gap: 4px; }
 .timer-box { background: #333; color: #fff; padding: 2px 6px; border-radius: 4px; font-weight: 700; font-size: 0.8em; }
 .flash-see-all { margin-left: auto; font-size: 0.85em; color: var(--secondary-text); text-decoration: none; display: flex; align-items: center; }
-.flash-items-scroll { display: flex; overflow-x: auto; gap: 15px; scrollbar-width: none; -webkit-overflow-scrolling: touch; padding-bottom: 5px; padding-left: 5px; padding-right: 5px; scroll-snap-type: x mandatory; }
+.flash-items-scroll { display: flex; overflow-x: auto; gap: 15px; scrollbar-width: none; -webkit-overflow-scrolling: touch; padding-bottom: 5px; padding-left: 5px; padding-right: 5px; scroll-snap-type: x mandatory; touch-action: pan-x; }
 .flash-items-scroll::-webkit-scrollbar { display: none; }
 .flash-item { min-width: 120px; width: 120px; position: relative; scroll-snap-align: start; transition: transform 0.2s; }
 .flash-item:active { transform: scale(0.98); }
