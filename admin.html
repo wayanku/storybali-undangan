@@ -586,6 +586,8 @@
                     <div>
                         <h1 style="font-size: 1.8rem;">Selamat Datang, Admin!</h1>
                         <p>Berikut adalah ringkasan data undangan Anda hari ini.</p>
+                        <!-- [BARU] Indikator Sumber Data -->
+                        <span id="data-source-indicator" class="data-source-badge badge-local">Memuat Status Data...</span>
                     </div>
                     <button onclick="exportReport()" class="btn btn-secondary btn-sm" style="width: auto; margin: 0; gap: 8px;">
                         <svg style="width:18px;height:18px;" viewBox="0 0 24 24"><path fill="currentColor" d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20M16,11V18.1L13.9,16L11.1,18.8L8.3,16L6.2,18.1L3.4,15.3L2,16.7L4.8,19.5L2,22.3L3.4,23.7L6.2,20.9L9,23.7L11.8,20.9L14.6,23.7L16,22.3L13.2,19.5L16,16.7L17.4,18.1V11H16Z" /></svg>
@@ -889,6 +891,7 @@
                         <button id="sync-btn" class="btn btn-primary" style="margin-bottom: 15px;">Sync Data ke Google Sheet</button>
                         <button onclick="location.reload()" class="btn btn-secondary" style="color: var(--danger-color); border-color: #fee2e2; background: #fef2f2;">Keluar Aplikasi</button>
                         <button onclick="resetLocalData()" class="btn btn-secondary btn-sm" style="margin-top: 10px; width: 100%;">⚠ Reset Cache & Data Lokal</button>
+                        <button onclick="restoreDefaults()" class="btn btn-secondary btn-sm" style="margin-top: 10px; width: 100%; color: var(--accent-color); border-color: var(--accent-color);">↺ Restore Data Bawaan</button>
                     </div>
                 </div>
             </div>
@@ -1114,9 +1117,12 @@
     <script src="catalog.js"></script>
     <script>
         // KONFIGURASI
-        const GOOGLE_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbxBsI7q7aIS2VlqBNXIdLrNGhPfdkxY2BsfP_Z65_1ogFaG-dQoP5wiZ-Qc8NTA-MjWmA/exec';
+        const GOOGLE_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbw2_llhQozzeTShLYSlMHIC9xT7RbCjL4YUHWjwcKMY9nbFv5o-ee1H2F9i6YGhJD4wcg/exec';
         // [BARU] API Key ImgBB telah dimasukkan
         const IMGBB_API_KEY = '7e6f3ce63649d305ccaceea00c28266d'; 
+        
+        // [BARU] Simpan salinan data bawaan saat aplikasi mulai (sebelum tertimpa data sheet)
+        const DEFAULT_CATALOG_DATA = JSON.parse(JSON.stringify(catalogData));
         
         // Load Password dari LocalStorage atau gunakan default 'admin123'
         let ADMIN_PASSWORD = localStorage.getItem('adminPassword') || 'admin123';
@@ -1211,6 +1217,17 @@
                     }
 
                     if (Array.isArray(data) && data.length > 0) {
+                        // [BARU] Deteksi Fatal: Header Sheet Hilang
+                        // Jika baris pertama data tidak punya 'category' atau 'themeName', berarti header hilang/salah
+                        const sampleRow = data[0];
+                        if (!sampleRow.hasOwnProperty('category') && !sampleRow.hasOwnProperty('themeName')) {
+                            if (!isBackground) {
+                                alert("ERROR FATAL: Google Sheet tidak memiliki Header (Judul Kolom) di Baris 1!\n\nData tidak bisa dibaca. Silakan 'Hapus Semua Data' di Sheet lalu klik 'Sync' di sini, atau tambahkan header manual.");
+                                showToast("Header Sheet Hilang! Data tidak terbaca.", "error");
+                            }
+                            return;
+                        }
+
                         // [OPTIMASI] Cek apakah data berubah sebelum memproses ulang
                         const currentCache = localStorage.getItem('catalogCache');
                         const newDataString = JSON.stringify(data);
@@ -1231,6 +1248,14 @@
                         localStorage.setItem('catalogCache', newDataString);
                         processCatalogData(data);
                         
+                        // [BARU] Jika data sheet tidak punya tema (hanya config), tawarkan restore
+                        const hasThemes = Object.values(catalogData).some(cat => cat.some(t => t.themes.length > 0));
+                        if (!hasThemes && !isBackground) showToast("Data tema di Sheet kosong. Gunakan 'Restore Data Bawaan' di Pengaturan jika perlu.", "info");
+                        
+                        // [BARU] Update Indikator
+                        document.getElementById('data-source-indicator').textContent = "Terhubung ke Google Sheet";
+                        document.getElementById('data-source-indicator').className = "data-source-badge badge-server";
+                        
                         if (!isBackground) {
                             console.log("Data berhasil dimuat.");
                         }
@@ -1238,6 +1263,10 @@
                         if (!isBackground) {
                             // [UPDATE] Pesan lebih informatif untuk pengguna baru
                             showToast("Database kosong atau format salah. Pastikan Sheet memiliki Header.", "info");
+                            
+                            // [BARU] Update Indikator jika kosong
+                            document.getElementById('data-source-indicator').textContent = "Sheet Kosong (Menggunakan Data Bawaan)";
+                            document.getElementById('data-source-indicator').className = "data-source-badge badge-local";
                         }
                     }
                 })
@@ -2210,6 +2239,7 @@
             const btn = document.getElementById('delete-btn');
             const originalText = btn.textContent;
             const editIndex = document.getElementById('edit-index').value;
+            const currentName = document.getElementById('admin-theme-name').value;
             btn.textContent = '...';
             btn.disabled = true;
 
@@ -2218,6 +2248,7 @@
             const formData = {
                 action: 'delete', // Pastikan backend Apps Script menangani ini
                 originalThemeName: currentEditingOriginalName,
+                themeName: currentName, // [PERBAIKAN] Kirim nama tema sebagai fallback agar data ditemukan
                 category: document.getElementById('admin-category').value,
                 type: document.getElementById('admin-type').value
             };
@@ -2250,7 +2281,7 @@
             })
             .catch(err => {
                 console.error(err);
-                showToast('Gagal menghapus data.', 'error');
+                showToast('Gagal menghapus: ' + err.message, 'error');
             })
             .finally(() => {
                 btn.textContent = originalText;
@@ -2268,21 +2299,22 @@
         }
 
         async function syncData() {
-            if (!confirm("Upload semua data bawaan ke Google Sheet?")) return;
+            if (!confirm("Sinkronisasi data ke Google Sheet? Data yang sudah ada akan diupdate, data baru akan ditambahkan.")) return;
             
             const btn = document.getElementById('sync-btn');
             btn.disabled = true;
             btn.textContent = "Sedang Mengupload...";
             
-            let count = 0;
+            // [PERBAIKAN] Menggunakan Bulk Save (Kirim semua sekaligus)
+            let allThemes = [];
+            
             for (const [cat, types] of Object.entries(catalogData)) {
                 for (const typeObj of types) {
                     for (let i = 0; i < typeObj.themes.length; i++) {
                         const theme = typeObj.themes[i];
                         const isWithoutPhoto = typeObj.type === 'withoutPhoto';
                         
-                        const payload = {
-                            action: 'save',
+                        allThemes.push({
                             category: cat,
                             type: typeObj.type,
                             themeName: theme.themeName || `${isWithoutPhoto ? 'Tanpa Foto' : 'Tema'} ${i + 1}`,
@@ -2295,24 +2327,47 @@
                             visible: theme.visible !== false,
                             rating: theme.rating || 4.9,
                             reviews: theme.reviews || 0
-                        };
-
-                        try {
-                            await fetch(GOOGLE_SHEET_API_URL, {
-                                method: 'POST',
-                                body: JSON.stringify(payload)
-                            }).then(res => res.json()); // Tunggu response dari server
-
-                            count++;
-                            await new Promise(r => setTimeout(r, 200)); // Jeda singkat
-                        } catch (e) { console.error(e); }
+                        });
                     }
                 }
             }
-            showToast(`Selesai! ${count} tema terupload.`, 'success');
-            localStorage.removeItem('catalogCache'); // Hapus cache setelah sinkronisasi besar
-            btn.disabled = false;
-            btn.textContent = "Upload Semua Data Bawaan";
+            
+            // [PERBAIKAN] Kirim data dalam Batch (Paket) agar tidak timeout/gagal
+            const BATCH_SIZE = 50;
+            const totalBatches = Math.ceil(allThemes.length / BATCH_SIZE);
+            
+            try {
+                for (let i = 0; i < totalBatches; i++) {
+                    const start = i * BATCH_SIZE;
+                    const end = start + BATCH_SIZE;
+                    const batch = allThemes.slice(start, end);
+                    
+                    btn.textContent = `Mengupload ${i + 1}/${totalBatches}...`;
+                    
+                    const payload = {
+                        action: 'bulkSave',
+                        data: batch
+                    };
+
+                    await fetch(GOOGLE_SHEET_API_URL, {
+                        method: 'POST',
+                        body: JSON.stringify(payload)
+                    }).then(res => res.json());
+                }
+
+                showToast(`Sinkronisasi Selesai! ${allThemes.length} data berhasil diupload.`, 'success');
+                localStorage.removeItem('catalogCache'); // Hapus cache agar memuat ulang dari sheet
+                
+                // Reload data setelah sync agar admin melihat data dari sheet
+                setTimeout(() => loadData(), 1000);
+                
+            } catch (e) { 
+                console.error(e);
+                showToast('Gagal upload data: ' + e.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = originalText;
+            }
         }
 
         // [BARU] Fungsi Reset Data Lokal jika tampilan error
@@ -2321,6 +2376,16 @@
             localStorage.removeItem('catalogCache');
             localStorage.removeItem('adminPassword');
             location.reload();
+        }
+        
+        // [BARU] Fungsi Mengembalikan Data Bawaan (Agar bisa di-Sync ulang)
+        function restoreDefaults() {
+            if(!confirm("Kembalikan katalog ke data bawaan aplikasi? (Data di Sheet tidak akan berubah sampai Anda klik Sync)")) return;
+            
+            catalogData = JSON.parse(JSON.stringify(DEFAULT_CATALOG_DATA));
+            renderThemeGrid();
+            updateStats();
+            showToast("Data dikembalikan ke default. Silakan klik 'Sync' untuk upload ke Sheet.", "success");
         }
 
         // --- Analytics Functions ---
