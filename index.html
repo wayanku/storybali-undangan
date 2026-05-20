@@ -12,6 +12,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#5A6B59">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Storybali">
     
@@ -45,7 +46,7 @@
     <link rel="preconnect" href="https://i.pravatar.cc">
 
     <!-- [OPTIMIZATION] Menggabungkan semua permintaan font menjadi satu untuk mengurangi latensi jaringan -->
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:wght@900&family=Poppins:wght@400;700;900&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:wght@900&family=Poppins:wght@400;700;900&display=swap" media="print" onload="this.media='all'">
     <!-- Fallback for browsers with JavaScript disabled -->
     <noscript>
       <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:wght@900&family=Poppins:wght@400;700;900&display=swap" rel="stylesheet">
@@ -125,7 +126,7 @@
             <!-- Sediakan versi gambar yang lebih kecil untuk mobile jika ada -->
             <!-- <source media="(max-width: 600px)" srcset="path/to/small-image.webp"> -->
             <!-- Gambar default -->
-            <img src="https://wayanku.github.io/storybali-undangan/foto%20nikah%202,foto%20nikah1,foto%20nikah%203/foto%20nikah1.webp" alt="Foto Pernikahan 1" class="cover-slide active-slide" loading="eager" decoding="async" fetchpriority="high">
+                <img src="https://wayanku.github.io/storybali-undangan/foto%20nikah%202,foto%20nikah1,foto%20nikah%203/foto%20nikah1.webp" alt="Storybali Undangan Digital" class="cover-slide active-slide" loading="eager" decoding="async" fetchpriority="high">
         </picture>
         <!-- Gambar slideshow lainnya bisa tetap menggunakan <img> dengan lazy loading -->
         <img src="https://wayanku.github.io/storybali-undangan/foto%20nikah%202,foto%20nikah1,foto%20nikah%203/foto%20nikah%202.webp" alt="Foto Pernikahan 2" class="cover-slide" loading="lazy" decoding="async">
@@ -846,6 +847,8 @@
 
     <!-- Navigasi Kaca Melayang -->
     <nav class="floating-nav">
+        <!-- [BARU] Indikator geser untuk navigasi aktif -->
+        <div class="nav-indicator"></div>
         <a href="#" id="nav-home">
             <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
             <span>Beranda</span>
@@ -933,32 +936,8 @@
     </button>
 
     <!-- JavaScript untuk Fungsionalitas Ajaib -->
-    <script>
-        // [DIPINDAHKAN] Fungsi untuk Animasi Angka (Harga) dibuat global
-        function animatePrice(element, start, end, duration) {
-            let startTimestamp = null;
-            const step = (timestamp) => {
-                if (!startTimestamp) startTimestamp = timestamp;
-                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-                // Menggunakan easing function (easeOut) agar lebih natural
-                const easedProgress = 1 - Math.pow(1 - progress, 3);
-                const currentValue = Math.floor(easedProgress * (end - start) + start);
-                
-                // Format angka menjadi format mata uang Rupiah
-                element.textContent = 'Rp ' + currentValue.toLocaleString('id-ID');
-                
-                if (progress < 1) {
-                    window.requestAnimationFrame(step);
-                }
-            };
-            window.requestAnimationFrame(step);
-        }
-    </script>
     <!-- [BARU] Load Data Katalog dari file eksternal -->
     <script src="catalog.js" defer></script>
-    <script>
-        // Script ini akan kosong karena semua logika sudah dipindahkan ke main.js
-    </script>
 
     <!-- [BARU] CSS untuk Tombol Info Melayang & Draggable -->
     <style>
