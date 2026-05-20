@@ -1117,7 +1117,7 @@
     <script src="catalog.js"></script>
     <script>
         // KONFIGURASI
-        const GOOGLE_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbw64pUlfOl1tblbAK_UCWXvWllKha3srv-FDl1V5J2hW3xRcObR9gehdqR-8Hd_H5P9Tg/exec';
+        const GOOGLE_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbzdLlcU5XjVt23g3X1t15tOkefEP4YvTg38nEIGqIXxHtQWEPw-UfvY-hVVt5UEm3lJ0A/exec';
         // [BARU] API Key ImgBB telah dimasukkan
         const IMGBB_API_KEY = '7e6f3ce63649d305ccaceea00c28266d'; 
         
@@ -1874,7 +1874,7 @@
                 originalPrice: price, // [PERBAIKAN] Kirim sebagai string/raw agar sesuai dengan format sheet
                 discount: link, 
                 label: orderDate, 
-                visible: isPaid === 'true'
+                visible: isPaid
             };
 
             // [PERBAIKAN] Tunggu respon server sebelum update UI
@@ -2308,6 +2308,7 @@
             if (!confirm("Sinkronisasi data ke Google Sheet? Data yang sudah ada akan diupdate, data baru akan ditambahkan.")) return;
             
             const btn = document.getElementById('sync-btn');
+            const originalText = btn.textContent;
             btn.disabled = true;
             btn.textContent = "Sedang Mengupload...";
             
