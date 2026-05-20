@@ -1,4 +1,4 @@
-// [OPTIMASI] Fungsi Debounce untuk menunda eksekusi fungsi hingga user berhenti mengetik
+/** [ARCHITECTURE] Reactive State Management **/
 function debounce(func, delay) {
     let timeout;
     return function(...args) {
@@ -6,6 +6,7 @@ function debounce(func, delay) {
         timeout = setTimeout(() => func.apply(this, args), delay);
     };
 }
+
 // Fungsi untuk Animasi Angka (Harga) dibuat global
 function animatePrice(element, start, end, duration) {
     let startTimestamp = null;
@@ -26,14 +27,28 @@ function animatePrice(element, start, end, duration) {
     window.requestAnimationFrame(step);
 }
 
-// Muat keranjang dari localStorage sebelum DOMContentLoaded
-const savedCart = localStorage.getItem('shoppingCart');
-if (savedCart && savedCart !== '[]') {
-    window.shoppingCart = JSON.parse(savedCart);
-}
+// Inisialisasi State Reaktif untuk Keranjang & Wishlist
+const AppState = {
+    cart: new Proxy(JSON.parse(localStorage.getItem('shoppingCart') || '[]'), {
+        set(target, prop, value) {
+            target[prop] = value;
+            localStorage.setItem('shoppingCart', JSON.stringify(target));
+            updateCartUI(); // UI otomatis update tiap kali array cart diubah
+            return true;
+        }
+    }),
+    wishlist: new Proxy(JSON.parse(localStorage.getItem('wishlist') || '[]'), {
+        set(target, prop, value) {
+            target[prop] = value;
+            localStorage.setItem('wishlist', JSON.stringify(target));
+            return true;
+        }
+    })
+};
 
-// [BARU] Muat Wishlist dari localStorage
-let wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+// Backward Compatibility agar kode lama tidak rusak
+window.shoppingCart = AppState.cart;
+let wishlist = AppState.wishlist;
 
 // --- KONFIGURASI GLOBAL & DATA ---
 
@@ -42,7 +57,7 @@ const CATALOG_PAGE_SIZE = 6;
 let currentCatalogPage = 1;
 let currentCatalogItems = [];
 
-const GOOGLE_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbw64pUlfOl1tblbAK_UCWXvWllKha3srv-FDl1V5J2hW3xRcObR9gehdqR-8Hd_H5P9Tg/exec';
+const GOOGLE_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbzdLlcU5XjVt23g3X1t15tOkefEP4YvTg38nEIGqIXxHtQWEPw-UfvY-hVVt5UEm3lJ0A/exec';
 let allOrdersCache = []; // Cache untuk data pesanan
 
 // [BARU] Data Master Layanan (Default)
@@ -58,52 +73,18 @@ const SERVICES_DATA = [
 ];
 
 // --- Fungsi untuk Mengambil Data dari Google Sheets ---
-function fetchCatalogFromGoogleSheet() {
+async function fetchCatalogFromGoogleSheet() {
     if (!GOOGLE_SHEET_API_URL) return;
 
-    console.log("Fetching data from:", GOOGLE_SHEET_API_URL);
-    // [UPDATE] Tambahkan timestamp agar tidak dicache oleh browser
-    fetch(`${GOOGLE_SHEET_API_URL}?v=${new Date().getTime()}&action=read`)
-        .then(response => {
-            // [PERBAIKAN] Cek status HTTP terlebih dahulu
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (!data || (Array.isArray(data) && data.length === 0) || data.status === 'error') {
-                console.warn("Data kosong atau error dari Sheet:", data);
-                
-                // [PERBAIKAN] Fallback: Render layanan default jika sheet kosong agar menu tidak hilang
-                renderServices([]); 
-
-                // [PERBAIKAN] Beri notifikasi jika admin sedang login agar tahu masalahnya
-                if (localStorage.getItem('adminPassword')) {
-                    // Tunggu sebentar agar fungsi showToast siap
-                    setTimeout(() => {
-                        if (typeof showToast === 'function') showToast("Data Sheet Kosong. Silakan Sync dari Admin.");
-                    }, 2000);
-                }
-                return;
-            }
-            console.log("Data berhasil dimuat dari Sheet:", data.length, "baris");
-            
-            // [DEBUG] Log kategori yang ditemukan untuk memastikan semua sheet terbaca
-            const categoriesFound = [...new Set(data.map(item => item.category))];
-            console.log("Kategori ditemukan:", categoriesFound);
-
-            // [PERBAIKAN] Hapus penyimpanan cache katalog agar selalu real-time
-            // localStorage.setItem('catalogCache', JSON.stringify(data));
-            processCatalogData(data);
-        })
-        .catch(error => {
-            console.error("Gagal memuat data dari Google Sheets (Cek Deployment/CORS):", error);
-            // [PERBAIKAN] Beri notifikasi visual jika gagal fetch (biasanya masalah CORS atau Offline)
-            if (typeof window.showToast === 'function') {
-                window.showToast("Gagal koneksi ke server data (Cek Izin Script/CORS).");
-            }
-        });
+    try {
+        const res = await fetch(`${GOOGLE_SHEET_API_URL}?v=${Date.now()}&action=read`);
+        if (!res.ok) throw new Error('Network response was not ok');
+        const data = await res.json();
+        if (data && Array.isArray(data)) processCatalogData(data);
+    } catch (err) {
+        console.error("Fetch Error:", err);
+        if (typeof showToast === 'function') showToast("Menggunakan data offline...");
+    }
 }
 
 // Fungsi helper untuk memproses data katalog
@@ -826,12 +807,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 clone.style.left = `${buttonRect.left + (buttonRect.width / 2) - 12}px`;
                 clone.style.top = `${buttonRect.top + (buttonRect.height / 2) - 12}px`;
+                clone.style.transition = 'all 0.8s cubic-bezier(0.17, 0.67, 0.83, 0.67)';
 
                 requestAnimationFrame(() => {
                     clone.style.left = `${cartRect.left + (cartRect.width / 2) - 12}px`;
                     clone.style.top = `${cartRect.top + (cartRect.height / 2) - 12}px`;
-                    clone.style.transform = 'scale(0.5)';
-                    clone.style.opacity = '0.5';
+                    clone.style.transform = 'scale(0.2) rotate(360deg)';
+                    clone.style.opacity = '0';
                 });
 
                 setTimeout(() => {
@@ -1654,6 +1636,15 @@ document.addEventListener('DOMContentLoaded', function() {
         const activeLink = Array.from(navCategoryLinks).find(link => link.dataset.category === categoryName);
         if (activeLink) {
             activeLink.classList.add('active');
+            
+            // [BARU] Gerakkan indikator navigasi secara dinamis
+            const indicator = document.querySelector('.nav-indicator');
+            if (indicator) {
+                const rect = activeLink.getBoundingClientRect();
+                const navRect = document.querySelector('.floating-nav').getBoundingClientRect();
+                indicator.style.left = `${rect.left - navRect.left + (rect.width / 2) - 10}px`;
+                indicator.style.opacity = '1';
+            }
         }
     }
 
