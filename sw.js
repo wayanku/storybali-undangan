@@ -1,4 +1,4 @@
-const CACHE_NAME = 'storybali-cache-v9.3'; // Naikkan versi cache
+const CACHE_NAME = 'storybali-cache-v9.5'; // Naikkan versi cache ke v9.5 untuk memaksa pembaruan URL API baru
 const urlsToCache = [
     '/',
     '/index.html',
